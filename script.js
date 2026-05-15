@@ -25,15 +25,26 @@ const meals=[
 {id:24,name:'Turkey Club Sandwich',emoji:'🥪',bg:'linear-gradient(135deg,#8e9eab,#eef2f3)',mood:['lazy','healthy'],budget:'normal',energy:'low',time:'fast',ingredients:['bread','turkey','bacon','lettuce'],desc:'A sandwich that showed up to work dressed business casual.',steps:['Toast bread.','Layer turkey, bacon, lettuce, and sauce.','Cut and serve with chips.'],tags:['classic','quick','lunch']}
 ];
 
-let state={mood:'comfort',budget:'broke',energy:'low',time:'fast',saved:JSON.parse(localStorage.getItem('wteSaved')||'[]'),swipe:null};
+let state={mood:'comfort',budget:'broke',energy:'low',time:'fast',saved:JSON.parse(localStorage.getItem('wteSaved')||'[]'),swipe:null,vibeIndex:0};
 const $=s=>document.querySelector(s);const $$=s=>document.querySelectorAll(s);
 function saveState(){localStorage.setItem('wteSaved',JSON.stringify(state.saved))}
-function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1600)}
+function tapBuzz(){try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}}
+function toast(msg){tapBuzz();const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1500)}
 function nav(id){$$('.screen').forEach(s=>s.classList.remove('active'));$('#'+id).classList.add('active');$$('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.nav===id));window.scrollTo({top:0,behavior:'smooth'});if(id==='savedScreen')renderSaved();if(id==='swipeScreen'&&!state.swipe)newSwipe();}
 function scoreMeal(meal){let score=0;if(meal.mood.includes(state.mood))score+=4;if(meal.budget===state.budget)score+=3;if(meal.energy===state.energy)score+=3;if(meal.time===state.time)score+=3;const ing=$('#ingredientInput')?.value.toLowerCase().split(',').map(x=>x.trim()).filter(Boolean)||[];ing.forEach(i=>{if(meal.ingredients.some(m=>m.includes(i)||i.includes(m)))score+=2});return score;}
 function foodPhoto(meal){return `<div class="food-photo" style="--food-bg:${meal.bg}"><div class="food-emoji">${meal.emoji}</div></div>`}
 function mealCard(meal,showScore=false){const saved=state.saved.includes(meal.id);return `<article class="meal-card"><div class="meal-card-top">${foodPhoto(meal)}<div><h3>${meal.name}</h3><p>${meal.desc}</p><div class="tag-row">${meal.tags.map(t=>`<span class="tag">${t}</span>`).join('')}${showScore?`<span class="tag">${scoreMeal(meal)} pts</span>`:''}</div></div></div><div class="meal-actions"><button class="small-btn" onclick="openRecipe(${meal.id})">Recipe</button><button class="small-btn" onclick="toggleSave(${meal.id})">${saved?'Saved ❤️':'Save 🤍'}</button></div></article>`}
 function renderTrending(){const picks=meals.filter(m=>m.mood.includes('craving')||m.mood.includes('comfort')).slice(0,10);$('#trendingMeals').innerHTML=picks.map(m=>`<button class="trend-card" onclick="showHomeResult(${m.id})">${foodPhoto(m)}<h4>${m.name}</h4><p>${m.desc}</p></button>`).join('')}
+const vibes=[
+{title:'Comfort food with zero drama.',text:'For when your stomach wants a hug and your patience clocked out.',filter:{mood:'comfort'}},
+{title:'Broke but still eating good.',text:'Cheap meals that do not taste like financial distress.',filter:{budget:'broke'}},
+{title:'Lazy mode, professionally.',text:'Bare minimum effort. Maximum “okay, this actually hits.”',filter:{energy:'low'}},
+{title:'Craving chaos accepted.',text:'For when dinner needs to be messy, loud, saucy, and slightly irresponsible.',filter:{mood:'chaos'}},
+{title:'Date night without the group chat debate.',text:'Food that feels cute without requiring a reservation or emotional labor.',filter:{mood:'date'}}
+];
+function renderVibe(){const v=vibes[state.vibeIndex%vibes.length];const title=$('#vibeTitle');const text=$('#vibeText');if(title)title.textContent=v.title;if(text)text.textContent=v.text;renderTonightFeed(v.filter)}
+function renderTonightFeed(filter={}){const pool=meals.filter(m=>Object.entries(filter).every(([k,v])=>Array.isArray(m[k])?m[k].includes(v):m[k]===v));const picks=(pool.length?pool:meals).slice(0,5);const wrap=$('#tonightFeed');if(!wrap)return;wrap.innerHTML=picks.map(m=>`<button class="feed-card" onclick="showHomeResult(${m.id});document.getElementById('homeResult').scrollIntoView({behavior:'smooth',block:'center'})">${foodPhoto(m)}<div><h4>${m.name}</h4><p>${m.desc}</p><div class="feed-meta"><span>${m.budget}</span><span>${m.time}</span><span>${m.energy} energy</span></div></div></button>`).join('')}
+function shareMeal(meal){const text=`WhatToEat picked ${meal.name} for me. ${meal.desc}`;if(navigator.share){navigator.share({title:'WhatToEat',text}).catch(()=>{})}else{navigator.clipboard?.writeText(text);toast('Meal idea copied') }}
 function showHomeResult(id){const meal=meals.find(m=>m.id===id);const box=$('#homeResult');box.innerHTML=`<p class="eyebrow">Today's pick</p>${mealCard(meal)}`;box.classList.add('show');}
 function randomMeal(filter={}){let pool=meals.filter(m=>Object.entries(filter).every(([k,v])=>Array.isArray(m[k])?m[k].includes(v):m[k]===v));if(!pool.length)pool=meals;return pool[Math.floor(Math.random()*pool.length)]}
 function findMatches(){const ranked=[...meals].map(m=>({m,score:scoreMeal(m)})).sort((a,b)=>b.score-a.score).slice(0,7);$('#matchSummary').textContent=`Top ${ranked.length} matches for your current food mood.`;$('#smartResults').innerHTML=ranked.map(x=>mealCard(x.m,true)).join('');setTimeout(()=>$('#smartResults').scrollIntoView({behavior:'smooth',block:'start'}),80)}
@@ -43,7 +54,7 @@ function openRecipe(id){const m=meals.find(x=>x.id===id);$('#modalContent').inne
 function closeRecipe(){ $('#modalBackdrop').classList.remove('show');$('#recipeModal').classList.remove('show');$('#recipeModal').setAttribute('aria-hidden','true')}
 function swipeMarkup(m){return `<div class="match-badge">${m.budget} • ${m.time}</div><div class="swipe-visual" style="--food-bg:${m.bg}"><div class="food-emoji">${m.emoji}</div></div><div class="swipe-info"><p class="eyebrow">${m.tags[0]}</p><h2>${m.name}</h2><p class="muted">${m.desc}</p><div class="tag-row">${m.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div></div>`}
 function newSwipe(avoid){let m=randomMeal();if(avoid){let tries=0;while(m.id===avoid&&tries<10){m=randomMeal();tries++}}state.swipe=m;const card=$('#swipeCard');card.classList.remove('throw-left','throw-right');card.innerHTML=swipeMarkup(m)}
-function animateSwipe(dir,then){const card=$('#swipeCard');card.classList.add(dir==='left'?'throw-left':'throw-right');setTimeout(()=>{then?.();newSwipe(state.swipe?.id)},230)}
+function animateSwipe(dir,then){tapBuzz();const card=$('#swipeCard');card.classList.add(dir==='left'?'throw-left':'throw-right');setTimeout(()=>{then?.();newSwipe(state.swipe?.id)},230)}
 $$('[data-nav]').forEach(b=>b.addEventListener('click',()=>nav(b.dataset.nav)));
 $$('.chip-grid').forEach(group=>group.addEventListener('click',e=>{if(!e.target.classList.contains('chip'))return;group.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));e.target.classList.add('active');state[group.dataset.filterGroup]=e.target.dataset.value;}));
 $('#findMealBtn').addEventListener('click',findMatches);
@@ -54,10 +65,12 @@ $('#chaosBtn').addEventListener('click',()=>{showHomeResult(randomMeal({mood:'ch
 $('#passBtn').addEventListener('click',()=>animateSwipe('left'));
 $('#saveSwipeBtn').addEventListener('click',()=>state.swipe&&animateSwipe('right',()=>toggleSave(state.swipe.id)));
 $('#recipeSwipeBtn').addEventListener('click',()=>state.swipe&&openRecipe(state.swipe.id));
+$('#shareSwipeBtn')?.addEventListener('click',()=>state.swipe&&shareMeal(state.swipe));
+$('#vibeRefresh')?.addEventListener('click',()=>{state.vibeIndex++;renderVibe();toast('New dinner vibe loaded')});
 $('#closeModal').addEventListener('click',closeRecipe);$('#modalBackdrop').addEventListener('click',closeRecipe);
 let startX=0,currentX=0,dragging=false;const swipeCard=$('#swipeCard');
 swipeCard.addEventListener('pointerdown',e=>{dragging=true;startX=e.clientX;swipeCard.setPointerCapture(e.pointerId)});
 swipeCard.addEventListener('pointermove',e=>{if(!dragging)return;currentX=e.clientX-startX;swipeCard.style.transform=`translateX(${currentX}px) rotate(${currentX/18}deg)`});
 swipeCard.addEventListener('pointerup',()=>{if(!dragging)return;dragging=false;swipeCard.style.transform='';if(currentX>95){animateSwipe('right',()=>toggleSave(state.swipe.id))}else if(currentX<-95){animateSwipe('left')}currentX=0});
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
-renderTrending();renderSaved();newSwipe();showHomeResult(randomMeal().id);
+renderTrending();renderVibe();renderSaved();newSwipe();showHomeResult(randomMeal().id);

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>WhatToEat</title>
-  <meta name="description" content="A fast, funny food picker that helps you decide what to eat based on mood, budget, energy, time, and ingredients." />
+  <meta name="description" content="WhatToEat helps you pick dinner fast with smart food matches, swipe-style discovery, funny mood filters, and saved meal ideas." />
   <meta name="theme-color" content="#ff7a18" />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
@@ -45,6 +45,20 @@
         <button class="mini-card" id="lazyMode"><span>🛋️</span><b>Lazy mode</b><small>Low effort only.</small></button>
         <button class="mini-card" id="coupleMode"><span>💬</span><b>Couple mode</b><small>End the “idk” loop.</small></button>
       </section>
+
+      <section class="tonight-vibe card">
+        <div class="vibe-copy">
+          <p class="eyebrow">Tonight's vibe</p>
+          <h3 id="vibeTitle">Comfort food with zero drama.</h3>
+          <p id="vibeText">Open the app, tap once, eat something that makes sense. That is the whole mission.</p>
+        </div>
+        <button class="vibe-btn" id="vibeRefresh">New vibe</button>
+      </section>
+
+      <section class="section-head">
+        <div><h3>Tonight's feed</h3><p>Fast picks based on real life, not chef fantasy.</p></div>
+      </section>
+      <div class="vibe-feed" id="tonightFeed"></div>
 
       <section class="section-head">
         <div><h3>Trending cravings</h3><p>Quick hits for when your brain is offline.</p></div>
@@ -124,6 +138,7 @@
           <button class="round-action nope" id="passBtn"><span>✕</span><small>Nah</small></button>
           <button class="round-action recipe" id="recipeSwipeBtn"><span>👀</span><small>Recipe</small></button>
           <button class="round-action save" id="saveSwipeBtn"><span>❤️</span><small>Save</small></button>
+          <button class="round-action share" id="shareSwipeBtn"><span>📤</span><small>Share</small></button>
         </div>
       </section>
     </section>
