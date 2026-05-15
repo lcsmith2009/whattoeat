@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WhatToEat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="top-bar">
+      <div>
+        <p class="eyebrow">Stop overthinking dinner</p>
+        <h1>WhatToEat</h1>
+      </div>
+      <button class="icon-btn" id="surpriseBtn" aria-label="Surprise me">🎲</button>
+    </header>
+
+    <main>
+      <section class="screen active" id="homeScreen">
+        <div class="hero-card">
+          <div class="hero-copy">
+            <span class="pill">V1.0 App Shell</span>
+            <h2>Hungry, broke, tired, or just being dramatic?</h2>
+            <p>Pick a mood and we’ll give you something realistic to eat. No chef cosplay required.</p>
+          </div>
+          <button class="primary-btn" data-action="random">Tell me what to eat</button>
+        </div>
+
+        <section class="section-block">
+          <div class="section-head">
+            <h3>Pick your food mood</h3>
+            <p>Tap one and let the app do the thinking.</p>
+          </div>
+          <div class="mood-grid" id="moodGrid"></div>
+        </section>
+
+        <section class="section-block">
+          <div class="section-head row-head">
+            <div>
+              <h3>Featured struggle saver</h3>
+              <p>Quick, easy, and won’t judge you.</p>
+            </div>
+          </div>
+          <article class="meal-card featured" id="featuredMeal"></article>
+        </section>
+      </section>
+
+      <section class="screen" id="generatorScreen">
+        <div class="section-head page-title">
+          <h2>Random Meal Generator</h2>
+          <p>Hit the button until your stomach agrees.</p>
+        </div>
+        <button class="primary-btn big" data-action="random">Spin the food wheel</button>
+        <div class="result-wrap" id="randomResult"></div>
+      </section>
+
+      <section class="screen" id="resultsScreen">
+        <div class="section-head page-title">
+          <h2 id="resultsTitle">Meal Results</h2>
+          <p id="resultsSubtitle">Your realistic options are below.</p>
+        </div>
+        <div class="meal-list" id="mealResults"></div>
+      </section>
+
+      <section class="screen" id="favoritesScreen">
+        <div class="section-head page-title">
+          <h2>Favorites</h2>
+          <p>Your saved “don’t make me think” meals.</p>
+        </div>
+        <div class="meal-list" id="favoritesList"></div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Main navigation">
+      <button class="nav-btn active" data-screen="homeScreen">🏠<span>Home</span></button>
+      <button class="nav-btn" data-screen="generatorScreen">🎲<span>Random</span></button>
+      <button class="nav-btn" data-screen="resultsScreen">🍽️<span>Meals</span></button>
+      <button class="nav-btn" data-screen="favoritesScreen">❤️<span>Saved</span></button>
+    </nav>
+  </div>
+
+  <div class="modal hidden" id="recipeModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-backdrop" data-close="modal"></div>
+    <div class="modal-card">
+      <button class="close-btn" data-close="modal" aria-label="Close recipe">×</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
