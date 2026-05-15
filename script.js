@@ -94,7 +94,7 @@ function showToast(message) {
   toast.textContent = message;
   toast.classList.remove('hidden');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.add('hidden'), 1600);
+  toastTimer = setTimeout(() => toast.classList.add('hidden'), 1100);
 }
 
 function toggleFavorite(id) {

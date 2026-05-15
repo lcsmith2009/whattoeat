@@ -297,3 +297,75 @@ p { color: var(--muted); line-height: 1.42; }
   .secondary-btn { padding: 10px 10px; font-size: 0.86rem; }
   .bottom-nav { border-radius: 22px; }
 }
+
+
+/* V1.3 Final Mobile Cleanup */
+html { scroll-padding-bottom: 170px; }
+.app-shell {
+  padding-top: 10px;
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-bottom: calc(175px + env(safe-area-inset-bottom));
+}
+.top-bar { margin-bottom: 8px; }
+.eyebrow { font-size: 0.64rem; margin-bottom: 3px; }
+h1 { font-size: clamp(1.55rem, 7vw, 2.25rem); letter-spacing: -0.07em; }
+h2 { font-size: clamp(1.18rem, 5.4vw, 1.72rem); margin-bottom: 7px; }
+h3 { font-size: 0.98rem; }
+p { line-height: 1.32; }
+.icon-btn { width: 40px; height: 40px; font-size: 1.08rem; }
+.hero-card { padding: 11px; margin-bottom: 8px; border-radius: 22px; }
+.hero-card::after { font-size: 4.2rem; right: -14px; top: -4px; }
+.hero-copy p { margin-bottom: 8px; font-size: 0.8rem; max-width: 92%; }
+.pill, .tag { padding: 5px 8px; font-size: 0.66rem; }
+.primary-btn { min-height: 44px; border-radius: 15px; font-size: 0.92rem; }
+.primary-btn.big { min-height: 48px; margin: 2px 0 10px; }
+.section-block { padding: 11px; margin-bottom: 8px; border-radius: 22px; }
+.section-block.compact { padding: 10px; }
+.section-head { margin-bottom: 7px; }
+.section-head p { font-size: 0.78rem; }
+.page-title { padding: 2px 2px 6px; }
+.mood-grid { gap: 7px; }
+.mood-btn { min-height: 58px; padding: 8px; border-radius: 17px; }
+.mood-btn strong { font-size: 0.84rem; margin-bottom: 2px; }
+.mood-btn span { font-size: 0.68rem; }
+.filters-block p { margin-bottom: 6px; font-size: 0.76rem; }
+.filter-row { gap: 6px; margin-top: 6px; }
+.filter-chip { padding: 7px 9px; font-size: 0.69rem; }
+.meal-list, .result-wrap { gap: 8px; padding-bottom: 48px; }
+.meal-card { padding: 10px; border-radius: 21px; }
+.meal-card.featured { margin-top: 2px; }
+.meal-top { gap: 8px; }
+.meal-emoji { width: 38px; height: 38px; border-radius: 13px; font-size: 1.2rem; }
+.meal-title { font-size: 0.94rem; margin-bottom: 3px; line-height: 1.1; }
+.meal-desc { margin-bottom: 7px; font-size: 0.76rem; line-height: 1.26; }
+.meta-row, .action-row, .tag-row { gap: 6px; }
+.meta-chip { padding: 5px 7px; font-size: 0.66rem; }
+.action-row { margin-top: 8px; }
+.secondary-btn { padding: 9px 9px; border-radius: 13px; font-size: 0.82rem; }
+.bottom-nav {
+  bottom: max(10px, env(safe-area-inset-bottom));
+  width: min(calc(100% - 22px), 492px);
+  padding: 6px;
+  border-radius: 22px;
+}
+.nav-btn { padding: 7px 3px; border-radius: 16px; font-size: 0.92rem; }
+.nav-btn span { font-size: 0.61rem; }
+.toast {
+  bottom: calc(84px + env(safe-area-inset-bottom));
+  width: min(calc(100% - 74px), 340px);
+  padding: 9px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+}
+.modal-card { max-height: 78vh; padding: 18px 14px calc(28px + env(safe-area-inset-bottom)); }
+.empty-state { padding: 14px; border-radius: 20px; }
+#randomResult .meal-card:last-child, #mealResults .meal-card:last-child, #favoritesList .meal-card:last-child { margin-bottom: 44px; }
+
+@media (max-width: 390px) {
+  .app-shell { padding-left: 10px; padding-right: 10px; }
+  .hero-card { padding: 10px; }
+  .hero-copy p { font-size: 0.76rem; }
+  .mood-btn { min-height: 55px; }
+  .secondary-btn { padding: 8px 8px; font-size: 0.78rem; }
+}
