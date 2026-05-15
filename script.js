@@ -252,7 +252,7 @@ randomResult.innerHTML = emptyState('Ready when you are', 'Pick filters or hit t
 mealResults.innerHTML = meals.map(mealCard).join('');
 
 
-// V1.5 lightweight app install support
+// Lightweight app install support
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw.js').catch(() => {});
