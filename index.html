@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0d0b09" />
   <title>WhatToEat</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,21 +17,21 @@
         <p class="eyebrow">Stop overthinking dinner</p>
         <h1>WhatToEat</h1>
       </div>
-      <button class="icon-btn" id="surpriseBtn" aria-label="Surprise me">🎲</button>
+      <button class="icon-btn" id="surpriseBtn" data-action="random" aria-label="Surprise me">🎲</button>
     </header>
 
     <main>
       <section class="screen active" id="homeScreen">
         <div class="hero-card">
           <div class="hero-copy">
-            <span class="pill">V1.0 App Shell</span>
+            <span class="pill">V1.1 Real Meal Engine</span>
             <h2>Hungry, broke, tired, or just being dramatic?</h2>
-            <p>Pick a mood and we’ll give you something realistic to eat. No chef cosplay required.</p>
+            <p>Pick a mood and get realistic food ideas fast. No chef cosplay. No 47-step nonsense.</p>
           </div>
           <button class="primary-btn" data-action="random">Tell me what to eat</button>
         </div>
 
-        <section class="section-block">
+        <section class="section-block compact">
           <div class="section-head">
             <h3>Pick your food mood</h3>
             <p>Tap one and let the app do the thinking.</p>
@@ -38,7 +39,7 @@
           <div class="mood-grid" id="moodGrid"></div>
         </section>
 
-        <section class="section-block">
+        <section class="section-block compact">
           <div class="section-head row-head">
             <div>
               <h3>Featured struggle saver</h3>
@@ -52,8 +53,17 @@
       <section class="screen" id="generatorScreen">
         <div class="section-head page-title">
           <h2>Random Meal Generator</h2>
-          <p>Hit the button until your stomach agrees.</p>
+          <p>Set the vibe, then spin until your stomach says yes.</p>
         </div>
+
+        <section class="section-block compact filters-block">
+          <h3>Food filters</h3>
+          <p>Optional, because sometimes the budget is the boss.</p>
+          <div class="filter-row" id="budgetFilters"></div>
+          <div class="filter-row" id="timeFilters"></div>
+          <div class="filter-row" id="energyFilters"></div>
+        </section>
+
         <button class="primary-btn big" data-action="random">Spin the food wheel</button>
         <div class="result-wrap" id="randomResult"></div>
       </section>
@@ -82,6 +92,8 @@
       <button class="nav-btn" data-screen="favoritesScreen">❤️<span>Saved</span></button>
     </nav>
   </div>
+
+  <div class="toast hidden" id="toast"></div>
 
   <div class="modal hidden" id="recipeModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-backdrop" data-close="modal"></div>
