@@ -6,9 +6,9 @@
   <title>WhatToEat — Smart Food Picker</title>
   <meta name="description" content="WhatToEat helps you decide what to eat fast with smart matches, swipe-style food discovery, Tonight's Vibe picks, and funny realistic meal ideas." />
   <meta name="theme-color" content="#ff7a18" />
-  <link rel="manifest" href="manifest.json?v=23" />
+  <link rel="manifest" href="manifest.json?v=24" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <link rel="stylesheet" href="style.css?v=23" />
+  <link rel="stylesheet" href="style.css?v=24" />
 </head>
 <body>
   <div class="app-bg"></div>
@@ -23,8 +23,6 @@
     </header>
 
     <section class="screen active" id="homeScreen">
-      <section class="live-update-banner card"><span>🔥 V2.3 is live</span><b>Tonight's Vibe + Swipe Food upgrade</b><small>If you can see this banner, the newest files deployed correctly.</small></section>
-
       <section class="hero card glow-card">
         <div class="hero-copy">
           <p class="pill">Smart food match</p>
@@ -48,6 +46,20 @@
         <button class="mini-card" id="coupleMode"><span>💬</span><b>Couple mode</b><small>End the “idk” loop.</small></button>
       </section>
 
+      <section class="decision-deck card">
+        <div>
+          <p class="eyebrow">V2.4 feature</p>
+          <h3>Dinner Decision Deck</h3>
+          <p>Tap a life situation and WhatToEat throws you a meal that fits the chaos.</p>
+        </div>
+        <div class="deck-grid">
+          <button class="deck-chip" data-deck="payday">Payday hungry</button>
+          <button class="deck-chip" data-deck="broke">Broke but bold</button>
+          <button class="deck-chip" data-deck="lazy">Couch locked</button>
+          <button class="deck-chip" data-deck="late">Late-night gremlin</button>
+        </div>
+      </section>
+
       <section class="tonight-vibe card">
         <div class="vibe-copy">
           <p class="eyebrow">Tonight's vibe</p>
@@ -61,6 +73,11 @@
         <div><h3>Tonight's feed</h3><p>Fast picks based on real life, not chef fantasy.</p></div>
       </section>
       <div class="vibe-feed" id="tonightFeed"></div>
+
+      <section class="section-head">
+        <div><h3>Quick craving lanes</h3><p>Pick the lane. Let the app do the thinking.</p></div>
+      </section>
+      <div class="craving-lanes" id="cravingLanes"></div>
 
       <section class="section-head">
         <div><h3>Trending cravings</h3><p>Quick hits for when your brain is offline.</p></div>
@@ -165,6 +182,6 @@
   </section>
 
   <div class="toast" id="toast"></div>
-  <script src="script.js?v=23"></script>
+  <script src="script.js?v=24"></script>
 </body>
 </html>

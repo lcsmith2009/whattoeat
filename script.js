@@ -72,5 +72,15 @@ let startX=0,currentX=0,dragging=false;const swipeCard=$('#swipeCard');
 swipeCard.addEventListener('pointerdown',e=>{dragging=true;startX=e.clientX;swipeCard.setPointerCapture(e.pointerId)});
 swipeCard.addEventListener('pointermove',e=>{if(!dragging)return;currentX=e.clientX-startX;swipeCard.style.transform=`translateX(${currentX}px) rotate(${currentX/18}deg)`});
 swipeCard.addEventListener('pointerup',()=>{if(!dragging)return;dragging=false;swipeCard.style.transform='';if(currentX>95){animateSwipe('right',()=>toggleSave(state.swipe.id))}else if(currentX<-95){animateSwipe('left')}currentX=0});
+
+const deckFilters={payday:{budget:'treat'},broke:{budget:'broke'},lazy:{energy:'low'},late:{mood:'chaos'}};
+function renderCravingLanes(){const lanes=[
+  {emoji:'🍗',title:'Protein drama',sub:'Chicken, bowls, and filling food.',filter:{mood:'healthy'}},
+  {emoji:'🍜',title:'Cozy bowl stuff',sub:'Soup, noodles, rice, comfort.',filter:{mood:'comfort'}},
+  {emoji:'🌮',title:'Messy cravings',sub:'Saucy food with no manners.',filter:{mood:'chaos'}},
+  {emoji:'🥪',title:'No-cook-ish',sub:'Fast meals for tired people.',filter:{energy:'low'}}
+];const wrap=document.getElementById('cravingLanes');if(!wrap)return;wrap.innerHTML=lanes.map((l,i)=>`<button class="lane-card" data-lane="${i}"><span>${l.emoji}</span><b>${l.title}</b><small>${l.sub}</small></button>`).join('');wrap.querySelectorAll('.lane-card').forEach((btn,i)=>btn.addEventListener('click',()=>{const meal=randomMeal(lanes[i].filter);showHomeResult(meal.id);toast(lanes[i].title+' loaded');document.getElementById('homeResult').scrollIntoView({behavior:'smooth',block:'center'});}));}
+
+$$('.deck-chip').forEach(btn=>btn.addEventListener('click',()=>{const meal=randomMeal(deckFilters[btn.dataset.deck]||{});showHomeResult(meal.id);toast(btn.textContent+' pick loaded');document.getElementById('homeResult').scrollIntoView({behavior:'smooth',block:'center'});}));
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
-renderTrending();renderVibe();renderSaved();newSwipe();showHomeResult(randomMeal().id);
+renderTrending();renderVibe();renderCravingLanes();renderSaved();newSwipe();showHomeResult(randomMeal().id);
