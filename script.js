@@ -112,14 +112,14 @@ function toggleSave(id){
 function openMeal(id){
   const meal = meals.find(m=>m.id===id);
   $('#modalContent').innerHTML = `<div class="food-img ${meal.photo}" style="border-radius:24px;height:210px"></div><h2>${meal.emoji} ${meal.name}</h2><p>${meal.desc}</p><p><strong>Why this works:</strong> ${meal.why}</p><h3>Quick steps</h3><ol>${meal.steps.map(s=>`<li>${s}</li>`).join('')}</ol><button class="primary-btn full" onclick="openShare(${meal.id})">Make share card</button>`;
-  $('#modalBackdrop').hidden = false;
+  modalBackdrop.hidden = false; modalBackdrop.removeAttribute('hidden');
 }
 
 function openShare(id){
   const meal = meals.find(m=>m.id===id);
   const text = `WhatToEat picked ${meal.emoji} ${meal.name} for me because ${meal.why} ${meal.desc}\nhttps://whattoeat-ten-hazel.vercel.app/`;
   $('#modalContent').innerHTML = `<div class="share-card-preview"><div><p class="eyebrow">WhatToEat picked</p><h2>${meal.emoji} ${meal.name}</h2></div><p>${meal.desc}</p><p>${meal.why}</p></div><button class="primary-btn full" id="copyShareBtn">Copy share text</button>`;
-  $('#modalBackdrop').hidden = false;
+  modalBackdrop.hidden = false; modalBackdrop.removeAttribute('hidden');
   setTimeout(()=>$('#copyShareBtn').onclick=()=>{navigator.clipboard?.writeText(text); toast('Share text copied');},0);
 }
 
@@ -142,8 +142,8 @@ $('#smartPickBtn').addEventListener('click',smartPick);
 $('#chaosPickBtn').addEventListener('click',chaosPick);
 $('#refreshDailyBtn').addEventListener('click',()=>refreshDaily(true));
 $('#makeShareBtn').addEventListener('click',()=>openShare((state.lastMeal || meals[2]).id));
-$('#closeModal').addEventListener('click',()=>$('#modalBackdrop').hidden=true);
-$('#modalBackdrop').addEventListener('click',e=>{ if(e.target.id==='modalBackdrop') $('#modalBackdrop').hidden=true; });
+$('#closeModal').addEventListener('click',()=>modalBackdrop.hidden = true; modalBackdrop.setAttribute('hidden',''));
+$('#modalBackdrop').addEventListener('click',e=>{ if(e.target.id==='modalBackdrop'){ modalBackdrop.hidden = true; modalBackdrop.setAttribute('hidden',''); } });
 $('#resetBtn').addEventListener('click',()=>{localStorage.clear(); location.reload();});
 let deferredPrompt; window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;});
 $('#installBtn').addEventListener('click',()=>{ if(deferredPrompt){deferredPrompt.prompt();} else toast('Use browser menu → Add to Home screen'); });
