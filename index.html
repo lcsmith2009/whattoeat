@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>WhatToEat</title>
-  <meta name="description" content="WhatToEat helps you pick dinner fast with smart food matches, swipe-style discovery, funny mood filters, and saved meal ideas." />
+  <title>WhatToEat — Smart Food Picker</title>
+  <meta name="description" content="WhatToEat helps you decide what to eat fast with smart matches, swipe-style food discovery, Tonight's Vibe picks, and funny realistic meal ideas." />
   <meta name="theme-color" content="#ff7a18" />
-  <link rel="manifest" href="manifest.json" />
+  <link rel="manifest" href="manifest.json?v=23" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=23" />
 </head>
 <body>
   <div class="app-bg"></div>
@@ -23,11 +23,13 @@
     </header>
 
     <section class="screen active" id="homeScreen">
+      <section class="live-update-banner card"><span>🔥 V2.3 is live</span><b>Tonight's Vibe + Swipe Food upgrade</b><small>If you can see this banner, the newest files deployed correctly.</small></section>
+
       <section class="hero card glow-card">
         <div class="hero-copy">
           <p class="pill">Smart food match</p>
-          <h2>Stop arguing with your stomach.</h2>
-          <p>Pick your mood, budget, energy, and cravings. We’ll throw food ideas at you until something hits.</p>
+          <h2>Your stomach called. It wants answers.</h2>
+          <p>Answer the vibe check, swipe through food cards, and stop pretending “whatever” is a dinner plan.</p>
           <div class="hero-actions">
             <button class="primary-btn" data-nav="smartScreen">Start Match</button>
             <button class="secondary-btn" data-nav="swipeScreen">Swipe Food</button>
@@ -163,6 +165,6 @@
   </section>
 
   <div class="toast" id="toast"></div>
-  <script src="script.js"></script>
+  <script src="script.js?v=23"></script>
 </body>
 </html>
