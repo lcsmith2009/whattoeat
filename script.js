@@ -1,12 +1,12 @@
 const moods = [
-  { id: 'lazy', emoji: '😴', title: 'Lazy', subtitle: 'Low effort only' },
-  { id: 'broke', emoji: '💸', title: 'Broke', subtitle: 'Cheap but good' },
-  { id: 'comfort', emoji: '🛋️', title: 'Comfort', subtitle: 'Feed my feelings' },
-  { id: 'protein', emoji: '💪', title: 'High Protein', subtitle: 'Trying to act right' },
-  { id: 'quick', emoji: '⚡', title: 'Quick', subtitle: 'Under 15 minutes' },
-  { id: 'craving', emoji: '🤤', title: 'Craving', subtitle: 'Something that hits' },
-  { id: 'healthyish', emoji: '🥗', title: 'Healthy-ish', subtitle: 'Not sad food' },
-  { id: 'couple', emoji: '👥', title: 'For Two', subtitle: 'Shareable meals' }
+  { id: 'lazy', emoji: '😴', title: 'Lazy', subtitle: 'No stove Olympics' },
+  { id: 'broke', emoji: '💸', title: 'Broke', subtitle: 'Wallet on life support' },
+  { id: 'comfort', emoji: '🛋️', title: 'Comfort', subtitle: 'Emotionally seasoned' },
+  { id: 'protein', emoji: '💪', title: 'High Protein', subtitle: 'Gym-adjacent behavior' },
+  { id: 'quick', emoji: '⚡', title: 'Quick', subtitle: 'Before I get hangry' },
+  { id: 'craving', emoji: '🤤', title: 'Craving', subtitle: 'I need it to HIT' },
+  { id: 'healthyish', emoji: '🥗', title: 'Healthy-ish', subtitle: 'Wellness with flavor' },
+  { id: 'couple', emoji: '👥', title: 'For Two', subtitle: 'Avoid the dinner debate' }
 ];
 
 const filterState = { budget: 'any', time: 'any', energy: 'any' };
@@ -186,7 +186,7 @@ function renderFavorites() {
   const savedMeals = meals.filter(meal => favorites.includes(meal.id));
   favoritesList.innerHTML = savedMeals.length
     ? savedMeals.map(mealCard).join('')
-    : emptyState('No favorites yet', 'Save meals you actually want to remember. Future you is hungry.');
+    : emptyState('No favorites yet', 'Save the meals that understood the assignment. Future hungry you is counting on this.');
 }
 
 function openRecipe(id) {
@@ -248,5 +248,5 @@ document.addEventListener('click', event => {
 });
 
 renderAll();
-randomResult.innerHTML = emptyState('Ready when you are', 'Pick filters or tap the button and let fate pick dinner.');
+randomResult.innerHTML = emptyState('Ready when you are', 'Pick filters or hit the button. Your stomach deserves leadership.');
 mealResults.innerHTML = meals.map(mealCard).join('');
