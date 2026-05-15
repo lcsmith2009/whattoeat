@@ -12,6 +12,7 @@
 </head>
 <body>
   <div class="app-bg"></div>
+
   <main class="app-shell">
     <header class="topbar">
       <div>
@@ -24,12 +25,19 @@
     <section class="screen active" id="homeScreen">
       <section class="hero card glow-card">
         <div class="hero-copy">
-          <p class="pill">V2 Smart Food Engine</p>
-          <h2>Tell the app your vibe. Get food that actually makes sense.</h2>
-          <p>Hungry, broke, tired, picky, or just dramatic? Pick your mood and let WhatToEat handle dinner.</p>
-          <button class="primary-btn" data-nav="smartScreen">Start Food Match</button>
+          <p class="pill">Smart food match</p>
+          <h2>Stop arguing with your stomach.</h2>
+          <p>Pick your mood, budget, energy, and cravings. We’ll throw food ideas at you until something hits.</p>
+          <div class="hero-actions">
+            <button class="primary-btn" data-nav="smartScreen">Start Match</button>
+            <button class="secondary-btn" data-nav="swipeScreen">Swipe Food</button>
+          </div>
         </div>
-        <div class="hero-plate" aria-hidden="true">🍜</div>
+        <div class="hero-stack" aria-hidden="true">
+          <div class="floating-food one">🍕</div>
+          <div class="floating-food two">🍜</div>
+          <div class="floating-food three">🌮</div>
+        </div>
       </section>
 
       <section class="quick-actions">
@@ -39,7 +47,7 @@
       </section>
 
       <section class="section-head">
-        <div><h3>Trending cravings</h3><p>Stuff people actually want after a long day.</p></div>
+        <div><h3>Trending cravings</h3><p>Quick hits for when your brain is offline.</p></div>
       </section>
       <div class="horizontal-scroll" id="trendingMeals"></div>
 
@@ -50,10 +58,10 @@
       <section class="card smart-card">
         <p class="eyebrow">Smart Food Engine</p>
         <h2>Build your food vibe</h2>
-        <p class="muted">Tap what fits. The app scores meals based on mood, budget, time, energy, and ingredients.</p>
+        <p class="muted">Tap what fits. The app scores meals based on your actual “what am I doing with my life?” situation.</p>
 
         <div class="question-block">
-          <h3>1. What mood are you in?</h3>
+          <h3>1. Mood?</h3>
           <div class="chip-grid" data-filter-group="mood">
             <button class="chip active" data-value="comfort">Comfort</button>
             <button class="chip" data-value="lazy">Lazy</button>
@@ -64,21 +72,22 @@
           </div>
         </div>
 
-        <div class="question-block">
-          <h3>2. Budget?</h3>
-          <div class="chip-grid" data-filter-group="budget">
-            <button class="chip active" data-value="broke">Broke</button>
-            <button class="chip" data-value="normal">Normal</button>
-            <button class="chip" data-value="treat">Treat me</button>
+        <div class="question-row">
+          <div class="question-block small">
+            <h3>2. Budget?</h3>
+            <div class="chip-grid two" data-filter-group="budget">
+              <button class="chip active" data-value="broke">Broke</button>
+              <button class="chip" data-value="normal">Normal</button>
+              <button class="chip" data-value="treat">Treat me</button>
+            </div>
           </div>
-        </div>
-
-        <div class="question-block">
-          <h3>3. Energy level?</h3>
-          <div class="chip-grid" data-filter-group="energy">
-            <button class="chip active" data-value="low">Bare minimum</button>
-            <button class="chip" data-value="medium">I can function</button>
-            <button class="chip" data-value="high">I’ll cook</button>
+          <div class="question-block small">
+            <h3>3. Energy?</h3>
+            <div class="chip-grid two" data-filter-group="energy">
+              <button class="chip active" data-value="low">Bare min</button>
+              <button class="chip" data-value="medium">I can function</button>
+              <button class="chip" data-value="high">I’ll cook</button>
+            </div>
           </div>
         </div>
 
@@ -92,8 +101,8 @@
         </div>
 
         <div class="question-block">
-          <h3>5. What ingredients you got?</h3>
-          <input id="ingredientInput" class="ingredient-input" placeholder="Example: chicken, rice, eggs, pasta" />
+          <h3>5. Ingredients?</h3>
+          <input id="ingredientInput" class="ingredient-input" placeholder="chicken, rice, eggs, pasta..." />
         </div>
 
         <button class="primary-btn full" id="findMealBtn">Find my food match</button>
@@ -105,15 +114,16 @@
       <div class="meal-list" id="smartResults"></div>
     </section>
 
-    <section class="screen" id="wheelScreen">
-      <section class="card wheel-card">
-        <p class="eyebrow">Food Wheel</p>
-        <h2>Swipe-style picker</h2>
-        <p class="muted">Tap pass or save. We’ll keep throwing meals at you until something hits.</p>
-        <div class="swipe-card" id="swipeCard"></div>
+    <section class="screen" id="swipeScreen">
+      <section class="section-head compact">
+        <div><h2>Swipe food</h2><p>Tinder for dinner. No commitment until it looks delicious.</p></div>
+      </section>
+      <section class="swipe-zone">
+        <article class="swipe-card big-food-card" id="swipeCard"></article>
         <div class="swipe-actions">
-          <button class="secondary-btn" id="passBtn">Nah, next</button>
-          <button class="primary-btn" id="saveSwipeBtn">Save this</button>
+          <button class="round-action nope" id="passBtn"><span>✕</span><small>Nah</small></button>
+          <button class="round-action recipe" id="recipeSwipeBtn"><span>👀</span><small>Recipe</small></button>
+          <button class="round-action save" id="saveSwipeBtn"><span>❤️</span><small>Save</small></button>
         </div>
       </section>
     </section>
@@ -127,7 +137,7 @@
   <nav class="bottom-nav" aria-label="App navigation">
     <button class="nav-item active" data-nav="homeScreen">🏠<span>Home</span></button>
     <button class="nav-item" data-nav="smartScreen">🧠<span>Match</span></button>
-    <button class="nav-item" data-nav="wheelScreen">🎡<span>Wheel</span></button>
+    <button class="nav-item" data-nav="swipeScreen">👆<span>Swipe</span></button>
     <button class="nav-item" data-nav="savedScreen">❤️<span>Saved</span></button>
   </nav>
 
