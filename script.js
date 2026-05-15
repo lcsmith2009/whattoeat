@@ -9,8 +9,14 @@ const meals=[
 {id:8,name:'Tuna Melt Situation',emoji:'🥪',mood:'broke',budget:'low',energy:'medium',time:'12 min',photo:'linear-gradient(135deg,#26384d,#d8a15d)',desc:'Pantry meal that shows up when the fridge is embarrassing.',why:'Because canned tuna has been waiting for its redemption arc.',steps:['Mix tuna with mayo/seasoning.','Put on bread with cheese.','Toast in pan.','Eat hot. Judge nobody.']},
 {id:9,name:'Loaded Nugget Bowl',emoji:'🍗',mood:'chaos',budget:'medium',energy:'low',time:'11 min',photo:'linear-gradient(135deg,#693011,#ffb703)',desc:'Chicken nuggets over fries/rice with sauce like you meant to do it.',why:'Because sometimes the meal is not classy — it is effective.',steps:['Cook nuggets.','Add fries, rice, or whatever base you have.','Drizzle ranch, buffalo, or BBQ.','Add cheese if you want chaos.']},
 {id:10,name:'Snack Plate Dinner',emoji:'🧀',mood:'lazy',budget:'medium',energy:'low',time:'5 min',photo:'linear-gradient(135deg,#3b2a16,#ffd166)',desc:'Cheese, crackers, fruit, meat, pickles. A board without the influencer pressure.',why:'Because you want to eat, not perform dinner for an imaginary audience.',steps:['Grab 3 salty things.','Grab 1 sweet thing.','Add cheese or protein.','Put it on a plate so it feels official.']}
+,{id:11,name:'Midnight Cereal Bowl Deluxe',emoji:'🥣',mood:'late-night',budget:'low',energy:'low',time:'3 min',photo:'linear-gradient(135deg,#161b3d,#8b5cf6)',desc:'Cereal after dark. No stove. No shame. Just survival.',why:'Because it is too late to be washing pans, and cereal has never betrayed you.',steps:['Pour cereal.','Add milk.','Add banana or peanut butter if you feel fancy.','Eat quietly like this was a plan.']}
+,{id:12,name:'Struggle Fried Rice',emoji:'🍚',mood:'struggle',budget:'low',energy:'medium',time:'12 min',photo:'linear-gradient(135deg,#1f3d26,#ffd166)',desc:'Rice, egg, frozen veggies, sauce. Cheap but not sad.',why:'Because your budget is whispering, but your taste buds still deserve a little respect.',steps:['Heat leftover rice.','Add frozen veggies.','Scramble in an egg.','Splash soy sauce or seasoning and stir.']}
+,{id:13,name:'Late Night Pizza Toast',emoji:'🍞',mood:'late-night',budget:'low',energy:'low',time:'7 min',photo:'linear-gradient(135deg,#421515,#ff7a1a)',desc:'Toast pretending to be pizza, and honestly doing a good job.',why:'Because delivery is expensive and your toaster is right there minding its business.',steps:['Toast bread.','Add sauce, cheese, and pepperoni if you have it.','Heat until melty.','Eat two because one was never enough.']}
+,{id:14,name:'Pantry Nacho Plate',emoji:'🧀',mood:'struggle',budget:'low',energy:'low',time:'6 min',photo:'linear-gradient(135deg,#4a2a0c,#f59e0b)',desc:'Chips, cheese, toppings, microwave. The economy made you creative.',why:'Because hunger does not care that groceries are high.',steps:['Put chips on plate.','Add cheese and any toppings.','Microwave until melted.','Add hot sauce and call it dinner.']}
+,{id:15,name:'Chaos Burger Bowl',emoji:'🍔',mood:'chaos',budget:'medium',energy:'medium',time:'15 min',photo:'linear-gradient(135deg,#34120c,#ef4444)',desc:'Burger ingredients over fries or rice. Bun optional. Judgment canceled.',why:'Because your craving said burger, but your kitchen said improvise.',steps:['Cook ground meat or burger pieces.','Add fries, rice, or lettuce base.','Top with cheese, pickles, sauce.','Eat like a genius.']}
+
 ];
-let favorites=JSON.parse(localStorage.getItem('wte_favorites_v30')||'[]');let currentSwipe=0;
+let favorites=JSON.parse(localStorage.getItem('wte_favorites_v31')||'[]');let currentSwipe=0;
 const $=s=>document.querySelector(s);const $$=s=>document.querySelectorAll(s);
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1700)}
 function pick(arr=meals){return arr[Math.floor(Math.random()*arr.length)]||meals[0]}
@@ -20,14 +26,39 @@ function renderDaily(){const m=pick(meals);$('#dailyPick').innerHTML=card(m)}
 function renderTrends(){const trend=[...meals].sort(()=>Math.random()-.5).slice(0,5);$('#trendFeed').innerHTML=trend.map(m=>`<button class="trend-card" onclick="openRecipe(${m.id})"><div class="trend-img" style="background:${m.photo}">${m.emoji}</div><div><b>${m.name}</b><small>${m.time} • ${m.mood}</small></div></button>`).join('')}
 function renderMeals(){const shuffled=[...meals].sort(()=>Math.random()-.5);$('#mealList').innerHTML=shuffled.map(m=>card(m,true)).join('')}
 function renderFavorites(){const favMeals=meals.filter(m=>favorites.includes(m.id));$('#favoritesList').innerHTML=favMeals.length?favMeals.map(m=>card(m,true)).join(''):`<div class="panel-card"><p class="tag">Empty plate</p><h2>No saved meals yet.</h2><p>Save something before your hunger starts making financial decisions.</p></div>`}
-function saveMeal(id){if(!favorites.includes(id)){favorites.push(id);localStorage.setItem('wte_favorites_v30',JSON.stringify(favorites));toast('Saved. Future you says thanks.');renderFavorites()}else toast('Already saved, bestie.')}
+function saveMeal(id){if(!favorites.includes(id)){favorites.push(id);localStorage.setItem('wte_favorites_v31',JSON.stringify(favorites));toast('Saved. Future you says thanks.');renderFavorites()}else toast('Already saved, bestie.')}
 function openRecipe(id){const m=meals.find(x=>x.id===id);$('#recipeContent').innerHTML=`<p class="tag">Quick recipe</p><h2>${m.emoji} ${m.name}</h2><p>${m.desc}</p><div class="why-box"><b>AI-style take:</b> ${m.why}</div><ol>${m.steps.map(s=>`<li>${s}</li>`).join('')}</ol><div class="badges"><span class="badge">${m.time}</span><span class="badge">${m.budget}</span><span class="badge">${m.energy}</span></div>`;$('#recipeModal').classList.add('show')}
 function renderSwipe(){const m=meals[currentSwipe%meals.length];$('#swipeCard').innerHTML=`<div class="swipe-photo" style="background:${m.photo}"><div class="big-food">${m.emoji}</div></div><div class="swipe-info"><p class="tag">${m.mood} mood • ${m.time}</p><h2>${m.name}</h2><p>${m.desc}</p><div class="why-box"><b>Why you might want this:</b> ${m.why}</div><div class="badges"><span class="badge">${m.budget} budget</span><span class="badge">${m.energy} energy</span></div></div>`}
 function nextSwipe(){currentSwipe++;renderSwipe()}
 function smartPick(){const mood=$('#moodSelect').value,budget=$('#budgetSelect').value,energy=$('#energySelect').value;let matches=[...meals].sort((a,b)=>scoreMeal(b,mood,budget,energy)-scoreMeal(a,mood,budget,energy));const top=matches[0];$('#smartResult').innerHTML=`<div class="match-summary"><p class="tag">Your food read</p><h2>${top.emoji} ${top.name} is the move.</h2><p>Because you picked <b>${mood}</b>, <b>${budget}</b> budget, and <b>${energy}</b> energy. The app says stop negotiating with hunger.</p></div>`+matches.slice(0,3).map(m=>card(m,true)).join('')}
+
+function animateEl(el,cls='pulse-pop'){if(!el)return;el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls)}
+function setFeaturedMeal(m, label='Fresh pick loaded'){
+  $('#dailyPick').innerHTML=card(m,true);
+  $('#rerollTitle').textContent=`${m.emoji} ${m.name}`;
+  $('#rerollCopy').textContent=m.why;
+  $('#heroText').textContent=m.why;
+  animateEl($('#dailyPick'));
+  toast(label);
+}
+function rerollAny(){setFeaturedMeal(pick(meals),'Rerolled. New plate energy.');renderTrends()}
+function applyMode(mode){
+  const pool=meals.filter(m=>m.mood===mode || (mode==='struggle'&&m.budget==='low') || (mode==='late-night'&&m.energy==='low'));
+  const m=pick(pool.length?pool:meals);
+  const titles={"late-night":"Late night hunger detected.","struggle":"Struggle meal mode activated.","chaos":"Random chaos has entered the kitchen."};
+  $('#heroTitle').textContent=titles[mode]||'Mood mode loaded.';
+  $('#aiPanel').innerHTML=`<p class="tag">Mode read</p><h3>${m.name} is the move.</h3><p>${m.why}</p>`;
+  setFeaturedMeal(m, mode==='struggle'?'Cheap plate loaded.':mode==='late-night'?'Late-night plate loaded.':'Chaos plate loaded.');
+}
+
 function nav(id){$$('.screen').forEach(s=>s.classList.remove('active'));$('#'+id).classList.add('active');$$('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.nav===id));window.scrollTo({top:0,behavior:'smooth'});if(id==='favoritesScreen')renderFavorites();if(id==='mealsScreen')renderMeals()}
 $$('[data-nav]').forEach(b=>b.addEventListener('click',()=>nav(b.dataset.nav)));
 $$('.mood-chip').forEach(b=>b.addEventListener('click',()=>{$$('.mood-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');const m=pick(meals.filter(x=>x.mood===b.dataset.mood));$('#heroTitle').textContent=`${b.textContent} mood detected.`;$('#heroText').textContent=m.why;$('#aiPanel').innerHTML=`<p class="tag">AI-style read</p><h3>${b.textContent} mood means: ${m.name}.</h3><p>${m.why}</p>`;$('#dailyPick').innerHTML=card(m)}));
 $('#refreshDaily').onclick=()=>{renderDaily();renderTrends();toast('Fresh cravings loaded.')};$('#surpriseBtn').onclick=()=>{renderDaily();renderTrends();toast('New food chaos loaded.')};$('#shuffleMeals').onclick=renderMeals;$('#smartPickBtn').onclick=smartPick;$('#nextSwipe').onclick=nextSwipe;$('#skipSwipe').onclick=()=>{toast('Skipped. The plate was not the vibe.');nextSwipe()};$('#saveSwipe').onclick=()=>saveMeal(meals[currentSwipe%meals.length].id);$('#recipeSwipe').onclick=()=>openRecipe(meals[currentSwipe%meals.length].id);$('#closeModal').onclick=()=>$('#recipeModal').classList.remove('show');$('#recipeModal').addEventListener('click',e=>{if(e.target.id==='recipeModal')e.currentTarget.classList.remove('show')});
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=30').catch(()=>{})}
+
+$('#quickReroll').onclick=rerollAny;
+$('#heroReroll').onclick=rerollAny;
+$$('.mode-card').forEach(b=>b.addEventListener('click',()=>applyMode(b.dataset.mode)));
+
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=31').catch(()=>{})}
 renderDaily();renderTrends();renderMeals();renderSwipe();renderFavorites();

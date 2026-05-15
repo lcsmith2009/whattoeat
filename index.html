@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>WhatToEat — V3.0 Food Media + AI Personality</title>
+  <title>WhatToEat — V3.1 Reroll + Mood Modes</title>
   <meta name="description" content="WhatToEat gives fast, funny, personalized meal ideas with photo-style food cards, daily picks, and smart mood-based recommendations." />
   <meta name="theme-color" content="#ff7a1a" />
-  <link rel="manifest" href="manifest.json?v=30" />
-  <link rel="stylesheet" href="style.css?v=30" />
+  <link rel="manifest" href="manifest.json?v=31" />
+  <link rel="stylesheet" href="style.css?v=31" />
 </head>
 <body>
   <div class="app-shell">
@@ -21,14 +21,14 @@
 
     <main>
       <section class="screen active" id="homeScreen">
-        <div class="version-ribbon">✨ V3.0 FOOD MEDIA + AI PERSONALITY IS LIVE</div>
+        <div class="version-ribbon">⚡ V3.1 REROLL + LATE-NIGHT MODES IS LIVE</div>
 
         <section class="hero-card v3-hero">
           <div class="hero-copy">
             <p class="tag">Tonight’s Vibe Engine</p>
             <h2 id="heroTitle">Tell the app your mood. It’ll handle dinner.</h2>
-            <p id="heroText">Smart picks now explain why the meal fits your mood, budget, and energy — without sounding like a boring recipe blog.</p>
-            <button class="primary-btn" data-nav="smartScreen">Build my plate</button>
+            <p id="heroText">Now with tap-to-reroll, Late Night Mode, Struggle Meal Mode, and stronger food logic when your stomach is acting confused.</p>
+            <button class="primary-btn" data-nav="smartScreen">Build my plate</button><button class="secondary-btn" id="heroReroll">Tap to reroll my vibe</button>
           </div>
           <div class="hero-photo-stack" aria-hidden="true">
             <div class="photo-chip pc1">🍔</div>
@@ -43,6 +43,22 @@
           <button class="mood-chip" data-mood="comfort">Comfort</button>
           <button class="mood-chip" data-mood="healthy-ish">Healthy-ish</button>
           <button class="mood-chip" data-mood="chaos">Chaos</button>
+        </section>
+
+        
+        <section class="mode-strip">
+          <button class="mode-card late" data-mode="late-night"><span>🌙</span><b>Late Night Mode</b><small>For 11pm hunger crimes.</small></button>
+          <button class="mode-card struggle" data-mode="struggle"><span>💸</span><b>Struggle Meal Mode</b><small>Cheap, fast, still good.</small></button>
+          <button class="mode-card chaos" data-mode="chaos"><span>🎲</span><b>Random Chaos</b><small>No rules. Just food.</small></button>
+        </section>
+
+        <section class="reroll-panel">
+          <div>
+            <p class="tag">Tap again energy</p>
+            <h3 id="rerollTitle">Not feeling it? Reroll the plate.</h3>
+            <p id="rerollCopy">Every tap gives a new suggestion with a more honest food read.</p>
+          </div>
+          <button class="primary-btn mini" id="quickReroll">Reroll</button>
         </section>
 
         <section class="ai-panel" id="aiPanel">
@@ -80,7 +96,7 @@
           <p class="tag">Smart Food Engine</p>
           <h2>Answer fast. Eat faster.</h2>
           <label>Mood</label>
-          <select id="moodSelect"><option value="lazy">Lazy</option><option value="broke">Broke</option><option value="comfort">Comfort</option><option value="healthy-ish">Healthy-ish</option><option value="chaos">Chaos</option></select>
+          <select id="moodSelect"><option value="lazy">Lazy</option><option value="broke">Broke</option><option value="comfort">Comfort</option><option value="healthy-ish">Healthy-ish</option><option value="chaos">Chaos</option><option value="late-night">Late night</option><option value="struggle">Struggle meal</option></select>
           <label>Budget</label>
           <select id="budgetSelect"><option value="low">I’m broke broke</option><option value="medium">Normal money</option><option value="high">Treat myself</option></select>
           <label>Energy</label>
@@ -130,6 +146,6 @@
 
   <div class="modal" id="recipeModal"><div class="modal-card"><button class="close" id="closeModal">×</button><div id="recipeContent"></div></div></div>
   <div class="toast" id="toast"></div>
-  <script src="script.js?v=30"></script>
+  <script src="script.js?v=31"></script>
 </body>
 </html>
