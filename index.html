@@ -3,41 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>WhatToEat — V2.5 Fresh Home</title>
-  <meta name="description" content="WhatToEat helps you decide what to eat fast with funny moods, smart food picks, and swipe-style meal ideas." />
+  <title>WhatToEat — V3.0 Food Media + AI Personality</title>
+  <meta name="description" content="WhatToEat gives fast, funny, personalized meal ideas with photo-style food cards, daily picks, and smart mood-based recommendations." />
   <meta name="theme-color" content="#ff7a1a" />
-  <link rel="manifest" href="manifest.json?v=25" />
-  <link rel="stylesheet" href="style.css?v=25" />
+  <link rel="manifest" href="manifest.json?v=30" />
+  <link rel="stylesheet" href="style.css?v=30" />
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
       <div>
         <p class="eyebrow">WhatToEat</p>
-        <h1>Stop arguing with your stomach.</h1>
+        <h1>Food ideas with main-character energy.</h1>
       </div>
       <button class="tiny-pill" id="surpriseBtn">Surprise me</button>
     </header>
 
     <main>
       <section class="screen active" id="homeScreen">
-        <div class="fresh-banner">
-          <span>🔥 NEW V2.5 LOOK IS LIVE</span>
-          <small>If you see this, the update worked.</small>
-        </div>
+        <div class="version-ribbon">✨ V3.0 FOOD MEDIA + AI PERSONALITY IS LIVE</div>
 
-        <section class="hero-card">
+        <section class="hero-card v3-hero">
           <div class="hero-copy">
-            <p class="tag">Tonight’s Vibe</p>
-            <h2 id="heroTitle">Hungry, dramatic, and undecided?</h2>
-            <p id="heroText">Tap a mood and let the app pick something realistic before DoorDash starts flirting with your wallet.</p>
-            <button class="primary-btn" data-nav="smartScreen">Find my food mood</button>
+            <p class="tag">Tonight’s Vibe Engine</p>
+            <h2 id="heroTitle">Tell the app your mood. It’ll handle dinner.</h2>
+            <p id="heroText">Smart picks now explain why the meal fits your mood, budget, and energy — without sounding like a boring recipe blog.</p>
+            <button class="primary-btn" data-nav="smartScreen">Build my plate</button>
           </div>
-          <div class="hero-food" aria-hidden="true">
-            <div class="plate">🍔</div>
-            <div class="steam s1"></div>
-            <div class="steam s2"></div>
-            <div class="steam s3"></div>
+          <div class="hero-photo-stack" aria-hidden="true">
+            <div class="photo-chip pc1">🍔</div>
+            <div class="photo-chip pc2">🌮</div>
+            <div class="photo-chip pc3">🍜</div>
           </div>
         </section>
 
@@ -46,6 +42,13 @@
           <button class="mood-chip" data-mood="broke">Broke</button>
           <button class="mood-chip" data-mood="comfort">Comfort</button>
           <button class="mood-chip" data-mood="healthy-ish">Healthy-ish</button>
+          <button class="mood-chip" data-mood="chaos">Chaos</button>
+        </section>
+
+        <section class="ai-panel" id="aiPanel">
+          <p class="tag">AI-style read</p>
+          <h3>Your stomach is giving: undecided but dramatic.</h3>
+          <p>Start with a quick smart pick, then swipe if you’re still acting brand new.</p>
         </section>
 
         <section class="section-head">
@@ -57,6 +60,14 @@
         </section>
         <div id="dailyPick" class="meal-card spotlight-card"></div>
 
+        <section class="section-head tight">
+          <div>
+            <p class="tag">Trending tonight</p>
+            <h3>People are probably craving these</h3>
+          </div>
+        </section>
+        <div id="trendFeed" class="trend-feed"></div>
+
         <section class="mini-grid">
           <button class="feature-tile" data-nav="swipeScreen"><span>🔥</span><b>Swipe Food</b><small>Tinder, but edible.</small></button>
           <button class="feature-tile" data-nav="smartScreen"><span>🧠</span><b>Smart Pick</b><small>Mood + budget + energy.</small></button>
@@ -65,7 +76,7 @@
       </section>
 
       <section class="screen" id="smartScreen">
-        <section class="panel-card">
+        <section class="panel-card smart-panel">
           <p class="tag">Smart Food Engine</p>
           <h2>Answer fast. Eat faster.</h2>
           <label>Mood</label>
@@ -94,7 +105,7 @@
 
       <section class="screen" id="mealsScreen">
         <section class="section-head">
-          <div><p class="tag">Food Matches</p><h2>Realistic meals, no food-blog essay.</h2></div>
+          <div><p class="tag">Food Matches</p><h2>Photo-style meals, zero food-blog essay.</h2></div>
           <button class="ghost-btn" id="shuffleMeals">Shuffle</button>
         </section>
         <div id="mealList" class="meal-list"></div>
@@ -119,6 +130,6 @@
 
   <div class="modal" id="recipeModal"><div class="modal-card"><button class="close" id="closeModal">×</button><div id="recipeContent"></div></div></div>
   <div class="toast" id="toast"></div>
-  <script src="script.js?v=25"></script>
+  <script src="script.js?v=30"></script>
 </body>
 </html>
