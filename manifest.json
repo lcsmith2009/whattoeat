@@ -1,0 +1,17 @@
+{
+  "name": "WhatToEat",
+  "short_name": "WhatToEat",
+  "description": "A quick, fun food decision app for hungry people who do not know what to eat.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0d0b09",
+  "theme_color": "#ff8a2a",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%230d0b09'/%3E%3Ctext x='50%25' y='56%25' dominant-baseline='middle' text-anchor='middle' font-size='250'%3E%F0%9F%8D%94%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

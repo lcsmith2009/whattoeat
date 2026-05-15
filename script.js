@@ -250,3 +250,11 @@ document.addEventListener('click', event => {
 renderAll();
 randomResult.innerHTML = emptyState('Ready when you are', 'Pick filters or hit the button. Your stomach deserves leadership.');
 mealResults.innerHTML = meals.map(mealCard).join('');
+
+
+// V1.5 lightweight app install support
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}

@@ -535,3 +535,62 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .icon-btn, .hero-card::after, .primary-btn::after { animation: none; }
 }
+
+
+/* V1.5 Version Label + Card Polish */
+.hero-copy .pill { display: none; }
+.hero-card { padding: 13px 13px 12px; }
+.hero-card h2 { max-width: 84%; }
+.hero-copy p { max-width: 88%; }
+.app-hint {
+  position: relative;
+  z-index: 1;
+  margin-top: 8px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 209, 102, 0.16);
+  border-radius: 15px;
+  background: rgba(0, 0, 0, 0.16);
+  color: #f4d7bd;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+.meal-list, .result-wrap { gap: 7px; }
+.meal-card { padding: 10px 10px 9px; border-radius: 20px; }
+.meal-card::before { content: 'quick pick'; top: 9px; right: 10px; font-size: 0.5rem; opacity: 0.72; }
+.meal-card h3 { padding-right: 60px; }
+.meal-title { font-size: 0.92rem; }
+.meal-desc { font-size: 0.74rem; margin-bottom: 6px; }
+.meal-emoji { width: 36px; height: 36px; font-size: 1.12rem; border-radius: 12px; }
+.meta-row { gap: 5px; }
+.meta-chip { padding: 4px 7px; font-size: 0.64rem; }
+.action-row { margin-top: 7px; gap: 6px; }
+.secondary-btn { min-height: 36px; padding: 8px 8px; font-size: 0.78rem; }
+#favoritesScreen .page-title { padding-bottom: 10px; }
+#favoritesList .empty-state { margin-top: 8px; }
+.toast {
+  width: auto;
+  max-width: min(calc(100% - 96px), 300px);
+  padding: 8px 11px;
+  font-size: 0.73rem;
+  bottom: calc(82px + env(safe-area-inset-bottom));
+}
+.modal-card {
+  border-radius: 24px 24px 0 0;
+  padding: 18px 15px calc(30px + env(safe-area-inset-bottom));
+}
+#modalContent .pill { margin-bottom: 10px; }
+#modalContent h2 { padding-right: 38px; margin-bottom: 6px; }
+#modalContent p { font-size: 0.83rem; margin-bottom: 12px; }
+.recipe-list { line-height: 1.45; font-size: 0.86rem; padding-left: 18px; }
+.tag-row { gap: 6px; }
+.tag { padding: 5px 8px; font-size: 0.66rem; }
+.bottom-nav { bottom: max(9px, env(safe-area-inset-bottom)); }
+.nav-btn { padding: 6px 3px; }
+
+@media (max-width: 390px) {
+  .hero-card { padding: 12px; }
+  .hero-card h2 { max-width: 82%; }
+  .app-hint { font-size: 0.68rem; padding: 7px 9px; }
+  .meal-card { padding: 9px; }
+}
