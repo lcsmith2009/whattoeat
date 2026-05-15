@@ -3,200 +3,185 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>WhatToEat — V4.0 Real User Experience Layer</title>
-  <meta name="description" content="WhatToEat gives fast, funny, personalized meal ideas with photo-style food cards, daily picks, and smart mood-based recommendations." />
-  <meta name="theme-color" content="#ff7a1a" />
-  <link rel="manifest" href="manifest.json?v=40" />
-  <link rel="stylesheet" href="style.css?v=40" />
+  <title>WhatToEat — Food ideas that match your mood</title>
+  <meta name="description" content="WhatToEat helps you decide what to eat with mood-based food picks, funny recommendations, share cards, and a daily food vibe." />
+  <meta name="theme-color" content="#111111" />
+  <meta property="og:title" content="WhatToEat" />
+  <meta property="og:description" content="Stop overthinking dinner. Let WhatToEat pick the vibe." />
+  <meta property="og:type" content="website" />
+  <link rel="manifest" href="manifest.json?v=6" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png?v=6" />
+  <link rel="stylesheet" href="style.css?v=6.0.1" />
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
       <div>
-        <p class="eyebrow">WhatToEat</p>
-        <h1>Food ideas with main-character energy.</h1>
+        <p class="eyebrow">Production V6</p>
+        <h1>WhatToEat</h1>
       </div>
-      <button class="tiny-pill" id="surpriseBtn">Surprise me</button>
+      <button class="install-pill" id="installBtn" type="button">Install</button>
     </header>
 
-    <main>
+    <main id="app">
       <section class="screen active" id="homeScreen">
-        <div class="version-ribbon">🚀 V4.0 USER EXPERIENCE LAYER IS LIVE</div>
-
-        <section class="hero-card v3-hero">
+        <article class="hero-card">
           <div class="hero-copy">
-            <p class="tag">Your Food Personality Engine</p>
-            <h2 id="heroTitle">Your daily food feed now remembers your vibe.</h2>
-            <p id="heroText">Now with onboarding, saved preferences, daily streaks, For You picks, share cards, and smarter “because you picked…” recommendations.</p>
-            <button class="primary-btn" data-nav="smartScreen">Start my food profile</button><button class="secondary-btn" id="heroReroll">Tap to reroll my vibe</button>
+            <span class="live-chip">🔥 new food media feed</span>
+            <h2>Stop staring at the fridge like it owes you money.</h2>
+            <p>Pick your mood, budget, and energy. We’ll serve up food that actually matches your life tonight.</p>
+            <div class="hero-actions">
+              <button class="primary-btn" data-go="matchScreen">Find my food</button>
+              <button class="ghost-btn" id="chaosPickBtn" type="button">Chaos pick</button>
+            </div>
           </div>
-          <div class="hero-photo-stack" aria-hidden="true">
-            <div class="photo-chip pc1">🍔</div>
-            <div class="photo-chip pc2">🌮</div>
-            <div class="photo-chip pc3">🍜</div>
+          <div class="hero-food-stack" aria-hidden="true">
+            <div class="mini-photo pizza"></div>
+            <div class="mini-photo burger"></div>
+            <div class="mini-photo ramen"></div>
           </div>
-        </section>
+        </article>
 
-        <section class="ux-dashboard">
-          <div class="streak-card">
-            <p class="tag">Daily habit</p>
-            <h3><span id="streakCount">0</span> day food streak</h3>
-            <p id="streakText">Open the app daily and let it bully your indecision.</p>
-          </div>
-          <div class="profile-card">
-            <p class="tag">Your profile</p>
-            <h3 id="profileName">No food profile yet</h3>
-            <p id="profileSummary">Set your default mood, budget, and energy so picks feel personal.</p>
-            <button class="ghost-btn small" id="editProfileBtn">Set up</button>
-          </div>
-        </section>
-
-        <section class="section-head tight">
+        <section class="daily-card glass-card">
           <div>
-            <p class="tag">For you feed</p>
-            <h3>Picked from your saved vibe</h3>
+            <p class="eyebrow">Tonight’s vibe</p>
+            <h3 id="dailyTitle">Comfort food with main-character seasoning</h3>
+            <p id="dailyText">The day was loud. Your plate should be easy, warm, and a little dramatic.</p>
           </div>
-          <button class="ghost-btn" id="refreshForYou">Refresh</button>
-        </section>
-        <div id="forYouFeed" class="for-you-feed"></div>
-
-        <section class="share-card" id="shareCard">
-          <p class="tag">Shareable food card</p>
-          <h3 id="shareTitle">Tonight I’m eating like my budget has boundaries.</h3>
-          <p id="shareCopy">Tap share after a pick to copy a funny food-card caption.</p>
-          <button class="primary-btn mini" id="sharePickBtn">Copy food card</button>
+          <button class="tiny-btn" id="refreshDailyBtn" type="button">Refresh</button>
         </section>
 
-        <section class="quick-row">
-          <button class="mood-chip active" data-mood="lazy">Lazy</button>
-          <button class="mood-chip" data-mood="broke">Broke</button>
-          <button class="mood-chip" data-mood="comfort">Comfort</button>
-          <button class="mood-chip" data-mood="healthy-ish">Healthy-ish</button>
-          <button class="mood-chip" data-mood="chaos">Chaos</button>
-        </section>
-
-        
-        <section class="mode-strip">
-          <button class="mode-card late" data-mode="late-night"><span>🌙</span><b>Late Night Mode</b><small>For 11pm hunger crimes.</small></button>
-          <button class="mode-card struggle" data-mode="struggle"><span>💸</span><b>Struggle Meal Mode</b><small>Cheap, fast, still good.</small></button>
-          <button class="mode-card chaos" data-mode="chaos"><span>🎲</span><b>Random Chaos</b><small>No rules. Just food.</small></button>
-        </section>
-
-        <section class="reroll-panel">
-          <div>
-            <p class="tag">Tap again energy</p>
-            <h3 id="rerollTitle">Not feeling it? Reroll the plate.</h3>
-            <p id="rerollCopy">Every tap gives a new suggestion with a more honest food read.</p>
+        <section class="section-block">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">For you</p>
+              <h3>Food feed</h3>
+            </div>
+            <button class="text-btn" data-go="feedScreen">See all</button>
           </div>
-          <button class="primary-btn mini" id="quickReroll">Reroll</button>
+          <div class="horizontal-feed" id="homeFeed"></div>
         </section>
 
-        <section class="ai-panel" id="aiPanel">
-          <p class="tag">AI-style read</p>
-          <h3>Your stomach is giving: undecided but dramatic.</h3>
-          <p>Start with a quick smart pick, then swipe if you’re still acting brand new.</p>
-        </section>
-
-        <section class="section-head">
-          <div>
-            <p class="tag">Daily pick</p>
-            <h3>Don’t overthink it plate</h3>
+        <section class="section-block">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Viral energy</p>
+              <h3>Shareable picks</h3>
+            </div>
           </div>
-          <button class="ghost-btn" id="refreshDaily">Refresh</button>
-        </section>
-        <div id="dailyPick" class="meal-card spotlight-card"></div>
-
-        <section class="section-head tight">
-          <div>
-            <p class="tag">Trending tonight</p>
-            <h3>People are probably craving these</h3>
+          <div class="share-preview-card" id="sharePreviewCard">
+            <p>WhatToEat picked <strong>something unreasonably accurate</strong> for me.</p>
+            <button class="primary-btn compact" id="makeShareBtn" type="button">Make share card</button>
           </div>
-        </section>
-        <div id="trendFeed" class="trend-feed"></div>
-
-        <section class="mini-grid">
-          <button class="feature-tile" data-nav="swipeScreen"><span>🔥</span><b>Swipe Food</b><small>Tinder, but edible.</small></button>
-          <button class="feature-tile" data-nav="smartScreen"><span>🧠</span><b>Smart Pick</b><small>Mood + budget + energy.</small></button>
-          <button class="feature-tile" data-nav="favoritesScreen"><span>❤️</span><b>Saved Meals</b><small>Your backup plan.</small></button>
         </section>
       </section>
 
-      <section class="screen" id="smartScreen">
-        <section class="panel-card smart-panel">
-          <p class="tag">Smart Food Engine</p>
-          <h2>Answer fast. Eat faster.</h2>
-          <label>Mood</label>
-          <select id="moodSelect"><option value="lazy">Lazy</option><option value="broke">Broke</option><option value="comfort">Comfort</option><option value="healthy-ish">Healthy-ish</option><option value="chaos">Chaos</option><option value="late-night">Late night</option><option value="struggle">Struggle meal</option></select>
-          <label>Budget</label>
-          <select id="budgetSelect"><option value="low">I’m broke broke</option><option value="medium">Normal money</option><option value="high">Treat myself</option></select>
-          <label>Energy</label>
-          <select id="energySelect"><option value="low">Barely functioning</option><option value="medium">I can cook a little</option><option value="high">I got kitchen energy</option></select>
-          <button class="primary-btn full" id="smartPickBtn">Tell me what to eat</button>
-        </section>
-        <div id="smartResult" class="result-stack"></div>
-      </section>
-
-      <section class="screen" id="swipeScreen">
-        <section class="section-head">
-          <div><p class="tag">Swipe mode</p><h2>One more food card won’t hurt.</h2></div>
-          <button class="ghost-btn" id="nextSwipe">Next</button>
-        </section>
-        <div id="swipeCard" class="swipe-card"></div>
-        <div class="swipe-actions">
-          <button id="skipSwipe">Nah</button>
-          <button id="saveSwipe">Save it</button>
-          <button id="recipeSwipe">Recipe</button>
+      <section class="screen" id="matchScreen">
+        <div class="screen-title">
+          <p class="eyebrow">Smart pick</p>
+          <h2>What’s your food situation?</h2>
+          <p>Choose fast. The app will judge lovingly.</p>
         </div>
+
+        <div class="question-card">
+          <h3>Mood</h3>
+          <div class="option-grid" data-group="mood">
+            <button data-value="comfort">🥘 Comfort</button>
+            <button data-value="lazy">🛋️ Lazy</button>
+            <button data-value="broke">🪙 Broke</button>
+            <button data-value="healthy">🥗 Healthy-ish</button>
+            <button data-value="late">🌙 Late night</button>
+            <button data-value="chaos">🎲 Chaos</button>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <h3>Budget</h3>
+          <div class="option-grid" data-group="budget">
+            <button data-value="cheap">$ Struggle</button>
+            <button data-value="mid">$$ Normal</button>
+            <button data-value="treat">$$$ Treat me</button>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <h3>Energy</h3>
+          <div class="option-grid" data-group="energy">
+            <button data-value="low">Barely standing</button>
+            <button data-value="medium">I can cook a lil</button>
+            <button data-value="high">Chef mode</button>
+          </div>
+        </div>
+
+        <button class="primary-btn full" id="smartPickBtn" type="button">Pick my food</button>
+        <div id="smartResult" class="result-zone"></div>
       </section>
 
-      <section class="screen" id="mealsScreen">
-        <section class="section-head">
-          <div><p class="tag">Food Matches</p><h2>Photo-style meals, zero food-blog essay.</h2></div>
-          <button class="ghost-btn" id="shuffleMeals">Shuffle</button>
-        </section>
-        <div id="mealList" class="meal-list"></div>
+      <section class="screen" id="feedScreen">
+        <div class="screen-title">
+          <p class="eyebrow">Swipe-ish feed</p>
+          <h2>Keep scrolling until dinner makes sense</h2>
+        </div>
+        <div class="mode-strip">
+          <button data-filter="all" class="active">All</button>
+          <button data-filter="late">Late night</button>
+          <button data-filter="broke">Struggle</button>
+          <button data-filter="comfort">Comfort</button>
+          <button data-filter="healthy">Healthy-ish</button>
+        </div>
+        <div class="vertical-feed" id="verticalFeed"></div>
+      </section>
+
+      <section class="screen" id="savedScreen">
+        <div class="screen-title">
+          <p class="eyebrow">Saved</p>
+          <h2>Your cravings folder</h2>
+          <p>For when future-you wants the same nonsense again.</p>
+        </div>
+        <div id="savedList" class="vertical-feed"></div>
       </section>
 
       <section class="screen" id="profileScreen">
-        <section class="panel-card smart-panel profile-setup">
-          <p class="tag">Food profile</p>
-          <h2>Teach WhatToEat your default chaos.</h2>
-          <label>Your usual mood</label>
-          <select id="profileMood"><option value="lazy">Lazy</option><option value="broke">Broke</option><option value="comfort">Comfort</option><option value="healthy-ish">Healthy-ish</option><option value="chaos">Chaos</option><option value="late-night">Late night</option><option value="struggle">Struggle meal</option></select>
-          <label>Your normal budget</label>
-          <select id="profileBudget"><option value="low">I’m broke broke</option><option value="medium">Normal money</option><option value="high">Treat myself</option></select>
-          <label>Your usual cooking energy</label>
-          <select id="profileEnergy"><option value="low">Barely functioning</option><option value="medium">I can cook a little</option><option value="high">I got kitchen energy</option></select>
-          <button class="primary-btn full" id="saveProfileBtn">Save my food profile</button>
-        </section>
-        <section class="panel-card">
-          <p class="tag">Daily recommendation</p>
-          <h2 id="profilePickTitle">Your food profile pick will appear here.</h2>
-          <p id="profilePickCopy">Save your profile first, then WhatToEat can stop acting like it just met you.</p>
-        </section>
-      </section>
-
-      <section class="screen" id="favoritesScreen">
-        <section class="section-head">
-          <div><p class="tag">Saved</p><h2>Meals your future self might actually cook.</h2></div>
-        </section>
-        <div id="favoritesList" class="meal-list"></div>
+        <div class="screen-title">
+          <p class="eyebrow">Your food brain</p>
+          <h2>Preferences + streaks</h2>
+        </div>
+        <div class="stats-grid">
+          <article class="stat-card"><span id="streakCount">0</span><p>day vibe streak</p></article>
+          <article class="stat-card"><span id="savedCount">0</span><p>saved meals</p></article>
+        </div>
+        <div class="question-card">
+          <h3>Favorite default mood</h3>
+          <div class="option-grid" data-group="defaultMood">
+            <button data-value="comfort">Comfort</button>
+            <button data-value="lazy">Lazy</button>
+            <button data-value="broke">Broke</button>
+            <button data-value="late">Late night</button>
+          </div>
+        </div>
+        <button class="ghost-btn full" id="resetBtn" type="button">Reset app memory</button>
       </section>
     </main>
 
-    <nav class="bottom-nav">
-      <button class="nav-btn active" data-nav="homeScreen">🏠<span>Home</span></button>
-      <button class="nav-btn" data-nav="smartScreen">🧠<span>Pick</span></button>
-      <button class="nav-btn" data-nav="swipeScreen">🔥<span>Swipe</span></button>
-      <button class="nav-btn" data-nav="mealsScreen">🍽️<span>Meals</span></button>
-      <button class="nav-btn" data-nav="profileScreen">👤<span>You</span></button>
-      <button class="nav-btn" data-nav="favoritesScreen">❤️<span>Saved</span></button>
+    <nav class="bottom-nav" aria-label="Main navigation">
+      <button class="active" data-go="homeScreen">🏠<span>Home</span></button>
+      <button data-go="matchScreen">✨<span>Pick</span></button>
+      <button data-go="feedScreen">🍔<span>Feed</span></button>
+      <button data-go="savedScreen">❤️<span>Saved</span></button>
+      <button data-go="profileScreen">👤<span>You</span></button>
     </nav>
   </div>
 
-  <div class="modal" id="recipeModal"><div class="modal-card"><button class="close" id="closeModal">×</button><div id="recipeContent"></div></div></div>
+  <div class="modal-backdrop" id="modalBackdrop" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <button class="close-btn" id="closeModal" type="button">×</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <canvas id="shareCanvas" width="1080" height="1350" hidden></canvas>
   <div class="toast" id="toast"></div>
-  <div class="onboarding" id="onboarding"><div class="onboarding-card"><p class="tag">Welcome to V4.0</p><h2>Let’s make WhatToEat feel like it knows you.</h2><p>Set a quick food profile now, or skip and use the app normally.</p><button class="primary-btn full" id="startOnboarding">Set my profile</button><button class="ghost-btn full" id="skipOnboarding">Skip for now</button></div></div>
-  <script src="script.js?v=40"></script>
+
+  <script src="script.js?v=6.0.1"></script>
 </body>
 </html>
