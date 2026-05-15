@@ -16,7 +16,7 @@ const meals=[
 ,{id:15,name:'Chaos Burger Bowl',emoji:'🍔',mood:'chaos',budget:'medium',energy:'medium',time:'15 min',photo:'linear-gradient(135deg,#34120c,#ef4444)',desc:'Burger ingredients over fries or rice. Bun optional. Judgment canceled.',why:'Because your craving said burger, but your kitchen said improvise.',steps:['Cook ground meat or burger pieces.','Add fries, rice, or lettuce base.','Top with cheese, pickles, sauce.','Eat like a genius.']}
 
 ];
-let favorites=JSON.parse(localStorage.getItem('wte_favorites_v31')||'[]');let currentSwipe=0;
+let favorites=JSON.parse(localStorage.getItem('wte_favorites_v40')||'[]');let currentSwipe=0;
 const $=s=>document.querySelector(s);const $$=s=>document.querySelectorAll(s);
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1700)}
 function pick(arr=meals){return arr[Math.floor(Math.random()*arr.length)]||meals[0]}
@@ -26,7 +26,7 @@ function renderDaily(){const m=pick(meals);$('#dailyPick').innerHTML=card(m)}
 function renderTrends(){const trend=[...meals].sort(()=>Math.random()-.5).slice(0,5);$('#trendFeed').innerHTML=trend.map(m=>`<button class="trend-card" onclick="openRecipe(${m.id})"><div class="trend-img" style="background:${m.photo}">${m.emoji}</div><div><b>${m.name}</b><small>${m.time} • ${m.mood}</small></div></button>`).join('')}
 function renderMeals(){const shuffled=[...meals].sort(()=>Math.random()-.5);$('#mealList').innerHTML=shuffled.map(m=>card(m,true)).join('')}
 function renderFavorites(){const favMeals=meals.filter(m=>favorites.includes(m.id));$('#favoritesList').innerHTML=favMeals.length?favMeals.map(m=>card(m,true)).join(''):`<div class="panel-card"><p class="tag">Empty plate</p><h2>No saved meals yet.</h2><p>Save something before your hunger starts making financial decisions.</p></div>`}
-function saveMeal(id){if(!favorites.includes(id)){favorites.push(id);localStorage.setItem('wte_favorites_v31',JSON.stringify(favorites));toast('Saved. Future you says thanks.');renderFavorites()}else toast('Already saved, bestie.')}
+function saveMeal(id){if(!favorites.includes(id)){favorites.push(id);localStorage.setItem('wte_favorites_v40',JSON.stringify(favorites));toast('Saved. Future you says thanks.');renderFavorites()}else toast('Already saved, bestie.')}
 function openRecipe(id){const m=meals.find(x=>x.id===id);$('#recipeContent').innerHTML=`<p class="tag">Quick recipe</p><h2>${m.emoji} ${m.name}</h2><p>${m.desc}</p><div class="why-box"><b>AI-style take:</b> ${m.why}</div><ol>${m.steps.map(s=>`<li>${s}</li>`).join('')}</ol><div class="badges"><span class="badge">${m.time}</span><span class="badge">${m.budget}</span><span class="badge">${m.energy}</span></div>`;$('#recipeModal').classList.add('show')}
 function renderSwipe(){const m=meals[currentSwipe%meals.length];$('#swipeCard').innerHTML=`<div class="swipe-photo" style="background:${m.photo}"><div class="big-food">${m.emoji}</div></div><div class="swipe-info"><p class="tag">${m.mood} mood • ${m.time}</p><h2>${m.name}</h2><p>${m.desc}</p><div class="why-box"><b>Why you might want this:</b> ${m.why}</div><div class="badges"><span class="badge">${m.budget} budget</span><span class="badge">${m.energy} energy</span></div></div>`}
 function nextSwipe(){currentSwipe++;renderSwipe()}
@@ -51,7 +51,56 @@ function applyMode(mode){
   setFeaturedMeal(m, mode==='struggle'?'Cheap plate loaded.':mode==='late-night'?'Late-night plate loaded.':'Chaos plate loaded.');
 }
 
-function nav(id){$$('.screen').forEach(s=>s.classList.remove('active'));$('#'+id).classList.add('active');$$('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.nav===id));window.scrollTo({top:0,behavior:'smooth'});if(id==='favoritesScreen')renderFavorites();if(id==='mealsScreen')renderMeals()}
+
+// V4.0 UX layer: onboarding, saved preferences, streak, For You feed, shareable cards
+const profileKey='wte_profile_v40';
+const streakKey='wte_streak_v40';
+let foodProfile=JSON.parse(localStorage.getItem(profileKey)||'null');
+function todayKey(){return new Date().toISOString().slice(0,10)}
+function updateStreak(){
+  const data=JSON.parse(localStorage.getItem(streakKey)||'{"count":0,"last":""}');
+  const today=todayKey();
+  if(data.last!==today){data.count=(data.count||0)+1;data.last=today;localStorage.setItem(streakKey,JSON.stringify(data));}
+  $('#streakCount').textContent=data.count||1;
+  $('#streakText').textContent=(data.count||1)>1?'You came back. The hunger lore continues.':'Day one. Let the food streak begin.';
+}
+function profileMatches(){
+  if(!foodProfile)return [...meals].sort(()=>Math.random()-.5).slice(0,4);
+  return [...meals].sort((a,b)=>scoreMeal(b,foodProfile.mood,foodProfile.budget,foodProfile.energy)-scoreMeal(a,foodProfile.mood,foodProfile.budget,foodProfile.energy)).slice(0,4);
+}
+function renderProfileUI(){
+  if(foodProfile){
+    $('#profileName').textContent=`${foodProfile.mood} • ${foodProfile.budget} • ${foodProfile.energy}`;
+    $('#profileSummary').textContent=`Your default food read: ${foodProfile.mood} mood, ${foodProfile.budget} budget, ${foodProfile.energy} energy.`;
+    $('#profileMood').value=foodProfile.mood;$('#profileBudget').value=foodProfile.budget;$('#profileEnergy').value=foodProfile.energy;
+    const p=profileMatches()[0];
+    $('#profilePickTitle').textContent=`${p.emoji} ${p.name}`;
+    $('#profilePickCopy').textContent=`Because your saved vibe says ${foodProfile.mood}, ${foodProfile.budget} budget, and ${foodProfile.energy} energy.`;
+  }else{
+    $('#profileName').textContent='No food profile yet';
+    $('#profileSummary').textContent='Set your default mood, budget, and energy so picks feel personal.';
+  }
+}
+function renderForYou(){
+  const intro=foodProfile?`Built from your ${foodProfile.mood} food profile.`:'Set a profile to make this smarter.';
+  $('#forYouFeed').innerHTML=profileMatches().map(m=>`<article class="for-you-card"><div class="for-you-art" style="background:${m.photo}">${m.emoji}</div><div class="for-you-body"><p class="tag">For you</p><h3>${m.name}</h3><p>${intro} ${m.why}</p><div class="card-actions"><button onclick="saveMeal(${m.id})">Save</button><button onclick="openRecipe(${m.id})">Recipe</button></div></div></article>`).join('');
+}
+function saveProfile(){
+  foodProfile={mood:$('#profileMood').value,budget:$('#profileBudget').value,energy:$('#profileEnergy').value};
+  localStorage.setItem(profileKey,JSON.stringify(foodProfile));
+  renderProfileUI();renderForYou();
+  $('#onboarding').classList.remove('show');
+  toast('Food profile saved. Picks just got smarter.');
+}
+function shareFoodCard(){
+  const m=profileMatches()[0]||pick(meals);
+  const text=`WhatToEat picked ${m.emoji} ${m.name} for me because my hunger is giving ${foodProfile?foodProfile.mood:'undecided'} energy. ${m.desc}`;
+  navigator.clipboard?.writeText(text).then(()=>toast('Food card copied. Post that craving.')).catch(()=>toast('Share card ready.'));
+  $('#shareTitle').textContent=`Tonight’s card: ${m.emoji} ${m.name}`;
+  $('#shareCopy').textContent=text;
+}
+
+function nav(id){$$('.screen').forEach(s=>s.classList.remove('active'));$('#'+id).classList.add('active');$$('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.nav===id));window.scrollTo({top:0,behavior:'smooth'});if(id==='favoritesScreen')renderFavorites();if(id==='mealsScreen')renderMeals();if(id==='profileScreen'){renderProfileUI();renderForYou()}}
 $$('[data-nav]').forEach(b=>b.addEventListener('click',()=>nav(b.dataset.nav)));
 $$('.mood-chip').forEach(b=>b.addEventListener('click',()=>{$$('.mood-chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');const m=pick(meals.filter(x=>x.mood===b.dataset.mood));$('#heroTitle').textContent=`${b.textContent} mood detected.`;$('#heroText').textContent=m.why;$('#aiPanel').innerHTML=`<p class="tag">AI-style read</p><h3>${b.textContent} mood means: ${m.name}.</h3><p>${m.why}</p>`;$('#dailyPick').innerHTML=card(m)}));
 $('#refreshDaily').onclick=()=>{renderDaily();renderTrends();toast('Fresh cravings loaded.')};$('#surpriseBtn').onclick=()=>{renderDaily();renderTrends();toast('New food chaos loaded.')};$('#shuffleMeals').onclick=renderMeals;$('#smartPickBtn').onclick=smartPick;$('#nextSwipe').onclick=nextSwipe;$('#skipSwipe').onclick=()=>{toast('Skipped. The plate was not the vibe.');nextSwipe()};$('#saveSwipe').onclick=()=>saveMeal(meals[currentSwipe%meals.length].id);$('#recipeSwipe').onclick=()=>openRecipe(meals[currentSwipe%meals.length].id);$('#closeModal').onclick=()=>$('#recipeModal').classList.remove('show');$('#recipeModal').addEventListener('click',e=>{if(e.target.id==='recipeModal')e.currentTarget.classList.remove('show')});
@@ -60,5 +109,14 @@ $('#quickReroll').onclick=rerollAny;
 $('#heroReroll').onclick=rerollAny;
 $$('.mode-card').forEach(b=>b.addEventListener('click',()=>applyMode(b.dataset.mode)));
 
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=31').catch(()=>{})}
-renderDaily();renderTrends();renderMeals();renderSwipe();renderFavorites();
+
+$('#editProfileBtn').onclick=()=>nav('profileScreen');
+$('#saveProfileBtn').onclick=saveProfile;
+$('#refreshForYou').onclick=()=>{renderForYou();toast('For You feed refreshed.')};
+$('#sharePickBtn').onclick=shareFoodCard;
+$('#startOnboarding').onclick=()=>nav('profileScreen');
+$('#skipOnboarding').onclick=()=>{$('#onboarding').classList.remove('show');localStorage.setItem('wte_onboarding_seen_v40','yes')};
+if(!localStorage.getItem('wte_onboarding_seen_v40')&&!foodProfile){setTimeout(()=>$('#onboarding').classList.add('show'),650)}
+
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=40').catch(()=>{})}
+updateStreak();renderDaily();renderTrends();renderMeals();renderSwipe();renderFavorites();renderProfileUI();renderForYou();
