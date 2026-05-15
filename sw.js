@@ -1,15 +1,1 @@
-const CACHE = 'whattoeat-v24';
-const ASSETS = ['./','index.html','style.css?v=24','script.js?v=24','manifest.json?v=24','icons/icon-192.png','icons/icon-512.png'];
-self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
-});
-self.addEventListener('activate', event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(keys.map(key => key !== CACHE ? caches.delete(key) : null))).then(() => self.clients.claim()));
-});
-self.addEventListener('fetch', event => {
-  event.respondWith(fetch(event.request).then(response => {
-    const copy = response.clone();
-    caches.open(CACHE).then(cache => cache.put(event.request, copy)).catch(()=>{});
-    return response;
-  }).catch(() => caches.match(event.request)));
-});
+const CACHE='whattoeat-v25-fresh-home';self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./index.html?v=25','./style.css?v=25','./script.js?v=25','./manifest.json?v=25'])))});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});self.addEventListener('fetch',e=>{e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)))})
