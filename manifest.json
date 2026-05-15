@@ -1,16 +1,1 @@
-{
-  "name": "WhatToEat",
-  "short_name": "WhatToEat",
-  "description": "A quick, funny food picker that helps hungry people decide what to eat fast.",
-  "start_url": ".",
-  "scope": ".",
-  "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#0d0b09",
-  "theme_color": "#ff8a2a",
-  "categories": ["food", "lifestyle", "utilities"],
-  "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
-  ]
-}
+{"name":"WhatToEat","short_name":"WhatToEat","description":"Fast, funny meal suggestions based on your mood, budget, energy, time, and ingredients.","start_url":"./","display":"standalone","background_color":"#0d0f14","theme_color":"#ff7a18","icons":[{"src":"icons/icon-192.png","sizes":"192x192","type":"image/png"},{"src":"icons/icon-512.png","sizes":"512x512","type":"image/png"}]}
