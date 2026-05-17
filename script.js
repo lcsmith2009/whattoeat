@@ -28,7 +28,8 @@ let state = {
   lastMeal: null,
   lastSmartMealId: null,
   lastChaosMealId: null,
-  rerollCount: 0
+  rerollCount: 0,
+  selectedTemplate: 'share'
 };
 
 const $ = sel => document.querySelector(sel);
@@ -195,14 +196,63 @@ function openMeal(id){
   modalBackdrop.hidden = false; modalBackdrop.removeAttribute('hidden');
 }
 
-function openShare(id){
-  const meal = meals.find(m=>m.id===id);
-  const text = `WhatToEat picked ${meal.emoji} ${meal.name} for me because ${meal.why} ${meal.desc}\nhttps://whattoeat-ten-hazel.vercel.app/`;
-  $('#modalContent').innerHTML = `<div class="share-card-preview"><div><p class="eyebrow">WhatToEat picked</p><h2>${meal.emoji} ${meal.name}</h2></div><p>${meal.desc}</p><p>${meal.why}</p><p class="tiny-note">V9.1 share card ready for screenshots, downloads, and group chats.</p></div><button class="primary-btn full" id="copyShareBtn">Copy share text</button><button class="ghost-btn full" onclick="downloadShareCard(${meal.id},'share')">Download share card</button><button class="ghost-btn full" onclick="openRoastMode()">Roast this pick</button>`;
+function openShare(id, template=state.selectedTemplate || 'share'){
+  const meal = meals.find(m=>m.id===id) || socialMeal();
+  state.lastMeal = meal;
+  const t = viralTemplates[template] || viralTemplates.share;
+  const copyText = `WhatToEat ${t.label}: ${meal.emoji} ${meal.name}\n${t.prompt(meal)}\nhttps://whattoeat-ten-hazel.vercel.app/`;
+  $('#modalContent').innerHTML = `<div class="share-card-preview dynamic-${template}"><div><p class="eyebrow">${t.emoji} ${t.label}</p><h2>${meal.emoji} ${meal.name}</h2></div><p>${t.prompt(meal)}</p><p class="tiny-note">V9.2 dynamic viral card — built for screenshots, stories, and group chats.</p></div><div class="template-strip modal-template-strip">${Object.entries(viralTemplates).map(([key,val])=>`<button data-template="${key}" class="${key===template?'active':''}">${val.emoji} ${val.label.split(' ')[0]}</button>`).join('')}</div><button class="primary-btn full" id="copyShareBtn">Copy share text</button><button class="ghost-btn full" onclick="downloadShareCard(${meal.id},'${template}')">Download ${t.label.toLowerCase()}</button><button class="ghost-btn full" onclick="openRoastMode()">Roast this pick</button>`;
   modalBackdrop.hidden = false; modalBackdrop.removeAttribute('hidden');
-  setTimeout(()=>$('#copyShareBtn').onclick=()=>{navigator.clipboard?.writeText(text); toast('Share text copied');},0);
+  setTimeout(()=>{
+    $('#copyShareBtn').onclick=()=>{navigator.clipboard?.writeText(copyText); toast('Share text copied');};
+    $$('.modal-template-strip button').forEach(btn=>btn.onclick=()=>openShare(meal.id, btn.dataset.template));
+  },0);
 }
 
+
+const viralTemplates = {
+  share: {
+    label: 'SHARE CARD', emoji: '🔥', footer: 'Send this to the group chat.',
+    colors: ['#ff8a1f','#ff4d4d','#111111'],
+    prompt: meal => `${meal.desc} ${meal.why}`
+  },
+  roast: {
+    label: 'ROAST MODE', emoji: '😮‍💨', footer: 'Screenshot this if the app clocked you.',
+    colors: ['#201012','#ff4d4d','#070707'],
+    prompt: meal => makeRoast(meal)
+  },
+  broke: {
+    label: 'BROKE ERA', emoji: '🪙', footer: 'Budget said no. Flavor said watch me.',
+    colors: ['#2d1b08','#a96a13','#050505'],
+    prompt: meal => `${meal.name} is giving “I checked my account and got creative.” ${meal.desc}`
+  },
+  late: {
+    label: 'LATE NIGHT COURT', emoji: '🌙', footer: 'The fridge light saw everything.',
+    colors: ['#07031a','#3d2a78','#111111'],
+    prompt: meal => `${meal.name} has entered the chat because it is too late for discipline and too early for shame.`
+  },
+  main: {
+    label: 'MAIN CHARACTER MEAL', emoji: '✨', footer: 'Romanticize the plate. Respectfully.',
+    colors: ['#2a1208','#ff9d3d','#241016'],
+    prompt: meal => `${meal.name} is the plot twist. Eat it like the camera is already rolling.`
+  },
+  couple: {
+    label: 'COUPLE MODE', emoji: '💞', footer: 'If y’all still argue, it was not about dinner.',
+    colors: ['#3b1029','#ff5ca8','#0b0b0d'],
+    prompt: meal => `${meal.name} is the compromise meal. One of you suggested it. The other one will act like they did.`
+  }
+};
+
+function setTemplate(template){
+  state.selectedTemplate = viralTemplates[template] ? template : 'share';
+  $$('#templateStrip button').forEach(btn=>btn.classList.toggle('active', btn.dataset.template===state.selectedTemplate));
+  const meal = socialMeal();
+  const t = viralTemplates[state.selectedTemplate];
+  const preview = $('#sharePreviewCard');
+  if (preview) preview.innerHTML = `<span class="social-badge">NEW V9.2</span><p>${t.emoji} <strong>${t.label}</strong><br>${t.prompt(meal).slice(0,120)}${t.prompt(meal).length>120?'...':''}</p><button class="primary-btn compact" id="makeShareBtn" type="button">Make viral card</button>`;
+  const btn = $('#makeShareBtn');
+  if (btn) btn.onclick = () => openShare(meal.id, state.selectedTemplate);
+}
 
 const roastLines = [
   'This craving has no budget, no plan, and somehow still has confidence.',
@@ -247,48 +297,43 @@ function drawShareCanvas(meal=socialMeal(), mode='share'){
   const canvas = $('#shareCanvas');
   const ctx = canvas.getContext('2d');
   const w = canvas.width, h = canvas.height;
+  const t = viralTemplates[mode] || viralTemplates.share;
   const grad = ctx.createLinearGradient(0,0,w,h);
-  grad.addColorStop(0,'#ff8a1f');
-  grad.addColorStop(.48,'#ff4d4d');
-  grad.addColorStop(1,'#111111');
+  grad.addColorStop(0,t.colors[0]);
+  grad.addColorStop(.52,t.colors[1]);
+  grad.addColorStop(1,t.colors[2]);
   ctx.fillStyle = grad;
   ctx.fillRect(0,0,w,h);
 
+  // Mood-specific background shapes so every share card feels different.
   ctx.fillStyle = 'rgba(0,0,0,.22)';
-  ctx.beginPath(); ctx.arc(930,150,260,0,Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.arc(80,1220,280,0,Math.PI*2); ctx.fill();
-
-  ctx.fillStyle = 'rgba(255,255,255,.14)';
-  ctx.roundRect(70,70,w-140,h-140,58);
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(255,255,255,.28)';
-  ctx.lineWidth = 4;
-  ctx.stroke();
+  ctx.beginPath(); ctx.arc(mode==='late'?160:930, mode==='late'?155:150, mode==='broke'?190:260,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(mode==='main'?920:80, mode==='main'?1120:1220, mode==='couple'?210:280,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.08)';
+  ctx.beginPath(); ctx.roundRect(70,70,w-140,h-140, mode==='roast'?34:58); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,.30)'; ctx.lineWidth = 4; ctx.stroke();
 
   ctx.fillStyle = '#fff7e8';
-  ctx.font = '900 46px Arial, sans-serif';
-  ctx.fillText('WhatToEat picked', 110, 170);
-
-  ctx.font = '900 120px Arial, sans-serif';
-  ctx.fillText(meal.emoji, 110, 315);
-
+  ctx.font = '900 38px Arial, sans-serif';
+  ctx.fillText(`WhatToEat • ${t.label}`, 110, 160);
+  ctx.font = '900 118px Arial, sans-serif';
+  ctx.fillText(t.emoji, 110, 310);
   ctx.font = '900 76px Arial, sans-serif';
-  let y = wrapCanvasText(ctx, meal.name, 110, 420, 860, 86, 3);
-
-  ctx.fillStyle = 'rgba(255,255,255,.92)';
+  let y = wrapCanvasText(ctx, `${meal.emoji} ${meal.name}`, 110, 420, 860, 86, 3);
+  ctx.fillStyle = 'rgba(255,255,255,.93)';
   ctx.font = '700 38px Arial, sans-serif';
-  const mainText = mode === 'roast' ? makeRoast(meal) : `${meal.desc} ${meal.why}`;
-  y = wrapCanvasText(ctx, mainText, 110, y + 40, 860, 50, 7);
+  y = wrapCanvasText(ctx, t.prompt(meal), 110, y + 40, 860, 52, 8);
 
   ctx.fillStyle = '#111111';
   ctx.fillRect(110, h-250, 860, 120);
   ctx.fillStyle = '#fff7e8';
-  ctx.font = '900 38px Arial, sans-serif';
-  ctx.fillText('Send this to the group chat.', 150, h-178);
+  ctx.font = '900 36px Arial, sans-serif';
+  ctx.fillText(t.footer, 150, h-178);
   ctx.font = '800 28px Arial, sans-serif';
   ctx.fillText('whattoeat-ten-hazel.vercel.app', 150, h-134);
   return canvas;
 }
+
 
 function downloadShareCard(id, mode='share'){
   const meal = meals.find(m=>m.id===id) || socialMeal();
@@ -303,6 +348,7 @@ function downloadShareCard(id, mode='share'){
 }
 
 function openRoastMode(){
+  state.selectedTemplate = 'roast';
   const meal = socialMeal();
   const roast = makeRoast(meal);
   $('#modalContent').innerHTML = `<div class="share-card-preview roast-preview"><div><p class="eyebrow">Roast mode</p><h2>${meal.emoji} ${meal.name}</h2></div><p>${roast}</p><p class="tiny-note">Screenshot this when the app clocks you too accurately.</p></div><button class="primary-btn full" id="copyRoastBtn">Copy roast</button><button class="ghost-btn full" onclick="downloadShareCard(${meal.id},'roast')">Download roast card</button>`;
@@ -311,6 +357,7 @@ function openRoastMode(){
 }
 
 function openCoupleMode(){
+  state.selectedTemplate = 'couple';
   const comfort = meals.filter(m=>m.mood.includes('comfort'));
   const lowDrama = meals.filter(m=>m.energy !== 'high');
   const meal = (comfort.concat(lowDrama)).filter((m,i,arr)=>arr.findIndex(x=>x.id===m.id)===i)[Math.floor(Math.random()*comfort.concat(lowDrama).length)] || socialMeal();
@@ -359,16 +406,17 @@ $$('.mode-strip button').forEach(btn=>btn.addEventListener('click',()=>{ $$('.mo
 $('#smartPickBtn').addEventListener('click',smartPick);
 $('#chaosPickBtn').addEventListener('click',chaosPick);
 $('#refreshDailyBtn').addEventListener('click',()=>refreshDaily(true));
-$('#makeShareBtn').addEventListener('click',()=>openShare((state.lastMeal || meals[2]).id));
+$('#makeShareBtn').addEventListener('click',()=>openShare((state.lastMeal || meals[2]).id, state.selectedTemplate));
 $('#forYouPickBtn').addEventListener('click',()=>{ const id = Number($('#forYouPickBtn').dataset.mealId || meals[0].id); const meal = meals.find(m=>m.id===id) || meals[0]; state.lastMeal = meal; rememberPick(meal,'for-you'); go('matchScreen'); $('#smartResult').innerHTML = `<div class="glass-card result-header"><p class="eyebrow">For You Tonight</p><p class="tiny-note">Picked from your saved vibe + recent cravings.</p></div>${mealCard(meal,true)}<button class="ghost-btn full" onclick="smartPick()">Reroll with my taste</button>`; toast('For You pick loaded'); });
 $('#roastModeBtn').addEventListener('click', openRoastMode);
 $('#coupleModeBtn').addEventListener('click', openCoupleMode);
 $('#groupVoteBtn').addEventListener('click', openGroupVote);
+$$('#templateStrip button').forEach(btn=>btn.addEventListener('click',()=>setTemplate(btn.dataset.template)));
 $('#closeModal').addEventListener('click', () => { modalBackdrop.hidden = true; modalBackdrop.setAttribute('hidden',''); });
 $('#modalBackdrop').addEventListener('click', e => { if (e.target.id === 'modalBackdrop') { modalBackdrop.hidden = true; modalBackdrop.setAttribute('hidden',''); } });
 $('#resetBtn').addEventListener('click',()=>{localStorage.clear(); location.reload();});
 let deferredPrompt; window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;});
 $('#installBtn').addEventListener('click',()=>{ if(deferredPrompt){deferredPrompt.prompt();} else toast('Use browser menu → Add to Home screen'); });
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js?v=9.1').catch(()=>{}); }
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js?v=9.2').catch(()=>{}); }
 registerDailyVisit();
-renderHome(); renderFeed(); renderProfile();
+renderHome(); renderFeed(); renderProfile(); setTemplate('share');
