@@ -1,4 +1,4 @@
-const CACHE_NAME = 'whattoeat-v6-5-reroll-fix';
+const CACHE_NAME = 'whattoeat-v7-1-ux-refinement';
 self.addEventListener('install', event => { self.skipWaiting(); });
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {

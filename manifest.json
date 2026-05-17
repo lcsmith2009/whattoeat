@@ -1,13 +1,21 @@
 {
-  "name":"WhatToEat V6.6",
-  "short_name":"WhatToEat",
-  "description":"Mood-based food suggestions with funny shareable picks.",
-  "start_url":"./index.html?v=6",
-  "display":"standalone",
-  "background_color":"#0b0b0d",
-  "theme_color":"#111111",
-  "icons":[
-    {"src":"icons/icon-192.png","sizes":"192x192","type":"image/png"},
-    {"src":"icons/icon-512.png","sizes":"512x512","type":"image/png"}
+  "name": "WhatToEat V7.1",
+  "short_name": "WhatToEat",
+  "description": "Premium mobile food picker with mood-based recommendations and smoother UX.",
+  "start_url": "./index.html?v=7.1",
+  "display": "standalone",
+  "background_color": "#0b0b0d",
+  "theme_color": "#111111",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
   ]
 }
