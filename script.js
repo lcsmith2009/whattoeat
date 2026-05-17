@@ -198,9 +198,135 @@ function openMeal(id){
 function openShare(id){
   const meal = meals.find(m=>m.id===id);
   const text = `WhatToEat picked ${meal.emoji} ${meal.name} for me because ${meal.why} ${meal.desc}\nhttps://whattoeat-ten-hazel.vercel.app/`;
-  $('#modalContent').innerHTML = `<div class="share-card-preview"><div><p class="eyebrow">WhatToEat picked</p><h2>${meal.emoji} ${meal.name}</h2></div><p>${meal.desc}</p><p>${meal.why}</p></div><button class="primary-btn full" id="copyShareBtn">Copy share text</button>`;
+  $('#modalContent').innerHTML = `<div class="share-card-preview"><div><p class="eyebrow">WhatToEat picked</p><h2>${meal.emoji} ${meal.name}</h2></div><p>${meal.desc}</p><p>${meal.why}</p><p class="tiny-note">V9.1 share card ready for screenshots, downloads, and group chats.</p></div><button class="primary-btn full" id="copyShareBtn">Copy share text</button><button class="ghost-btn full" onclick="downloadShareCard(${meal.id},'share')">Download share card</button><button class="ghost-btn full" onclick="openRoastMode()">Roast this pick</button>`;
   modalBackdrop.hidden = false; modalBackdrop.removeAttribute('hidden');
   setTimeout(()=>$('#copyShareBtn').onclick=()=>{navigator.clipboard?.writeText(text); toast('Share text copied');},0);
+}
+
+
+const roastLines = [
+  'This craving has no budget, no plan, and somehow still has confidence.',
+  'Your hunger said “I deserve better” while holding pantry ingredients.',
+  'This meal is not a choice. It is a cry for sauce.',
+  'Respectfully, your stomach is making executive decisions with intern energy.',
+  'The fridge saw you coming and turned the light on like a stage spotlight.',
+  'This is the kind of meal that says “I am healing” and “I am tired” at the same time.'
+];
+
+function socialMeal(){
+  return state.lastMeal || (state.history[0] ? meals.find(m=>m.id===state.history[0].id) : null) || meals[2];
+}
+
+function makeRoast(meal=socialMeal()){
+  const line = roastLines[Math.floor(Math.random()*roastLines.length)];
+  return `${meal.emoji} ${meal.name}: ${line}`;
+}
+
+function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight, maxLines=8){
+  const words = text.split(' ');
+  let line = '';
+  let lines = 0;
+  for (let n = 0; n < words.length; n++) {
+    const testLine = line + words[n] + ' ';
+    const metrics = ctx.measureText(testLine);
+    if (metrics.width > maxWidth && n > 0) {
+      ctx.fillText(line.trim(), x, y);
+      line = words[n] + ' ';
+      y += lineHeight;
+      lines++;
+      if (lines >= maxLines - 1) break;
+    } else {
+      line = testLine;
+    }
+  }
+  if (line && lines < maxLines) ctx.fillText(line.trim(), x, y);
+  return y + lineHeight;
+}
+
+function drawShareCanvas(meal=socialMeal(), mode='share'){
+  const canvas = $('#shareCanvas');
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const grad = ctx.createLinearGradient(0,0,w,h);
+  grad.addColorStop(0,'#ff8a1f');
+  grad.addColorStop(.48,'#ff4d4d');
+  grad.addColorStop(1,'#111111');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,w,h);
+
+  ctx.fillStyle = 'rgba(0,0,0,.22)';
+  ctx.beginPath(); ctx.arc(930,150,260,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(80,1220,280,0,Math.PI*2); ctx.fill();
+
+  ctx.fillStyle = 'rgba(255,255,255,.14)';
+  ctx.roundRect(70,70,w-140,h-140,58);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,.28)';
+  ctx.lineWidth = 4;
+  ctx.stroke();
+
+  ctx.fillStyle = '#fff7e8';
+  ctx.font = '900 46px Arial, sans-serif';
+  ctx.fillText('WhatToEat picked', 110, 170);
+
+  ctx.font = '900 120px Arial, sans-serif';
+  ctx.fillText(meal.emoji, 110, 315);
+
+  ctx.font = '900 76px Arial, sans-serif';
+  let y = wrapCanvasText(ctx, meal.name, 110, 420, 860, 86, 3);
+
+  ctx.fillStyle = 'rgba(255,255,255,.92)';
+  ctx.font = '700 38px Arial, sans-serif';
+  const mainText = mode === 'roast' ? makeRoast(meal) : `${meal.desc} ${meal.why}`;
+  y = wrapCanvasText(ctx, mainText, 110, y + 40, 860, 50, 7);
+
+  ctx.fillStyle = '#111111';
+  ctx.fillRect(110, h-250, 860, 120);
+  ctx.fillStyle = '#fff7e8';
+  ctx.font = '900 38px Arial, sans-serif';
+  ctx.fillText('Send this to the group chat.', 150, h-178);
+  ctx.font = '800 28px Arial, sans-serif';
+  ctx.fillText('whattoeat-ten-hazel.vercel.app', 150, h-134);
+  return canvas;
+}
+
+function downloadShareCard(id, mode='share'){
+  const meal = meals.find(m=>m.id===id) || socialMeal();
+  const canvas = drawShareCanvas(meal, mode);
+  const link = document.createElement('a');
+  link.download = `whattoeat-${meal.name.toLowerCase().replace(/[^a-z0-9]+/g,'-')}.png`;
+  link.href = canvas.toDataURL('image/png');
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  toast('Share card downloaded');
+}
+
+function openRoastMode(){
+  const meal = socialMeal();
+  const roast = makeRoast(meal);
+  $('#modalContent').innerHTML = `<div class="share-card-preview roast-preview"><div><p class="eyebrow">Roast mode</p><h2>${meal.emoji} ${meal.name}</h2></div><p>${roast}</p><p class="tiny-note">Screenshot this when the app clocks you too accurately.</p></div><button class="primary-btn full" id="copyRoastBtn">Copy roast</button><button class="ghost-btn full" onclick="downloadShareCard(${meal.id},'roast')">Download roast card</button>`;
+  modalBackdrop.hidden = false; modalBackdrop.removeAttribute('hidden');
+  setTimeout(()=>$('#copyRoastBtn').onclick=()=>{navigator.clipboard?.writeText(`${roast}\nhttps://whattoeat-ten-hazel.vercel.app/`); toast('Roast copied');},0);
+}
+
+function openCoupleMode(){
+  const comfort = meals.filter(m=>m.mood.includes('comfort'));
+  const lowDrama = meals.filter(m=>m.energy !== 'high');
+  const meal = (comfort.concat(lowDrama)).filter((m,i,arr)=>arr.findIndex(x=>x.id===m.id)===i)[Math.floor(Math.random()*comfort.concat(lowDrama).length)] || socialMeal();
+  state.lastMeal = meal;
+  rememberPick(meal,'couple');
+  $('#modalContent').innerHTML = `<div class="share-card-preview couple-preview"><div><p class="eyebrow">Couple mode picked</p><h2>${meal.emoji} ${meal.name}</h2></div><p>This is the compromise meal. If y’all still argue, it was never about dinner.</p><p>${meal.desc}</p></div><button class="primary-btn full" onclick="openShare(${meal.id})">Make share card</button><button class="ghost-btn full" onclick="openCoupleMode()">Pick another couple meal</button>`;
+  modalBackdrop.hidden = false; modalBackdrop.removeAttribute('hidden');
+  toast('Couple mode picked');
+}
+
+function openGroupVote(){
+  const shuffled = [...meals].sort(()=>Math.random()-.5).slice(0,3);
+  const text = `WhatToEat group vote:\n${shuffled.map((m,i)=>`${i+1}. ${m.emoji} ${m.name} — ${m.desc}`).join('\n')}\nVote before somebody says “I don’t care” again.\nhttps://whattoeat-ten-hazel.vercel.app/`;
+  $('#modalContent').innerHTML = `<div class="group-vote-card"><p class="eyebrow">Group vote</p><h2>Send these to the chat</h2>${shuffled.map((m,i)=>`<div class="vote-option"><span>${i+1}</span><div><strong>${m.emoji} ${m.name}</strong><p>${m.desc}</p></div></div>`).join('')}</div><button class="primary-btn full" id="copyVoteBtn">Copy group vote</button>`;
+  modalBackdrop.hidden = false; modalBackdrop.removeAttribute('hidden');
+  setTimeout(()=>$('#copyVoteBtn').onclick=()=>{navigator.clipboard?.writeText(text); toast('Group vote copied');},0);
 }
 
 function chaosPick(){
@@ -235,11 +361,14 @@ $('#chaosPickBtn').addEventListener('click',chaosPick);
 $('#refreshDailyBtn').addEventListener('click',()=>refreshDaily(true));
 $('#makeShareBtn').addEventListener('click',()=>openShare((state.lastMeal || meals[2]).id));
 $('#forYouPickBtn').addEventListener('click',()=>{ const id = Number($('#forYouPickBtn').dataset.mealId || meals[0].id); const meal = meals.find(m=>m.id===id) || meals[0]; state.lastMeal = meal; rememberPick(meal,'for-you'); go('matchScreen'); $('#smartResult').innerHTML = `<div class="glass-card result-header"><p class="eyebrow">For You Tonight</p><p class="tiny-note">Picked from your saved vibe + recent cravings.</p></div>${mealCard(meal,true)}<button class="ghost-btn full" onclick="smartPick()">Reroll with my taste</button>`; toast('For You pick loaded'); });
+$('#roastModeBtn').addEventListener('click', openRoastMode);
+$('#coupleModeBtn').addEventListener('click', openCoupleMode);
+$('#groupVoteBtn').addEventListener('click', openGroupVote);
 $('#closeModal').addEventListener('click', () => { modalBackdrop.hidden = true; modalBackdrop.setAttribute('hidden',''); });
 $('#modalBackdrop').addEventListener('click', e => { if (e.target.id === 'modalBackdrop') { modalBackdrop.hidden = true; modalBackdrop.setAttribute('hidden',''); } });
 $('#resetBtn').addEventListener('click',()=>{localStorage.clear(); location.reload();});
 let deferredPrompt; window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;});
 $('#installBtn').addEventListener('click',()=>{ if(deferredPrompt){deferredPrompt.prompt();} else toast('Use browser menu → Add to Home screen'); });
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js?v=8.1').catch(()=>{}); }
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js?v=9.1').catch(()=>{}); }
 registerDailyVisit();
 renderHome(); renderFeed(); renderProfile();
