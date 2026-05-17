@@ -19,3 +19,71 @@ button{font:inherit;color:inherit;border:0;cursor:pointer}
 .bottom-nav{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);width:min(456px,calc(100% - 20px));display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:8px;border:1px solid var(--border);border-radius:24px;background:rgba(12,12,14,.88);backdrop-filter:blur(22px);box-shadow:0 24px 60px rgba(0,0,0,.45);z-index:20}.bottom-nav button{background:transparent;border-radius:18px;padding:8px 3px;color:var(--muted);font-weight:900;font-size:1rem}.bottom-nav span{display:block;font-size:.65rem;margin-top:2px}.bottom-nav button.active{background:rgba(255,138,31,.18);color:var(--text)}
 .modal-backdrop:not([hidden]){position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.68);display:grid;place-items:end center;padding:14px}.modal-card{width:min(480px,100%);max-height:88vh;overflow:auto;border-radius:30px;background:#141416;border:1px solid var(--border);box-shadow:var(--shadow);padding:18px;position:relative}.close-btn{position:absolute;right:12px;top:10px;background:rgba(255,255,255,.1);width:34px;height:34px;border-radius:50%;font-size:1.4rem}.share-card-preview{border-radius:28px;padding:22px;background:linear-gradient(135deg,#ff8a1f,#ff4d4d 55%,#2b1111);min-height:360px;display:flex;flex-direction:column;justify-content:space-between}.share-card-preview h2{font-size:2.2rem;line-height:.95;margin:0;letter-spacing:-.07em}.share-card-preview p{font-size:1.08rem;line-height:1.35}.toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%) translateY(20px);background:#fff8ed;color:#141416;padding:12px 14px;border-radius:999px;font-weight:950;opacity:0;pointer-events:none;transition:.2s;z-index:60;max-width:90%;text-align:center}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 @media (max-width:380px){.hero-card h2{font-size:1.8rem}.food-img{height:170px}.horizontal-feed .food-card{min-width:88%}.app-shell{padding-inline:10px}.option-grid{grid-template-columns:1fr}}
+
+
+/* V6.3 Bottom Nav + Results Spacing Fix */
+html, body{
+  min-height:100%;
+  overflow-x:hidden;
+  overscroll-behavior-y:contain;
+}
+.app-shell{
+  padding-bottom:calc(148px + env(safe-area-inset-bottom));
+  overflow:visible;
+}
+.screen.active{
+  padding-bottom:calc(34px + env(safe-area-inset-bottom));
+}
+#matchScreen,
+#feedScreen,
+#savedScreen,
+#profileScreen{
+  padding-bottom:calc(150px + env(safe-area-inset-bottom));
+}
+.result-zone{
+  margin-top:16px;
+  margin-bottom:calc(130px + env(safe-area-inset-bottom));
+  scroll-margin-bottom:160px;
+}
+.result-zone .food-card,
+#smartResult .food-card{
+  margin-bottom:18px;
+}
+.vertical-feed{
+  padding-bottom:calc(130px + env(safe-area-inset-bottom));
+}
+.bottom-nav{
+  bottom:calc(8px + env(safe-area-inset-bottom));
+  width:min(436px,calc(100% - 18px));
+  padding:6px;
+  gap:4px;
+  border-radius:22px;
+  background:rgba(12,12,14,.94);
+}
+.bottom-nav button{
+  min-height:48px;
+  padding:6px 2px;
+  font-size:.95rem;
+}
+.bottom-nav span{
+  font-size:.6rem;
+  line-height:1;
+}
+.toast{
+  bottom:calc(82px + env(safe-area-inset-bottom));
+  max-width:calc(100% - 28px);
+}
+.card-actions{
+  position:relative;
+  z-index:2;
+}
+.primary-btn.full{
+  position:relative;
+  z-index:3;
+}
+@media (max-width:380px){
+  .app-shell{padding-bottom:calc(156px + env(safe-area-inset-bottom));}
+  .bottom-nav{width:min(420px,calc(100% - 14px));}
+  .bottom-nav button{min-height:46px;font-size:.9rem;}
+  .bottom-nav span{font-size:.58rem;}
+}

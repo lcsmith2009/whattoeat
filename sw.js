@@ -1,4 +1,4 @@
-const CACHE_NAME = 'whattoeat-v6-2-clicks-working';
+const CACHE_NAME = 'whattoeat-v6-3-spacing-fix';
 self.addEventListener('install', event => { self.skipWaiting(); });
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
