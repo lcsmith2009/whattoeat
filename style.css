@@ -169,7 +169,7 @@ body:after{
   height:calc(120px + env(safe-area-inset-bottom));
 }
 
-/* V6.5 reroll consistency fix */
+/* V6.6 verified reroll consistency fix */
 .result-pop { animation: resultPop .28s ease-out; }
 .result-header { margin-bottom: 12px; }
 .tiny-note { margin: 6px 0 0; font-size: 0.82rem; color: rgba(255,255,255,.68); }
