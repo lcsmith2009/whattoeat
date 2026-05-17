@@ -22,6 +22,9 @@ let state = {
   saved: JSON.parse(localStorage.getItem('wte_saved') || '[]'),
   defaultMood: localStorage.getItem('wte_defaultMood') || 'comfort',
   streak: Number(localStorage.getItem('wte_streak') || '1'),
+  history: JSON.parse(localStorage.getItem('wte_history') || '[]'),
+  moodCounts: JSON.parse(localStorage.getItem('wte_moodCounts') || '{}'),
+  lastVisit: localStorage.getItem('wte_lastVisit') || '',
   lastMeal: null,
   lastSmartMealId: null,
   lastChaosMealId: null,
@@ -31,11 +34,62 @@ let state = {
 const $ = sel => document.querySelector(sel);
 const $$ = sel => document.querySelectorAll(sel);
 
+
+function todayKey(){
+  return new Date().toISOString().slice(0,10);
+}
+
+function registerDailyVisit(){
+  const today = todayKey();
+  if (state.lastVisit !== today) {
+    state.streak = state.lastVisit ? state.streak + 1 : Math.max(state.streak,1);
+    state.lastVisit = today;
+    saveState();
+  }
+}
+
+function rememberPick(meal, source='smart'){
+  const mood = state.picks.mood || state.defaultMood || meal.mood[0] || 'comfort';
+  state.moodCounts[mood] = (state.moodCounts[mood] || 0) + 1;
+  state.history = [{id:meal.id,name:meal.name,emoji:meal.emoji,mood,source,time:Date.now()}, ...state.history.filter(x=>x.id!==meal.id)].slice(0,20);
+  saveState();
+}
+
+function topMood(){
+  const entries = Object.entries(state.moodCounts);
+  if (!entries.length) return state.defaultMood || 'comfort';
+  return entries.sort((a,b)=>b[1]-a[1])[0][0];
+}
+
+function timeMood(){
+  const h = new Date().getHours();
+  if (h >= 22 || h < 5) return 'late';
+  if (h >= 16 && h < 21) return 'comfort';
+  if (h >= 11 && h < 15) return 'lazy';
+  return state.defaultMood || 'comfort';
+}
+
+function renderForYou(){
+  const mood = topMood();
+  const clockMood = timeMood();
+  const finalMood = state.history.length ? mood : clockMood;
+  const pool = meals.filter(m=>m.mood.includes(finalMood));
+  const meal = (pool.length ? pool : meals).find(m=>!state.history.slice(0,3).some(h=>h.id===m.id)) || (pool[0] || meals[0]);
+  $('#forYouTitle').textContent = `${meal.emoji} ${meal.name}`;
+  $('#forYouText').textContent = state.history.length
+    ? `Because you usually lean ${finalMood}, this feels like your kind of plate tonight.`
+    : `Based on the time of day, your hunger might be giving ${finalMood} energy.`;
+  $('#forYouPickBtn').dataset.mealId = meal.id;
+}
+
 function saveState(){
   localStorage.setItem('wte_picks', JSON.stringify(state.picks));
   localStorage.setItem('wte_saved', JSON.stringify(state.saved));
   localStorage.setItem('wte_defaultMood', state.defaultMood);
   localStorage.setItem('wte_streak', String(state.streak));
+  localStorage.setItem('wte_history', JSON.stringify(state.history.slice(0,20)));
+  localStorage.setItem('wte_moodCounts', JSON.stringify(state.moodCounts));
+  localStorage.setItem('wte_lastVisit', state.lastVisit);
 }
 
 function toast(msg){
@@ -73,6 +127,7 @@ function mealCard(meal, large=false){
 function renderHome(){
   $('#homeFeed').innerHTML = meals.slice(0,6).map(m=>mealCard(m)).join('');
   refreshDaily(false);
+  renderForYou();
 }
 
 function renderFeed(filter='all'){
@@ -87,6 +142,10 @@ function renderSaved(){
 function renderProfile(){
   $('#streakCount').textContent = state.streak;
   $('#savedCount').textContent = state.saved.length;
+  $('#historyCount').textContent = state.history.length;
+  $('#topMoodText').textContent = topMood();
+  $('#recentList').innerHTML = state.history.length ? state.history.slice(0,6).map(item=>`<button onclick="openMeal(${item.id})">${item.emoji} ${item.name}<span>${item.mood}</span></button>`).join('') : '<p class="tiny-note">No history yet. Pick a meal and I’ll start learning your food chaos.</p>';
+  renderForYou();
   $$('[data-group="defaultMood"] button').forEach(b=>b.classList.toggle('active', b.dataset.value===state.defaultMood));
 }
 
@@ -114,7 +173,7 @@ function smartPick(){
   state.lastMeal = chosen;
   state.lastSmartMealId = chosen.id;
   state.rerollCount += 1;
-  state.streak += 1;
+  rememberPick(chosen, 'smart');
   saveState();
 
   const result = $('#smartResult');
@@ -151,6 +210,7 @@ function chaosPick(){
   state.lastMeal = meal;
   state.lastChaosMealId = meal.id;
   state.rerollCount += 1;
+  rememberPick(meal, 'chaos');
   saveState();
   go('matchScreen');
   const result = $('#smartResult');
@@ -174,10 +234,12 @@ $('#smartPickBtn').addEventListener('click',smartPick);
 $('#chaosPickBtn').addEventListener('click',chaosPick);
 $('#refreshDailyBtn').addEventListener('click',()=>refreshDaily(true));
 $('#makeShareBtn').addEventListener('click',()=>openShare((state.lastMeal || meals[2]).id));
+$('#forYouPickBtn').addEventListener('click',()=>{ const id = Number($('#forYouPickBtn').dataset.mealId || meals[0].id); const meal = meals.find(m=>m.id===id) || meals[0]; state.lastMeal = meal; rememberPick(meal,'for-you'); go('matchScreen'); $('#smartResult').innerHTML = `<div class="glass-card result-header"><p class="eyebrow">For You Tonight</p><p class="tiny-note">Picked from your saved vibe + recent cravings.</p></div>${mealCard(meal,true)}<button class="ghost-btn full" onclick="smartPick()">Reroll with my taste</button>`; toast('For You pick loaded'); });
 $('#closeModal').addEventListener('click', () => { modalBackdrop.hidden = true; modalBackdrop.setAttribute('hidden',''); });
 $('#modalBackdrop').addEventListener('click', e => { if (e.target.id === 'modalBackdrop') { modalBackdrop.hidden = true; modalBackdrop.setAttribute('hidden',''); } });
 $('#resetBtn').addEventListener('click',()=>{localStorage.clear(); location.reload();});
 let deferredPrompt; window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;});
 $('#installBtn').addEventListener('click',()=>{ if(deferredPrompt){deferredPrompt.prompt();} else toast('Use browser menu → Add to Home screen'); });
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js?v=7.1').catch(()=>{}); }
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js?v=8.1').catch(()=>{}); }
+registerDailyVisit();
 renderHome(); renderFeed(); renderProfile();

@@ -9,15 +9,15 @@
   <meta property="og:title" content="WhatToEat" />
   <meta property="og:description" content="Stop overthinking dinner. Let WhatToEat pick the vibe." />
   <meta property="og:type" content="website" />
-  <link rel="manifest" href="manifest.json?v=7.1" />
-  <link rel="apple-touch-icon" href="icons/icon-192.png?v=7.1" />
-  <link rel="stylesheet" href="style.css?v=7.1.0" />
+  <link rel="manifest" href="manifest.json?v=8.1" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png?v=8.1" />
+  <link rel="stylesheet" href="style.css?v=8.1.0" />
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
       <div>
-        <p class="eyebrow">Production V7.1</p>
+        <p class="eyebrow">Production V8.1</p>
         <h1>WhatToEat</h1>
       </div>
       <button class="install-pill" id="installBtn" type="button">Install</button>
@@ -27,9 +27,9 @@
       <section class="screen active" id="homeScreen">
         <article class="hero-card">
           <div class="hero-copy">
-            <span class="live-chip">✨ V7.1 full UX refinement active</span>
+            <span class="live-chip">🧠 V8.1 personalization active</span>
             <h2>Dinner should not require a board meeting.</h2>
-            <p>A smoother, cleaner WhatToEat experience built for fast taps, better scrolling, and less visual chaos.</p>
+            <p>Now remembers your cravings, learns your usual vibe, and gives smarter picks based on what you actually choose.</p>
             <div class="hero-actions">
               <button class="primary-btn" data-go="matchScreen">Find my food</button>
               <button class="ghost-btn" id="chaosPickBtn" type="button">Chaos pick</button>
@@ -49,6 +49,15 @@
             <p id="dailyText">The day was loud. Your plate should be easy, warm, and a little dramatic.</p>
           </div>
           <button class="tiny-btn" id="refreshDailyBtn" type="button">Refresh</button>
+        </section>
+
+        <section class="personal-card glass-card" id="forYouCard">
+          <div>
+            <p class="eyebrow">For You Tonight</p>
+            <h3 id="forYouTitle">Loading your food brain...</h3>
+            <p id="forYouText">The app is checking your cravings without judging too loud.</p>
+          </div>
+          <button class="tiny-btn" id="forYouPickBtn" type="button">Pick this vibe</button>
         </section>
 
         <section class="section-block">
@@ -149,6 +158,12 @@
         <div class="stats-grid">
           <article class="stat-card"><span id="streakCount">0</span><p>day vibe streak</p></article>
           <article class="stat-card"><span id="savedCount">0</span><p>saved meals</p></article>
+          <article class="stat-card"><span id="historyCount">0</span><p>recent picks</p></article>
+          <article class="stat-card"><span id="topMoodText">—</span><p>usual vibe</p></article>
+        </div>
+        <div class="glass-card">
+          <p class="eyebrow">Recent cravings</p>
+          <div id="recentList" class="recent-list"></div>
         </div>
         <div class="question-card">
           <h3>Favorite default mood</h3>
@@ -182,6 +197,6 @@
   <canvas id="shareCanvas" width="1080" height="1350" hidden></canvas>
   <div class="toast" id="toast"></div>
 
-  <script src="script.js?v=7.1.0"></script>
+  <script src="script.js?v=8.1.0"></script>
 </body>
 </html>

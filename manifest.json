@@ -1,8 +1,8 @@
 {
-  "name": "WhatToEat V7.1",
+  "name": "WhatToEat V8.1",
   "short_name": "WhatToEat",
   "description": "Premium mobile food picker with mood-based recommendations and smoother UX.",
-  "start_url": "./index.html?v=7.1",
+  "start_url": "./index.html?v=8.1",
   "display": "standalone",
   "background_color": "#0b0b0d",
   "theme_color": "#111111",
