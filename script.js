@@ -6759,6 +6759,23 @@ const dailyVibes = [
   ['Healthy-ish with a side of realism','Add vegetables, but do not remove joy. We are not doing punishment food.']
 ];
 
+const dailyModes = [
+  { key:'monday', days:[1], emoji:'😮‍💨', title:'Monday Survival Mode', tag:'weekday survival', mood:'comfort', text:'The week clocked in before you were ready. Pick something warm, easy, and emotionally supportive.' },
+  { key:'tuesday', days:[2], emoji:'🌮', title:'Taco Tuesday-ish Energy', tag:'taco-adjacent', mood:'chaos', text:'It does not have to be tacos, but it does need flavor and a little dramatic crunch.' },
+  { key:'wednesday', days:[3], emoji:'🍝', title:'Midweek Carb Therapy', tag:'hump day hunger', mood:'comfort', text:'Wednesday is asking too much. Pasta, noodles, rice, or anything that feels like a reset button.' },
+  { key:'thursday', days:[4], emoji:'💪', title:'Gym Bro Thursday', tag:'protein-ish', mood:'healthy', text:'Give yourself something with protein so you can pretend the week is still under control.' },
+  { key:'friday', days:[5], emoji:'💸', title:'Payday Friday / Treat Energy', tag:'treat yourself', mood:'comfort', text:'If the direct deposit hit, act accordingly. If it did not, we can still plate delusion beautifully.' },
+  { key:'saturday', days:[6], emoji:'🍗', title:'Wing Weekend Mode', tag:'group-chat food', mood:'chaos', text:'Saturday food should be shareable, snacky, saucy, or at least chaotic enough to become a story.' },
+  { key:'sunday', days:[0], emoji:'🛋️', title:'Lazy Sunday Recovery Plate', tag:'slow comfort', mood:'lazy', text:'Low effort. High comfort. Your couch requested something that does not require a production meeting.' }
+];
+
+const specialTimeModes = [
+  { test:h=>h>=0 && h<5, emoji:'🧌', title:'2AM Gremlin Mode', tag:'late-night chaos', mood:'late', text:'Nobody makes wise decisions under fridge light. That is exactly why this mode exists.' },
+  { test:h=>h>=22, emoji:'🌙', title:'Late-Night Snack Court', tag:'night hunger', mood:'late', text:'The kitchen is closed emotionally, but somehow your appetite filed an appeal.' },
+  { test:h=>h>=6 && h<10, emoji:'☕', title:'Breakfast Chaos Check', tag:'morning fuel', mood:'lazy', text:'You need food that understands you woke up before your personality finished loading.' },
+  { test:h=>h>=16 && h<20, emoji:'🍽️', title:'Dinner Decision Deadline', tag:'prime dinner', mood:'comfort', text:'This is the danger zone where “what you want to eat?” can ruin relationships. Let the app work.' }
+];
+
 let state = {
   picks: JSON.parse(localStorage.getItem('wte_picks') || '{}'),
   saved: JSON.parse(localStorage.getItem('wte_saved') || '[]'),
@@ -6767,6 +6784,7 @@ let state = {
   history: JSON.parse(localStorage.getItem('wte_history') || '[]'),
   moodCounts: JSON.parse(localStorage.getItem('wte_moodCounts') || '{}'),
   lastVisit: localStorage.getItem('wte_lastVisit') || '',
+  lastModeKey: localStorage.getItem('wte_lastModeKey') || '',
   lastMeal: null,
   lastSmartMealId: null,
   lastChaosMealId: null,
@@ -6782,13 +6800,67 @@ function todayKey(){
   return new Date().toISOString().slice(0,10);
 }
 
+function previousDayKey(date=new Date()){
+  const d = new Date(date);
+  d.setDate(d.getDate() - 1);
+  return d.toISOString().slice(0,10);
+}
+
 function registerDailyVisit(){
   const today = todayKey();
+  const yesterday = previousDayKey();
   if (state.lastVisit !== today) {
-    state.streak = state.lastVisit ? state.streak + 1 : Math.max(state.streak,1);
+    state.streak = state.lastVisit === yesterday ? state.streak + 1 : 1;
     state.lastVisit = today;
+    const mode = getTodayMode();
+    state.lastModeKey = mode.key;
     saveState();
   }
+}
+
+function getTodayMode(){
+  const now = new Date();
+  const hour = now.getHours();
+  const timeMode = specialTimeModes.find(mode => mode.test(hour));
+  if (timeMode) return { ...timeMode, key:`time-${timeMode.tag}` };
+  return dailyModes.find(mode => mode.days.includes(now.getDay())) || dailyModes[0];
+}
+
+function modePool(mode){
+  const mood = mode?.mood || 'comfort';
+  let pool = meals.filter(m => m.mood.includes(mood));
+  if (!pool.length && mood === 'healthy') pool = meals.filter(m => m.mood.includes('healthy') || m.energy === 'high');
+  if (!pool.length) pool = meals;
+  const recent = recentIds(8);
+  const fresh = pool.filter(m => !recent.includes(m.id));
+  return fresh.length ? fresh : pool;
+}
+
+function pickFromTodayMode(){
+  const mode = getTodayMode();
+  const pool = modePool(mode);
+  const meal = pool[Math.floor(Math.random()*pool.length)] || meals[0];
+  state.lastMeal = meal;
+  rememberPick(meal, 'daily-mode');
+  saveState();
+  go('matchScreen');
+  const result = $('#smartResult');
+  result.classList.remove('result-pop');
+  result.innerHTML = `<div class="glass-card result-header"><p class="eyebrow">${mode.emoji} ${mode.title}</p><p class="tiny-note">${mode.text}</p></div>${mealCard(meal,true)}<button class="ghost-btn full" onclick="pickFromTodayMode()">Pick another from today’s mode</button>`;
+  requestAnimationFrame(()=>result.classList.add('result-pop'));
+  toast('Today’s mode picked');
+}
+
+function renderTodayMode(){
+  const mode = getTodayMode();
+  const hour = new Date().getHours();
+  const clock = hour >= 22 || hour < 5 ? 'late-night active' : hour >= 16 ? 'dinner window' : 'daytime vibe';
+  $('#todayModeTitle').textContent = mode.title;
+  $('#todayModeText').textContent = mode.text;
+  $('#todayModeEmoji').textContent = mode.emoji;
+  $('#todayModeTag').textContent = mode.tag;
+  $('#todayModeStreak').textContent = `${state.streak || 1} day streak`;
+  $('#todayModeClock').textContent = clock;
 }
 
 function rememberPick(meal, source='smart'){
@@ -6833,6 +6905,7 @@ function saveState(){
   localStorage.setItem('wte_history', JSON.stringify(state.history.slice(0,20)));
   localStorage.setItem('wte_moodCounts', JSON.stringify(state.moodCounts));
   localStorage.setItem('wte_lastVisit', state.lastVisit);
+  localStorage.setItem('wte_lastModeKey', state.lastModeKey || '');
 }
 
 function toast(msg){
@@ -6870,6 +6943,7 @@ function mealCard(meal, large=false){
 function renderHome(){
   $('#homeFeed').innerHTML = meals.slice(0,6).map(m=>mealCard(m)).join('');
   refreshDaily(false);
+  renderTodayMode();
   renderForYou();
 }
 
@@ -6892,10 +6966,19 @@ function renderProfile(){
   $$('[data-group="defaultMood"] button').forEach(b=>b.classList.toggle('active', b.dataset.value===state.defaultMood));
 }
 
+function seededDailyIndex(extra=0){
+  const key = todayKey().replaceAll('-','');
+  const seed = Number(key) + extra;
+  return seed % dailyVibes.length;
+}
+
 function refreshDaily(show=true){
-  const vibe = dailyVibes[Math.floor(Math.random()*dailyVibes.length)];
-  $('#dailyTitle').textContent = vibe[0]; $('#dailyText').textContent = vibe[1];
-  if(show) toast('Tonight\'s vibe refreshed');
+  const mode = getTodayMode();
+  const vibe = show ? dailyVibes[Math.floor(Math.random()*dailyVibes.length)] : dailyVibes[seededDailyIndex(mode.key.length)];
+  $('#dailyTitle').textContent = `${mode.emoji} ${vibe[0]}`;
+  $('#dailyText').textContent = `${mode.title}: ${vibe[1]}`;
+  renderTodayMode();
+  if(show) toast('Live banner refreshed');
 }
 
 function normalizeBudget(value){
@@ -7210,6 +7293,7 @@ $('#smartPickBtn').addEventListener('click',smartPick);
 $('#chaosPickBtn').addEventListener('click',chaosPick);
 $('#refreshDailyBtn').addEventListener('click',()=>refreshDaily(true));
 $('#makeShareBtn').addEventListener('click',()=>openShare((state.lastMeal || meals[2]).id, state.selectedTemplate));
+$('#todayModePickBtn').addEventListener('click', pickFromTodayMode);
 $('#forYouPickBtn').addEventListener('click',()=>{ const id = Number($('#forYouPickBtn').dataset.mealId || meals[0].id); const meal = meals.find(m=>m.id===id) || meals[0]; state.lastMeal = meal; rememberPick(meal,'for-you'); go('matchScreen'); $('#smartResult').innerHTML = `<div class="glass-card result-header"><p class="eyebrow">For You Tonight</p><p class="tiny-note">Picked from your saved vibe + recent cravings.</p></div>${mealCard(meal,true)}<button class="ghost-btn full" onclick="smartPick()">Reroll with my taste</button>`; toast('For You pick loaded'); });
 $('#roastModeBtn').addEventListener('click', openRoastMode);
 $('#coupleModeBtn').addEventListener('click', openCoupleMode);
@@ -7220,6 +7304,6 @@ $('#modalBackdrop').addEventListener('click', e => { if (e.target.id === 'modalB
 $('#resetBtn').addEventListener('click',()=>{localStorage.clear(); location.reload();});
 let deferredPrompt; window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;});
 $('#installBtn').addEventListener('click',()=>{ if(deferredPrompt){deferredPrompt.prompt();} else toast('Use browser menu → Add to Home screen'); });
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js?v=phase1b1').catch(()=>{}); }
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js?v=phase2-1').catch(()=>{}); }
 registerDailyVisit();
 renderHome(); renderFeed(); renderProfile(); setTemplate('share');

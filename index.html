@@ -9,15 +9,15 @@
   <meta property="og:title" content="WhatToEat" />
   <meta property="og:description" content="Stop overthinking dinner. Let WhatToEat pick the vibe." />
   <meta property="og:type" content="website" />
-  <link rel="manifest" href="manifest.json?v=phase1b1" />
-  <link rel="apple-touch-icon" href="icons/icon-192.png?v=phase1b1" />
-  <link rel="stylesheet" href="style.css?v=phase1b1" />
+  <link rel="manifest" href="manifest.json?v=phase2-1" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png?v=phase2-1" />
+  <link rel="stylesheet" href="style.css?v=phase2-1" />
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
       <div>
-        <p class="eyebrow">Phase 1B.1 Best of Both</p>
+        <p class="eyebrow">Phase 2.1 Daily Live System</p>
         <h1>WhatToEat</h1>
       </div>
       <button class="install-pill" id="installBtn" type="button">Install</button>
@@ -27,9 +27,9 @@
       <section class="screen active" id="homeScreen">
         <article class="hero-card">
           <div class="hero-copy">
-            <span class="live-chip">🧠 Phase 1B.1: smart engine active + Phase 1A vibe restored</span>
+            <span class="live-chip">📆 Phase 2.1: daily live mode active + smart engine preserved</span>
             <h2>Dinner should not require a board meeting.</h2>
-            <p>The fun social-card version is back, now with smarter picks, better anti-repeat logic, and a larger meal universe underneath.</p>
+            <p>Daily modes, return streaks, and live-feeling food vibes are active — while keeping the fun Phase 1A personality and smarter rerolls underneath.</p>
             <div class="hero-actions">
               <button class="primary-btn" data-go="matchScreen">Find my food</button>
               <button class="ghost-btn" id="chaosPickBtn" type="button">Chaos pick</button>
@@ -44,12 +44,29 @@
 
         <section class="daily-card glass-card">
           <div>
-            <p class="eyebrow">Tonight’s vibe</p>
+            <p class="eyebrow">Live banner</p>
             <h3 id="dailyTitle">Comfort food with main-character seasoning</h3>
             <p id="dailyText">The day was loud. Your plate should be easy, warm, and a little dramatic.</p>
           </div>
           <button class="tiny-btn" id="refreshDailyBtn" type="button">Refresh</button>
         </section>
+        <section class="today-mode-card glass-card" id="todayModeCard">
+          <div class="today-mode-top">
+            <div>
+              <p class="eyebrow">Today’s Mode</p>
+              <h3 id="todayModeTitle">Loading today’s food chaos...</h3>
+              <p id="todayModeText">Checking the calendar, the clock, and your hunger attitude.</p>
+            </div>
+            <span class="mode-orb" id="todayModeEmoji">🍽️</span>
+          </div>
+          <div class="daily-meta-row">
+            <span id="todayModeTag">Live vibe</span>
+            <span id="todayModeStreak">0 day streak</span>
+            <span id="todayModeClock">Tonight energy</span>
+          </div>
+          <button class="primary-btn compact" id="todayModePickBtn" type="button">Pick from today’s mode</button>
+        </section>
+
 
         <section class="personal-card glass-card" id="forYouCard">
           <div>
@@ -79,7 +96,7 @@
             </div>
           </div>
           <div class="share-preview-card social-preview-card" id="sharePreviewCard">
-            <span class="social-badge">PHASE 1B.1</span>
+            <span class="social-badge">PHASE 2.1</span>
             <p>WhatToEat picked <strong>something unreasonably accurate</strong> for me.</p>
             <button class="primary-btn compact" id="makeShareBtn" type="button">Make viral card</button>
           </div>
@@ -232,6 +249,6 @@
   <canvas id="shareCanvas" width="1080" height="1350" hidden></canvas>
   <div class="toast" id="toast"></div>
 
-  <script src="script.js?v=9.2.0"></script>
+  <script src="script.js?v=phase2-1"></script>
 </body>
 </html>
