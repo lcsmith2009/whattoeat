@@ -22,7 +22,10 @@ let state = {
   saved: JSON.parse(localStorage.getItem('wte_saved') || '[]'),
   defaultMood: localStorage.getItem('wte_defaultMood') || 'comfort',
   streak: Number(localStorage.getItem('wte_streak') || '1'),
-  lastMeal: null
+  lastMeal: null,
+  lastSmartMealId: null,
+  lastChaosMealId: null,
+  rerollCount: 0
 };
 
 const $ = sel => document.querySelector(sel);
@@ -97,10 +100,28 @@ function smartPick(){
   const mood = state.picks.mood || state.defaultMood;
   const budget = state.picks.budget || 'mid';
   const energy = state.picks.energy || 'medium';
-  let scored = meals.map(m=>({m,score:(m.mood.includes(mood)?3:0)+(m.budget===budget?2:0)+(m.energy===energy?2:0)+Math.random()})).sort((a,b)=>b.score-a.score);
-  const meal = scored[0].m; state.lastMeal = meal; state.streak += 1; saveState();
-  $('#smartResult').innerHTML = `<div class="glass-card"><p class="eyebrow">Your pick</p></div>${mealCard(meal,true)}<button class="ghost-btn full" onclick="smartPick()">Reroll, I deserve options</button>`;
-  toast(`${meal.name} picked for your ${mood} mood`);
+  let scored = meals
+    .map(m=>({m,score:(m.mood.includes(mood)?3:0)+(m.budget===budget?2:0)+(m.energy===energy?2:0)+Math.random()}))
+    .sort((a,b)=>b.score-a.score);
+
+  // Never return the same exact meal twice in a row when the user hits reroll.
+  let chosen = scored[0].m;
+  if (state.lastSmartMealId && scored.length > 1) {
+    const different = scored.find(item => item.m.id !== state.lastSmartMealId);
+    if (different) chosen = different.m;
+  }
+
+  state.lastMeal = chosen;
+  state.lastSmartMealId = chosen.id;
+  state.rerollCount += 1;
+  state.streak += 1;
+  saveState();
+
+  const result = $('#smartResult');
+  result.classList.remove('result-pop');
+  result.innerHTML = `<div class="glass-card result-header"><p class="eyebrow">Your pick #${state.rerollCount}</p><p class="tiny-note">Fresh reroll locked in — no same-meal back-to-back nonsense.</p></div>${mealCard(chosen,true)}<button class="ghost-btn full" onclick="smartPick()">Reroll, I deserve options</button>`;
+  requestAnimationFrame(()=>result.classList.add('result-pop'));
+  toast(`${chosen.name} picked for your ${mood} mood`);
 }
 
 function toggleSave(id){
@@ -124,8 +145,19 @@ function openShare(id){
 }
 
 function chaosPick(){
-  const meal = meals[Math.floor(Math.random()*meals.length)]; state.lastMeal = meal;
-  go('matchScreen'); $('#smartResult').innerHTML = mealCard(meal,true); toast('Chaos has chosen');
+  let pool = meals.filter(m => m.id !== state.lastChaosMealId);
+  if (!pool.length) pool = meals;
+  const meal = pool[Math.floor(Math.random()*pool.length)];
+  state.lastMeal = meal;
+  state.lastChaosMealId = meal.id;
+  state.rerollCount += 1;
+  saveState();
+  go('matchScreen');
+  const result = $('#smartResult');
+  result.classList.remove('result-pop');
+  result.innerHTML = `<div class="glass-card result-header"><p class="eyebrow">Chaos pick #${state.rerollCount}</p><p class="tiny-note">Different from the last chaos pick, because repeats are lazy.</p></div>${mealCard(meal,true)}<button class="ghost-btn full" onclick="chaosPick()">Reroll chaos</button>`;
+  requestAnimationFrame(()=>result.classList.add('result-pop'));
+  toast('Chaos has chosen');
 }
 
 $$('[data-go]').forEach(btn=>btn.addEventListener('click',()=>go(btn.dataset.go)));
@@ -147,5 +179,5 @@ $('#modalBackdrop').addEventListener('click', e => { if (e.target.id === 'modalB
 $('#resetBtn').addEventListener('click',()=>{localStorage.clear(); location.reload();});
 let deferredPrompt; window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;});
 $('#installBtn').addEventListener('click',()=>{ if(deferredPrompt){deferredPrompt.prompt();} else toast('Use browser menu → Add to Home screen'); });
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js?v=6.4').catch(()=>{}); }
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js?v=6.5').catch(()=>{}); }
 renderHome(); renderFeed(); renderProfile();

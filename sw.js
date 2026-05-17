@@ -1,4 +1,4 @@
-const CACHE_NAME = 'whattoeat-v6-3-spacing-fix';
+const CACHE_NAME = 'whattoeat-v6-5-reroll-fix';
 self.addEventListener('install', event => { self.skipWaiting(); });
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
@@ -8,5 +8,5 @@ self.addEventListener('activate', event => {
   })());
 });
 self.addEventListener('fetch', event => {
-  event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+  event.respondWith(fetch(event.request, { cache: 'no-store' }).catch(() => caches.match(event.request)));
 });
