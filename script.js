@@ -147,5 +147,5 @@ $('#modalBackdrop').addEventListener('click', e => { if (e.target.id === 'modalB
 $('#resetBtn').addEventListener('click',()=>{localStorage.clear(); location.reload();});
 let deferredPrompt; window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;});
 $('#installBtn').addEventListener('click',()=>{ if(deferredPrompt){deferredPrompt.prompt();} else toast('Use browser menu → Add to Home screen'); });
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js?v=6').catch(()=>{}); }
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js?v=6.4').catch(()=>{}); }
 renderHome(); renderFeed(); renderProfile();
