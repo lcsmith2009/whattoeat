@@ -7303,9 +7303,11 @@ $('#closeModal').addEventListener('click', () => { modalBackdrop.hidden = true; 
 $('#modalBackdrop').addEventListener('click', e => { if (e.target.id === 'modalBackdrop') { modalBackdrop.hidden = true; modalBackdrop.setAttribute('hidden',''); } });
 $('#resetBtn').addEventListener('click',()=>{localStorage.clear(); location.reload();});
 
-const PWA_VERSION = 'pwa-install-fix-1';
+
+const PWA_VERSION = 'pwa-native-install-only-2';
 let deferredPrompt = null;
 let installReady = false;
+let swReady = false;
 
 function isStandaloneMode(){
   return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
@@ -7316,62 +7318,66 @@ function setInstallButtonState(label, ready=false){
   if(!btn) return;
   btn.textContent = label;
   btn.classList.toggle('ready', !!ready);
+  btn.classList.toggle('disabled', !ready && !isStandaloneMode());
+  btn.setAttribute('aria-disabled', (!ready && !isStandaloneMode()) ? 'true' : 'false');
 }
 
-function installInstructionsHtml(status='Manual install may be required'){
-  const standalone = isStandaloneMode();
-  return `<div class="install-help-card">
-    <p class="eyebrow">PWA Install</p>
-    <h2>${standalone ? 'WhatToEat is already installed' : 'Install WhatToEat on Android'}</h2>
-    <p>${standalone ? 'You are viewing the app in standalone mode. Your hunger officially has an app.' : status}</p>
-    <div class="install-steps">
-      <div><span>1</span><p>Tap the Chrome menu <strong>⋮</strong> in the top right.</p></div>
-      <div><span>2</span><p>Tap <strong>Add to Home screen</strong> or <strong>Install app</strong>.</p></div>
-      <div><span>3</span><p>Confirm <strong>Install</strong>. WhatToEat will show like a normal app.</p></div>
-    </div>
-    <p class="tiny-note">Chrome only shows the native install prompt when the browser decides the app is eligible. If it blocks the prompt, these manual steps are the correct fallback.</p>
-  </div>`;
+function setPwaStatusState(label, ready=false){
+  const btn = document.getElementById('pwaStatusBtn');
+  if(!btn) return;
+  btn.textContent = label;
+  btn.classList.toggle('ready', !!ready);
+  btn.classList.toggle('disabled', !ready && !isStandaloneMode());
+  btn.setAttribute('aria-disabled', (!ready && !isStandaloneMode()) ? 'true' : 'false');
 }
 
-function openInstallHelp(message){
-  const content = document.getElementById('modalContent');
-  const modal = document.getElementById('modalBackdrop');
-  if(!content || !modal){ toast('Use Chrome menu → Add to Home screen'); return; }
-  content.innerHTML = installInstructionsHtml(message);
-  modal.hidden = false;
-  modal.removeAttribute('hidden');
+function updateInstallUi(){
+  if(isStandaloneMode()){
+    setInstallButtonState('Installed', true);
+    setPwaStatusState('Installed', true);
+    return;
+  }
+  if(deferredPrompt){
+    setInstallButtonState('Install', true);
+    setPwaStatusState('Install app', true);
+    return;
+  }
+  setInstallButtonState('Install', false);
+  setPwaStatusState(swReady ? 'PWA ready' : 'Checking…', false);
 }
 
 async function handleInstallClick(){
   if(isStandaloneMode()){
-    setInstallButtonState('Installed', true);
     toast('Already installed');
-    openInstallHelp('Already installed. Open from your home screen anytime.');
+    updateInstallUi();
     return;
   }
-  if(deferredPrompt){
-    const promptEvent = deferredPrompt;
-    deferredPrompt = null;
-    promptEvent.prompt();
-    const choice = await promptEvent.userChoice.catch(() => ({ outcome: 'dismissed' }));
-    if(choice.outcome === 'accepted'){
-      setInstallButtonState('Installing…', true);
-      toast('Installing WhatToEat');
-    } else {
-      setInstallButtonState('Install', false);
-      openInstallHelp('Install prompt was dismissed. You can still install manually.');
-    }
+  if(!deferredPrompt){
+    toast('Install button will activate when Chrome unlocks the native prompt');
+    updateInstallUi();
     return;
   }
-  openInstallHelp('Chrome did not provide the native install prompt yet, so use the manual Add to Home screen path.');
+  const promptEvent = deferredPrompt;
+  deferredPrompt = null;
+  updateInstallUi();
+  await promptEvent.prompt();
+  const choice = await promptEvent.userChoice.catch(() => ({ outcome: 'dismissed' }));
+  if(choice.outcome === 'accepted'){
+    setInstallButtonState('Installing…', true);
+    setPwaStatusState('Installing…', true);
+    toast('Installing WhatToEat');
+  } else {
+    toast('Install dismissed');
+    updateInstallUi();
+  }
 }
 
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   deferredPrompt = e;
   installReady = true;
-  setInstallButtonState('Install', true);
-  toast('WhatToEat is install-ready');
+  updateInstallUi();
+  toast('Install is ready — tap Install');
 });
 
 const installButton = document.getElementById('installBtn');
@@ -7381,26 +7387,31 @@ if(pwaStatusButton) pwaStatusButton.addEventListener('click', handleInstallClick
 const launchPrepCard = document.getElementById('launchPrepCard');
 if(launchPrepCard) launchPrepCard.addEventListener('click', e => {
   if(e.target.closest('button')) return;
-  openInstallHelp(installReady ? 'Native install prompt is ready. Tap Install at the top.' : 'PWA basics are active. If Chrome does not show an install prompt, use manual install.');
+  toast(deferredPrompt ? 'Native install is ready' : 'PWA is active. Chrome has not unlocked the native prompt yet.');
 });
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js?v=' + PWA_VERSION, { scope: '/' })
       .then(reg => {
+        swReady = true;
         reg.update?.();
+        updateInstallUi();
         console.log('WhatToEat service worker registered', reg.scope);
       })
       .catch(err => {
+        swReady = false;
+        updateInstallUi();
         console.warn('WhatToEat service worker failed', err);
       });
   });
 }
 
-if(isStandaloneMode()) setInstallButtonState('Installed', true);
+updateInstallUi();
 
 window.addEventListener('appinstalled',()=>{
   setInstallButtonState('Installed', true);
+  setPwaStatusState('Installed', true);
   deferredPrompt = null;
   toast('WhatToEat installed. Your hunger has an app now.');
 });

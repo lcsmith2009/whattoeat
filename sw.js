@@ -1,4 +1,4 @@
-const CACHE_NAME = 'whattoeat-pwa-install-fix-v1';
+const CACHE_NAME = 'whattoeat-pwa-native-install-v2';
 const ASSETS = [
   '/',
   '/index.html',

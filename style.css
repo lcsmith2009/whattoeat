@@ -828,3 +828,15 @@ body{
   color: #fff7e8;
   font-weight: 750;
 }
+
+
+/* Native PWA install state polish */
+.install-pill.disabled,
+.launch-badge.disabled{
+  opacity:.62;
+  filter:saturate(.75);
+}
+.install-pill.ready,
+.launch-badge.ready{
+  box-shadow:0 0 0 1px rgba(255,255,255,.18), 0 14px 35px rgba(255,107,44,.24);
+}
