@@ -7304,10 +7304,11 @@ $('#modalBackdrop').addEventListener('click', e => { if (e.target.id === 'modalB
 $('#resetBtn').addEventListener('click',()=>{localStorage.clear(); location.reload();});
 
 
-const PWA_VERSION = 'strict-pwa-compliance-v1';
+const PWA_VERSION = 'pwa-cache-reset-20260518-v1';
+const RESET_KEY = 'whattoeat_pwa_reset_20260518_done';
 let deferredPrompt = null;
-let installReady = false;
 let swReady = false;
+let resetRunning = false;
 
 function isStandaloneMode(){
   return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
@@ -7342,8 +7343,50 @@ function updateInstallUi(){
     setPwaStatusState('Install app', true);
     return;
   }
-  setInstallButtonState('Install', false);
-  setPwaStatusState(swReady ? 'PWA checked' : 'Checking…', false);
+  setInstallButtonState(swReady ? 'Install' : 'Checking…', false);
+  setPwaStatusState(swReady ? 'PWA reset' : 'Checking…', false);
+}
+
+async function clearOldPwaStateOnce(){
+  if(resetRunning || localStorage.getItem(RESET_KEY) === 'yes') return false;
+  resetRunning = true;
+  try{
+    if('serviceWorker' in navigator){
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(reg => reg.unregister()));
+    }
+    if('caches' in window){
+      const keys = await caches.keys();
+      await Promise.all(keys.map(key => caches.delete(key)));
+    }
+    localStorage.setItem(RESET_KEY, 'yes');
+    sessionStorage.setItem('whattoeat_pwa_reset_reload', 'yes');
+    location.replace('/?pwaReset=20260518');
+    return true;
+  }catch(err){
+    console.warn('WhatToEat PWA reset failed', err);
+    localStorage.setItem(RESET_KEY, 'yes');
+    return false;
+  }
+}
+
+async function registerFreshServiceWorker(){
+  if(!('serviceWorker' in navigator)){
+    swReady = false;
+    updateInstallUi();
+    return;
+  }
+  try{
+    const reg = await navigator.serviceWorker.register('/sw.js?v=20260518', { scope: '/' });
+    swReady = true;
+    await reg.update();
+    updateInstallUi();
+    console.log('WhatToEat fresh service worker registered', reg.scope);
+  }catch(err){
+    swReady = false;
+    updateInstallUi();
+    console.warn('WhatToEat service worker failed', err);
+  }
 }
 
 async function handleInstallClick(){
@@ -7353,7 +7396,7 @@ async function handleInstallClick(){
     return;
   }
   if(!deferredPrompt){
-    toast('Chrome has not marked this as installable yet. Clear site data, reload, then check menu for Install app.');
+    toast('PWA reset is active. Reload once, then check Chrome menu for Install app. If it still says Add to Home screen, Chrome has not approved install yet.');
     updateInstallUi();
     return;
   }
@@ -7375,7 +7418,6 @@ async function handleInstallClick(){
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   deferredPrompt = e;
-  installReady = true;
   updateInstallUi();
   toast('Install is ready — tap Install');
 });
@@ -7387,27 +7429,8 @@ if(pwaStatusButton) pwaStatusButton.addEventListener('click', handleInstallClick
 const launchPrepCard = document.getElementById('launchPrepCard');
 if(launchPrepCard) launchPrepCard.addEventListener('click', e => {
   if(e.target.closest('button')) return;
-  toast(deferredPrompt ? 'Native install is ready' : 'Strict PWA files are active. Chrome still controls install eligibility.');
+  toast(deferredPrompt ? 'Native install is ready' : 'PWA reset files are active. Chrome will re-check install eligibility after the reset.');
 });
-
-if('serviceWorker' in navigator){
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js', { scope: '/' })
-      .then(reg => {
-        swReady = true;
-        reg.update?.();
-        updateInstallUi();
-        console.log('WhatToEat service worker registered', reg.scope);
-      })
-      .catch(err => {
-        swReady = false;
-        updateInstallUi();
-        console.warn('WhatToEat service worker failed', err);
-      });
-  });
-}
-
-updateInstallUi();
 
 window.addEventListener('appinstalled',()=>{
   setInstallButtonState('Installed', true);
@@ -7415,5 +7438,18 @@ window.addEventListener('appinstalled',()=>{
   deferredPrompt = null;
   toast('WhatToEat installed. Your hunger has an app now.');
 });
+
+window.addEventListener('load', async () => {
+  const didReset = await clearOldPwaStateOnce();
+  if(!didReset){
+    await registerFreshServiceWorker();
+    if(sessionStorage.getItem('whattoeat_pwa_reset_reload') === 'yes'){
+      sessionStorage.removeItem('whattoeat_pwa_reset_reload');
+      toast('PWA cache reset complete. Reload once more if Chrome still shows Add to Home screen.');
+    }
+  }
+});
+
+updateInstallUi();
 registerDailyVisit();
 renderHome(); renderFeed(); renderProfile(); setTemplate('share');
