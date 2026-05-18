@@ -1,7 +1,7 @@
 {
-  "name": "WhatToEat Phase 1A",
+  "name": "WhatToEat Phase 3 Viral Polish",
   "short_name": "WhatToEat",
-  "description": "Mood-based food picker with personalization, share cards, roast mode, couple mode, and group vote prompts, and dynamic viral cards.",
+  "description": "Funny food picker with daily vibes, share cards, and viral polish.",
   "start_url": "./index.html?v=9.2",
   "display": "standalone",
   "background_color": "#0b0b0d",

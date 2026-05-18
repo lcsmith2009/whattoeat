@@ -7065,7 +7065,7 @@ function smartPick(){
 
   const result = $('#smartResult');
   result.classList.remove('result-pop');
-  result.innerHTML = `<div class="glass-card result-header"><p class="eyebrow">Smart pick #${state.rerollCount}</p><p class="tiny-note">Phase 1B.1 engine: smarter matching, less repeat nonsense, same fun UI.</p></div>${mealCard(chosen,true)}<button class="ghost-btn full" onclick="smartPick()">Reroll, I deserve options</button>`;
+  result.innerHTML = `<div class="glass-card result-header"><p class="eyebrow">Smart pick #${state.rerollCount}</p><p class="tiny-note">Phase 3 polish: smoother feel, stronger brand voice, smarter rerolls.</p></div>${mealCard(chosen,true)}<button class="ghost-btn full" onclick="smartPick()">Reroll, I deserve options</button>`;
   requestAnimationFrame(()=>result.classList.add('result-pop'));
   toast(`${chosen.name} picked for your ${mood} mood`);
 }
@@ -7087,7 +7087,7 @@ function openShare(id, template=state.selectedTemplate || 'share'){
   state.lastMeal = meal;
   const t = viralTemplates[template] || viralTemplates.share;
   const copyText = `WhatToEat ${t.label}: ${meal.emoji} ${meal.name}\n${t.prompt(meal)}\nhttps://whattoeat-ten-hazel.vercel.app/`;
-  $('#modalContent').innerHTML = `<div class="share-card-preview dynamic-${template}"><div><p class="eyebrow">${t.emoji} ${t.label}</p><h2>${meal.emoji} ${meal.name}</h2></div><p>${t.prompt(meal)}</p><p class="tiny-note">Phase 1B.1 smart + fun share card — built for screenshots, stories, and group chats.</p></div><div class="template-strip modal-template-strip">${Object.entries(viralTemplates).map(([key,val])=>`<button data-template="${key}" class="${key===template?'active':''}">${val.emoji} ${val.label.split(' ')[0]}</button>`).join('')}</div><button class="primary-btn full" id="copyShareBtn">Copy share text</button><button class="ghost-btn full" onclick="downloadShareCard(${meal.id},'${template}')">Download ${t.label.toLowerCase()}</button><button class="ghost-btn full" onclick="openRoastMode()">Roast this pick</button>`;
+  $('#modalContent').innerHTML = `<div class="share-card-preview dynamic-${template}"><div><p class="eyebrow">${t.emoji} ${t.label}</p><h2>${meal.emoji} ${meal.name}</h2></div><p>${t.prompt(meal)}</p><p class="tiny-note">Phase 3 viral polish — built for screenshots, stories, and group chats.</p></div><div class="template-strip modal-template-strip">${Object.entries(viralTemplates).map(([key,val])=>`<button data-template="${key}" class="${key===template?'active':''}">${val.emoji} ${val.label.split(' ')[0]}</button>`).join('')}</div><button class="primary-btn full" id="copyShareBtn">Copy share text</button><button class="ghost-btn full" onclick="downloadShareCard(${meal.id},'${template}')">Download ${t.label.toLowerCase()}</button><button class="ghost-btn full" onclick="openRoastMode()">Roast this pick</button>`;
   modalBackdrop.hidden = false; modalBackdrop.removeAttribute('hidden');
   setTimeout(()=>{
     $('#copyShareBtn').onclick=()=>{navigator.clipboard?.writeText(copyText); toast('Share text copied');};
