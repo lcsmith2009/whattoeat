@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>WhatToEat — Funny food picks for your mood</title>
   <meta name="description" content="WhatToEat is a fast, funny food picker that helps you decide what to eat with daily vibes, smart rerolls, share cards, and chaotic meal energy." />
-  <meta name="theme-color" content="#111111" />
+  <meta name="theme-color" content="#ff6b2c" />
   <meta name="application-name" content="WhatToEat" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -20,15 +20,15 @@
   <meta name="twitter:description" content="Funny food picks for your mood, your wallet, and your current chaos." />
   <meta name="twitter:image" content="social-preview.png?v=launch-prep-real" />
   <meta property="og:type" content="website" />
-  <link rel="manifest" href="manifest.json?v=launch-prep-real" />
-  <link rel="apple-touch-icon" href="icons/icon-192.png?v=launch-prep-real" />
-  <link rel="stylesheet" href="style.css?v=launch-prep-real" />
+  <link rel="manifest" href="manifest.json?v=pwa-fix-1" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png?v=pwa-fix-1" />
+  <link rel="stylesheet" href="style.css?v=pwa-fix-1" />
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
       <div>
-        <p class="eyebrow">Launch Prep Foundation</p>
+        <p class="eyebrow">PWA Install Fix Pass</p>
         <h1>WhatToEat</h1>
       </div>
       <button class="install-pill" id="installBtn" type="button">Install</button>
@@ -38,9 +38,9 @@
       <section class="screen active" id="homeScreen">
         <article class="hero-card">
           <div class="hero-copy">
-            <span class="live-chip">🚀 Launch prep active: install-ready polish + brand lock-in</span>
+            <span class="live-chip">🛠️ PWA fix active: install button + install help connected</span>
             <h2>Dinner should not require a board meeting.</h2>
-            <p>The fun version stays intact — now with cleaner install readiness, stronger metadata, better PWA structure, and launch-safe polish.</p>
+            <p>The fun version stays intact — now the install button gives the real Chrome prompt when available and clear Add to Home Screen steps when Chrome blocks it.</p>
             <div class="hero-actions">
               <button class="primary-btn" data-go="matchScreen">Find my food</button>
               <button class="ghost-btn" id="chaosPickBtn" type="button">Chaos pick</button>
@@ -81,10 +81,10 @@
         <section class="launch-card glass-card" id="launchPrepCard">
           <div>
             <p class="eyebrow">Launch Status</p>
-            <h3>Install-ready foundation active</h3>
-            <p>Metadata, app icons, offline fallback, and PWA basics are cleaned up so WhatToEat feels more legit on mobile.</p>
+            <h3>PWA install fix active</h3>
+            <p>Install button, PWA status button, manifest, service worker, and Android fallback instructions are connected for real-world testing.</p>
           </div>
-          <span class="launch-badge">PWA</span>
+          <button class="launch-badge" id="pwaStatusBtn" type="button">PWA</button>
         </section>
 
         <section class="personal-card glass-card" id="forYouCard">
@@ -278,6 +278,6 @@
   <canvas id="shareCanvas" width="1080" height="1350" hidden></canvas>
   <div class="toast" id="toast"></div>
 
-  <script src="script.js?v=launch-prep-real"></script>
+  <script src="script.js?v=pwa-fix-1"></script>
 </body>
 </html>

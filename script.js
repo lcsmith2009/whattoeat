@@ -7302,9 +7302,107 @@ $$('#templateStrip button').forEach(btn=>btn.addEventListener('click',()=>setTem
 $('#closeModal').addEventListener('click', () => { modalBackdrop.hidden = true; modalBackdrop.setAttribute('hidden',''); });
 $('#modalBackdrop').addEventListener('click', e => { if (e.target.id === 'modalBackdrop') { modalBackdrop.hidden = true; modalBackdrop.setAttribute('hidden',''); } });
 $('#resetBtn').addEventListener('click',()=>{localStorage.clear(); location.reload();});
-let deferredPrompt; window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;});
-$('#installBtn').addEventListener('click',async()=>{ if(deferredPrompt){deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; } else toast('Use browser menu → Add to Home screen'); });
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js?v=launch-prep-real').catch(()=>{}); }
-window.addEventListener('appinstalled',()=>{ const btn=document.getElementById('installBtn'); if(btn){btn.textContent='Installed'; btn.classList.add('ready');} toast('WhatToEat installed. Your hunger has an app now.'); });
+
+const PWA_VERSION = 'pwa-install-fix-1';
+let deferredPrompt = null;
+let installReady = false;
+
+function isStandaloneMode(){
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+function setInstallButtonState(label, ready=false){
+  const btn = document.getElementById('installBtn');
+  if(!btn) return;
+  btn.textContent = label;
+  btn.classList.toggle('ready', !!ready);
+}
+
+function installInstructionsHtml(status='Manual install may be required'){
+  const standalone = isStandaloneMode();
+  return `<div class="install-help-card">
+    <p class="eyebrow">PWA Install</p>
+    <h2>${standalone ? 'WhatToEat is already installed' : 'Install WhatToEat on Android'}</h2>
+    <p>${standalone ? 'You are viewing the app in standalone mode. Your hunger officially has an app.' : status}</p>
+    <div class="install-steps">
+      <div><span>1</span><p>Tap the Chrome menu <strong>⋮</strong> in the top right.</p></div>
+      <div><span>2</span><p>Tap <strong>Add to Home screen</strong> or <strong>Install app</strong>.</p></div>
+      <div><span>3</span><p>Confirm <strong>Install</strong>. WhatToEat will show like a normal app.</p></div>
+    </div>
+    <p class="tiny-note">Chrome only shows the native install prompt when the browser decides the app is eligible. If it blocks the prompt, these manual steps are the correct fallback.</p>
+  </div>`;
+}
+
+function openInstallHelp(message){
+  const content = document.getElementById('modalContent');
+  const modal = document.getElementById('modalBackdrop');
+  if(!content || !modal){ toast('Use Chrome menu → Add to Home screen'); return; }
+  content.innerHTML = installInstructionsHtml(message);
+  modal.hidden = false;
+  modal.removeAttribute('hidden');
+}
+
+async function handleInstallClick(){
+  if(isStandaloneMode()){
+    setInstallButtonState('Installed', true);
+    toast('Already installed');
+    openInstallHelp('Already installed. Open from your home screen anytime.');
+    return;
+  }
+  if(deferredPrompt){
+    const promptEvent = deferredPrompt;
+    deferredPrompt = null;
+    promptEvent.prompt();
+    const choice = await promptEvent.userChoice.catch(() => ({ outcome: 'dismissed' }));
+    if(choice.outcome === 'accepted'){
+      setInstallButtonState('Installing…', true);
+      toast('Installing WhatToEat');
+    } else {
+      setInstallButtonState('Install', false);
+      openInstallHelp('Install prompt was dismissed. You can still install manually.');
+    }
+    return;
+  }
+  openInstallHelp('Chrome did not provide the native install prompt yet, so use the manual Add to Home screen path.');
+}
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  installReady = true;
+  setInstallButtonState('Install', true);
+  toast('WhatToEat is install-ready');
+});
+
+const installButton = document.getElementById('installBtn');
+if(installButton) installButton.addEventListener('click', handleInstallClick);
+const pwaStatusButton = document.getElementById('pwaStatusBtn');
+if(pwaStatusButton) pwaStatusButton.addEventListener('click', handleInstallClick);
+const launchPrepCard = document.getElementById('launchPrepCard');
+if(launchPrepCard) launchPrepCard.addEventListener('click', e => {
+  if(e.target.closest('button')) return;
+  openInstallHelp(installReady ? 'Native install prompt is ready. Tap Install at the top.' : 'PWA basics are active. If Chrome does not show an install prompt, use manual install.');
+});
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js?v=' + PWA_VERSION, { scope: '/' })
+      .then(reg => {
+        reg.update?.();
+        console.log('WhatToEat service worker registered', reg.scope);
+      })
+      .catch(err => {
+        console.warn('WhatToEat service worker failed', err);
+      });
+  });
+}
+
+if(isStandaloneMode()) setInstallButtonState('Installed', true);
+
+window.addEventListener('appinstalled',()=>{
+  setInstallButtonState('Installed', true);
+  deferredPrompt = null;
+  toast('WhatToEat installed. Your hunger has an app now.');
+});
 registerDailyVisit();
 renderHome(); renderFeed(); renderProfile(); setTemplate('share');
