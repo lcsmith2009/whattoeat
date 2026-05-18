@@ -6,6 +6,7 @@
   <title>WhatToEat — Funny food picks for your mood</title>
   <meta name="description" content="WhatToEat is a fast, funny food picker that helps you decide what to eat with daily vibes, smart rerolls, share cards, and chaotic meal energy." />
   <meta name="theme-color" content="#ff6b2c" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="application-name" content="WhatToEat" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -14,21 +15,21 @@
   <meta property="og:site_name" content="WhatToEat" />
   <meta property="og:title" content="WhatToEat" />
   <meta property="og:description" content="Stop overthinking dinner. Let WhatToEat pick the vibe — with funny share cards and daily meal chaos." />
-  <meta property="og:image" content="social-preview.png?v=launch-prep-real" />
+  <meta property="og:image" content="https://whattoeat-ten-hazel.vercel.app/social-preview.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="WhatToEat" />
   <meta name="twitter:description" content="Funny food picks for your mood, your wallet, and your current chaos." />
-  <meta name="twitter:image" content="social-preview.png?v=launch-prep-real" />
+  <meta name="twitter:image" content="https://whattoeat-ten-hazel.vercel.app/social-preview.png" />
   <meta property="og:type" content="website" />
-  <link rel="manifest" href="manifest.json?v=pwa-fix-1" />
-  <link rel="apple-touch-icon" href="icons/icon-192.png?v=pwa-fix-1" />
-  <link rel="stylesheet" href="style.css?v=pwa-fix-1" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
       <div>
-        <p class="eyebrow">PWA Install Fix Pass</p>
+        <p class="eyebrow">Strict PWA Compliance Pass</p>
         <h1>WhatToEat</h1>
       </div>
       <button class="install-pill" id="installBtn" type="button">Install</button>
@@ -38,9 +39,9 @@
       <section class="screen active" id="homeScreen">
         <article class="hero-card">
           <div class="hero-copy">
-            <span class="live-chip">🛠️ PWA fix active: install button + install help connected</span>
+            <span class="live-chip">🛠️ PWA strict pass active: manifest + service worker + install logic tightened</span>
             <h2>Dinner should not require a board meeting.</h2>
-            <p>The fun version stays intact — now the install button gives the real Chrome prompt when available and clear Add to Home Screen steps when Chrome blocks it.</p>
+            <p>The fun version stays intact — now the install button can trigger the real Chrome install prompt when Chrome marks the app eligible.</p>
             <div class="hero-actions">
               <button class="primary-btn" data-go="matchScreen">Find my food</button>
               <button class="ghost-btn" id="chaosPickBtn" type="button">Chaos pick</button>
@@ -81,8 +82,8 @@
         <section class="launch-card glass-card" id="launchPrepCard">
           <div>
             <p class="eyebrow">PWA Status</p>
-            <h3>PWA install fix active</h3>
-            <p>Install button, PWA status button, manifest, service worker, and Android fallback instructions are connected for real-world testing.</p>
+            <h3>Strict PWA check active</h3>
+            <p>Manifest, icons, service worker, offline fallback, and install event handling are tightened for Chrome PWA eligibility testing.</p>
           </div>
           <button class="launch-badge" id="pwaStatusBtn" type="button">PWA</button>
         </section>
@@ -278,6 +279,6 @@
   <canvas id="shareCanvas" width="1080" height="1350" hidden></canvas>
   <div class="toast" id="toast"></div>
 
-  <script src="script.js?v=pwa-fix-1"></script>
+  <script src="/script.js"></script>
 </body>
 </html>

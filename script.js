@@ -7304,7 +7304,7 @@ $('#modalBackdrop').addEventListener('click', e => { if (e.target.id === 'modalB
 $('#resetBtn').addEventListener('click',()=>{localStorage.clear(); location.reload();});
 
 
-const PWA_VERSION = 'pwa-native-install-only-2';
+const PWA_VERSION = 'strict-pwa-compliance-v1';
 let deferredPrompt = null;
 let installReady = false;
 let swReady = false;
@@ -7343,7 +7343,7 @@ function updateInstallUi(){
     return;
   }
   setInstallButtonState('Install', false);
-  setPwaStatusState(swReady ? 'PWA ready' : 'Checking…', false);
+  setPwaStatusState(swReady ? 'PWA checked' : 'Checking…', false);
 }
 
 async function handleInstallClick(){
@@ -7353,7 +7353,7 @@ async function handleInstallClick(){
     return;
   }
   if(!deferredPrompt){
-    toast('Install button will activate when Chrome unlocks the native prompt');
+    toast('Chrome has not marked this as installable yet. Clear site data, reload, then check menu for Install app.');
     updateInstallUi();
     return;
   }
@@ -7387,12 +7387,12 @@ if(pwaStatusButton) pwaStatusButton.addEventListener('click', handleInstallClick
 const launchPrepCard = document.getElementById('launchPrepCard');
 if(launchPrepCard) launchPrepCard.addEventListener('click', e => {
   if(e.target.closest('button')) return;
-  toast(deferredPrompt ? 'Native install is ready' : 'PWA is active. Chrome has not unlocked the native prompt yet.');
+  toast(deferredPrompt ? 'Native install is ready' : 'Strict PWA files are active. Chrome still controls install eligibility.');
 });
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js?v=' + PWA_VERSION, { scope: '/' })
+    navigator.serviceWorker.register('/sw.js', { scope: '/' })
       .then(reg => {
         swReady = true;
         reg.update?.();

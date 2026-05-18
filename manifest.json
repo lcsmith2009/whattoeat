@@ -1,12 +1,16 @@
 {
-  "name": "WhatToEat",
+  "name": "WhatToEat - Funny Food Picker",
   "short_name": "WhatToEat",
-  "description": "A fast, funny food picker with daily vibes, smart rerolls, share cards, and chaotic meal energy.",
+  "description": "A fast, funny food picker with daily modes, smart rerolls, share cards, and chaotic meal energy.",
   "id": "/",
-  "start_url": "/",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
-  "orientation": "portrait",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "portrait-primary",
   "background_color": "#0b0b0d",
   "theme_color": "#ff6b2c",
   "categories": [
@@ -14,18 +18,33 @@
     "lifestyle",
     "entertainment"
   ],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
   "icons": [
     {
       "src": "/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "screenshots": [
@@ -33,7 +52,8 @@
       "src": "/social-preview.png",
       "sizes": "1200x630",
       "type": "image/png",
-      "form_factor": "wide"
+      "form_factor": "wide",
+      "label": "WhatToEat app preview"
     }
   ],
   "prefer_related_applications": false
