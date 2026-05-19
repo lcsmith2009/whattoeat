@@ -21,15 +21,15 @@
   <meta name="twitter:description" content="Funny food picks for your mood, your wallet, and your current chaos." />
   <meta name="twitter:image" content="https://whattoeat-ten-hazel.vercel.app/social-preview.png" />
   <meta property="og:type" content="website" />
-  <link rel="manifest" href="/manifest.json?v=pwa-reset-20260518" />
+  <link rel="manifest" href="/manifest.json?v=consumer-polish-20260519" />
   <link rel="apple-touch-icon" href="/icons/icon-192.png" />
-  <link rel="stylesheet" href="/style.css?v=pwa-reset-20260518" />
+  <link rel="stylesheet" href="/style.css?v=consumer-polish-20260519" />
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
       <div>
-        <p class="eyebrow">PWA Cache Reset Build</p>
+        <p class="eyebrow">Consumer Polish Build</p>
         <h1>WhatToEat</h1>
       </div>
       <button class="install-pill" id="installBtn" type="button">Install</button>
@@ -39,9 +39,9 @@
       <section class="screen active" id="homeScreen">
         <article class="hero-card">
           <div class="hero-copy">
-            <span class="live-chip">🧹 PWA reset active: old service workers + stale caches will be cleared</span>
+            <span class="live-chip">🍽️ Real food vibes, fewer dinner debates</span>
             <h2>Dinner should not require a board meeting.</h2>
-            <p>The fun version stays intact — this build forces a clean PWA reset so Chrome can re-check install eligibility from fresh files.</p>
+            <p>Pick a mood, hit chaos, or scroll the feed. WhatToEat gives you quick meal ideas without turning dinner into a whole meeting.</p>
             <div class="hero-actions">
               <button class="primary-btn" data-go="matchScreen">Find my food</button>
               <button class="ghost-btn" id="chaosPickBtn" type="button">Chaos pick</button>
@@ -79,7 +79,7 @@
           <button class="primary-btn compact" id="todayModePickBtn" type="button">Pick from today’s mode</button>
         </section>
 
-        <section class="launch-card glass-card" id="launchPrepCard">
+        <section class="launch-card glass-card app-dev-only" id="launchPrepCard" hidden>
           <div>
             <p class="eyebrow">PWA Status</p>
             <h3>PWA cache reset active</h3>
@@ -279,6 +279,6 @@
   <canvas id="shareCanvas" width="1080" height="1350" hidden></canvas>
   <div class="toast" id="toast"></div>
 
-  <script src="/script.js?v=pwa-reset-20260518"></script>
+  <script src="/script.js?v=consumer-polish-20260519"></script>
 </body>
 </html>

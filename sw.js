@@ -1,4 +1,4 @@
-const CACHE_NAME = 'whattoeat-pwa-reset-20260518-v1';
+const CACHE_NAME = 'whattoeat-consumer-polish-20260519-v1';
 const APP_SHELL = [
   '/',
   '/index.html',

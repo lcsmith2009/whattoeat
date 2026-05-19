@@ -6752,6 +6752,52 @@ const meals = [
   }
 ];
 
+// Consumer Polish Pass: assign better, category-aware images so cards never look blank or fake-repeated.
+function getBetterPhotoClass(meal){
+  const text = `${meal.name || ''} ${meal.category || ''} ${meal.emoji || ''}`.toLowerCase();
+  const checks = [
+    ['photo-mac', ['mac', 'cheese']],
+    ['photo-alfredo', ['alfredo', 'creamy pasta']],
+    ['photo-pork', ['pork chop', 'smothered pork']],
+    ['photo-meatloaf', ['meatloaf']],
+    ['photo-roast', ['pot roast', 'roast', 'oxtail', 'beef']],
+    ['photo-soup', ['dumpling', 'soup', 'stew', 'gumbo', 'chili']],
+    ['photo-potato', ['potato']],
+    ['photo-rice', ['rice', 'bowl', 'beans']],
+    ['photo-ramen', ['ramen', 'noodle', 'pho']],
+    ['photo-pizza', ['pizza', 'flatbread']],
+    ['photo-wings', ['wing', 'tender', 'nugget']],
+    ['photo-tacos', ['taco', 'quesadilla', 'burrito', 'fajita']],
+    ['photo-burger', ['burger', 'slider']],
+    ['photo-sandwich', ['sandwich', 'sub', 'melt', 'grilled cheese', 'toastie']],
+    ['photo-nachos', ['nacho', 'chips']],
+    ['photo-breakfast', ['egg', 'breakfast', 'omelet', 'bacon', 'sausage']],
+    ['photo-pancakes', ['pancake', 'waffle', 'french toast']],
+    ['photo-sushi', ['sushi', 'roll']],
+    ['photo-shrimp', ['shrimp', 'grits']],
+    ['photo-seafood', ['fish', 'salmon', 'catfish', 'crab', 'seafood', 'tuna']],
+    ['photo-salad', ['salad', 'veggie']],
+    ['photo-wrap', ['wrap']],
+    ['photo-smoothie', ['smoothie', 'yogurt', 'oats']],
+    ['photo-dessert', ['cake', 'cookie', 'brownie', 'ice cream', 'dessert']],
+    ['photo-charcuterie', ['charcuterie', 'snack board', 'board']],
+    ['photo-stirfry', ['stir fry', 'stir-fry', 'fried rice']],
+    ['photo-chicken', ['chicken']],
+    ['photo-toast', ['toast', 'peanut butter']],
+    ['photo-cereal', ['cereal']]
+  ];
+  for(const [cls, words] of checks){
+    if(words.some(w => text.includes(w))) return cls;
+  }
+  if(text.includes('comfort')) return 'photo-roast';
+  if(text.includes('healthy')) return 'photo-salad';
+  if(text.includes('late') || text.includes('chaos')) return 'photo-wings';
+  if(text.includes('broke') || text.includes('struggle')) return 'photo-ramen';
+  return 'photo-generic';
+}
+meals.forEach(meal => { meal.photo = getBetterPhotoClass(meal); });
+
+
 const dailyVibes = [
   ['Comfort food with main-character seasoning','The day was loud. Your plate should be easy, warm, and a little dramatic.'],
   ['Struggle meal, but make it legendary','Cheap does not mean sad. It means resourceful with seasoning.'],
@@ -7065,7 +7111,7 @@ function smartPick(){
 
   const result = $('#smartResult');
   result.classList.remove('result-pop');
-  result.innerHTML = `<div class="glass-card result-header"><p class="eyebrow">Smart pick #${state.rerollCount}</p><p class="tiny-note">Launch prep: fun Phase 3 feel preserved, with cleaner mobile/PWA foundation.</p></div>${mealCard(chosen,true)}<button class="ghost-btn full" onclick="smartPick()">Reroll, I deserve options</button>`;
+  result.innerHTML = `<div class="glass-card result-header"><p class="eyebrow">Smart pick #${state.rerollCount}</p><p class="tiny-note">Fresh picks, better pictures, and less dinner drama.</p></div>${mealCard(chosen,true)}<button class="ghost-btn full" onclick="smartPick()">Reroll, I deserve options</button>`;
   requestAnimationFrame(()=>result.classList.add('result-pop'));
   toast(`${chosen.name} picked for your ${mood} mood`);
 }
@@ -7087,7 +7133,7 @@ function openShare(id, template=state.selectedTemplate || 'share'){
   state.lastMeal = meal;
   const t = viralTemplates[template] || viralTemplates.share;
   const copyText = `WhatToEat ${t.label}: ${meal.emoji} ${meal.name}\n${t.prompt(meal)}\nhttps://whattoeat-ten-hazel.vercel.app/`;
-  $('#modalContent').innerHTML = `<div class="share-card-preview dynamic-${template}"><div><p class="eyebrow">${t.emoji} ${t.label}</p><h2>${meal.emoji} ${meal.name}</h2></div><p>${t.prompt(meal)}</p><p class="tiny-note">Launch prep polish — built for screenshots, stories, installs, and group chats.</p></div><div class="template-strip modal-template-strip">${Object.entries(viralTemplates).map(([key,val])=>`<button data-template="${key}" class="${key===template?'active':''}">${val.emoji} ${val.label.split(' ')[0]}</button>`).join('')}</div><button class="primary-btn full" id="copyShareBtn">Copy share text</button><button class="ghost-btn full" onclick="downloadShareCard(${meal.id},'${template}')">Download ${t.label.toLowerCase()}</button><button class="ghost-btn full" onclick="openRoastMode()">Roast this pick</button>`;
+  $('#modalContent').innerHTML = `<div class="share-card-preview dynamic-${template}"><div><p class="eyebrow">${t.emoji} ${t.label}</p><h2>${meal.emoji} ${meal.name}</h2></div><p>${t.prompt(meal)}</p><p class="tiny-note">Built for screenshots, stories, and group chats.</p></div><div class="template-strip modal-template-strip">${Object.entries(viralTemplates).map(([key,val])=>`<button data-template="${key}" class="${key===template?'active':''}">${val.emoji} ${val.label.split(' ')[0]}</button>`).join('')}</div><button class="primary-btn full" id="copyShareBtn">Copy share text</button><button class="ghost-btn full" onclick="downloadShareCard(${meal.id},'${template}')">Download ${t.label.toLowerCase()}</button><button class="ghost-btn full" onclick="openRoastMode()">Roast this pick</button>`;
   modalBackdrop.hidden = false; modalBackdrop.removeAttribute('hidden');
   setTimeout(()=>{
     $('#copyShareBtn').onclick=()=>{navigator.clipboard?.writeText(copyText); toast('Share text copied');};
@@ -7396,7 +7442,7 @@ async function handleInstallClick(){
     return;
   }
   if(!deferredPrompt){
-    toast('PWA reset is active. Reload once, then check Chrome menu for Install app. If it still says Add to Home screen, Chrome has not approved install yet.');
+    toast('Install is ready when Chrome allows it. You can still add WhatToEat to your home screen.');
     updateInstallUi();
     return;
   }
@@ -7429,7 +7475,7 @@ if(pwaStatusButton) pwaStatusButton.addEventListener('click', handleInstallClick
 const launchPrepCard = document.getElementById('launchPrepCard');
 if(launchPrepCard) launchPrepCard.addEventListener('click', e => {
   if(e.target.closest('button')) return;
-  toast(deferredPrompt ? 'Native install is ready' : 'PWA reset files are active. Chrome will re-check install eligibility after the reset.');
+  toast(deferredPrompt ? 'Install is ready.' : 'WhatToEat is already running like an app on this phone.');
 });
 
 window.addEventListener('appinstalled',()=>{
@@ -7445,7 +7491,7 @@ window.addEventListener('load', async () => {
     await registerFreshServiceWorker();
     if(sessionStorage.getItem('whattoeat_pwa_reset_reload') === 'yes'){
       sessionStorage.removeItem('whattoeat_pwa_reset_reload');
-      toast('PWA cache reset complete. Reload once more if Chrome still shows Add to Home screen.');
+      toast('WhatToEat is ready.');
     }
   }
 });
