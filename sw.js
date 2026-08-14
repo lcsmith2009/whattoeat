@@ -1,4 +1,4 @@
-const CACHE_NAME = 'whattoeat-foundation-20260814-v4';
+const CACHE_NAME = 'whattoeat-foundation-20260814-v5';
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -7,7 +7,7 @@ const APP_SHELL = [
   '/foundation-bootstrap.js',
   '/pwa-foundation.js',
   '/script.js',
-  '/manifest.webmanifest',
+  '/app.webmanifest',
   '/icon-192.png',
   '/icon-512.png',
   '/offline.html'
