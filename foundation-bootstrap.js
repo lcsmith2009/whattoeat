@@ -41,6 +41,26 @@
   sessionStorage.removeItem('whattoeat_pwa_reset_reload');
 
   document.addEventListener('DOMContentLoaded', () => {
+    // Reconcile persisted meal references after the main bundle has loaded.
+    // This protects Saved/Profile if a future catalog update removes a meal.
+    if (typeof meals !== 'undefined' && typeof state !== 'undefined' && Array.isArray(meals)) {
+      const validMealIds = new Set(meals.map(meal => meal.id));
+      const cleanedSaved = [...new Set(state.saved.filter(id => validMealIds.has(id)))];
+      const cleanedHistory = state.history
+        .filter(item => item && typeof item === 'object' && validMealIds.has(item.id))
+        .slice(0, 20);
+
+      if (cleanedSaved.length !== state.saved.length) {
+        state.saved = cleanedSaved;
+        localStorage.setItem('wte_saved', JSON.stringify(cleanedSaved));
+      }
+
+      if (cleanedHistory.length !== state.history.length) {
+        state.history = cleanedHistory;
+        localStorage.setItem('wte_history', JSON.stringify(cleanedHistory));
+      }
+    }
+
     const backdrop = document.getElementById('modalBackdrop');
     const modal = backdrop?.querySelector('.modal-card');
     const closeButton = document.getElementById('closeModal');
