@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#ff6b2c">
   <title>WhatToEat 2.0A PWA Diagnostic</title>
-  <link rel="manifest" href="/app.webmanifest?v=2.0a-pwa-test-2">
+  <link rel="manifest" href="/app.webmanifest?v=2.0a-pwa-test-3">
   <link rel="icon" href="/icon-192.png">
   <style>
     body{margin:0;min-height:100vh;background:#0b0b0d;color:#fff8ed;font:16px system-ui,sans-serif;padding:24px;box-sizing:border-box}
     main{max-width:620px;margin:0 auto}
     h1{margin:.25rem 0 1rem;font-size:2rem}p{line-height:1.5;color:#d8ccbf}button{font:inherit;font-weight:800;padding:14px 18px;border:0;border-radius:14px;background:#ff6b2c;color:white}
-    .panel{margin-top:18px;padding:14px;border:1px solid #ffffff22;border-radius:14px;background:#ffffff08}
+    button.engaged{background:#237a3b}.panel{margin-top:18px;padding:14px;border:1px solid #ffffff22;border-radius:14px;background:#ffffff08}
     .row{display:flex;justify-content:space-between;gap:18px;padding:8px 0;border-bottom:1px solid #ffffff12}.row:last-child{border-bottom:0}
     .label{color:#d8ccbf}.value{font-weight:800;text-align:right;word-break:break-word}.pass{color:#9cffb2}.fail{color:#ff9c9c}.wait{color:#ffd37a}
     code{font-family:ui-monospace,monospace;font-size:.9em}
@@ -30,6 +30,7 @@
 <script>
 const summary=document.getElementById('summary');
 const details=document.getElementById('details');
+const tapButton=document.getElementById('tap');
 let promptSeen=false;
 let engagement=false;
 const results={};
@@ -37,6 +38,7 @@ const results={};
 function row(label,value,state=''){
   return `<div class="row"><span class="label">${label}</span><span class="value ${state}">${value}</span></div>`;
 }
+function iconState(ok){return ok===true?'pass':ok===false?'fail':'wait';}
 function render(){
   details.innerHTML=''
     +row('Secure context',String(results.secure),results.secure?'pass':'fail')
@@ -44,6 +46,8 @@ function render(){
     +row('Manifest HTTP',results.manifestHttp||'checking…',results.manifestHttp===200?'pass':results.manifestHttp?'fail':'wait')
     +row('Manifest type',results.manifestType||'checking…',results.manifestType?.includes('manifest')?'pass':results.manifestType?'fail':'wait')
     +row('Manifest name',results.manifestName||'checking…',results.manifestName?'pass':'wait')
+    +row('192 icon',results.icon192||'checking…',iconState(results.icon192ok))
+    +row('512 icon',results.icon512||'checking…',iconState(results.icon512ok))
     +row('Service worker API',String(results.swApi),results.swApi?'pass':'fail')
     +row('SW registration',results.swRegistration||'checking…',results.swRegistration==='ready'?'pass':results.swRegistration==='failed'?'fail':'wait')
     +row('SW controller',String(results.swController),results.swController?'pass':'wait')
@@ -51,16 +55,32 @@ function render(){
     +row('Engagement tap',engagement?'done':'not yet',engagement?'pass':'wait')
     +row('Origin',location.origin);
 
+  const iconsHealthy=results.icon192ok===true && results.icon512ok===true;
   if(!results.secure) summary.innerHTML='<strong class="fail">FAIL:</strong> Not a secure context.';
   else if(results.manifestHttp && results.manifestHttp!==200) summary.innerHTML='<strong class="fail">FAIL:</strong> Manifest request failed.';
+  else if(results.icon192ok===false || results.icon512ok===false) summary.innerHTML='<strong class="fail">FAIL:</strong> One or more PWA icons failed to load or decode.';
   else if(results.swRegistration==='failed') summary.innerHTML='<strong class="fail">FAIL:</strong> Service worker registration failed.';
   else if(results.swRegistration==='ready' && results.manifestHttp===200 && !results.swController) summary.innerHTML='<strong class="wait">WAIT:</strong> Service worker is registered but not controlling this page yet. Refresh once.';
   else if(promptSeen) summary.innerHTML='<strong class="pass">PASS:</strong> Chrome fired <code>beforeinstallprompt</code>. This preview is installable.';
-  else if(results.swController && results.manifestHttp===200) summary.innerHTML='<strong class="wait">CORE PWA OK:</strong> Manifest and service worker are healthy. Chrome has not fired the install prompt yet.';
+  else if(results.swController && results.manifestHttp===200 && iconsHealthy) summary.innerHTML='<strong class="wait">CORE PWA OK:</strong> Manifest, icons, and service worker are healthy. Chrome has not fired the install prompt yet.';
   else summary.textContent='Running checks…';
 }
 
-document.getElementById('tap').addEventListener('click',()=>{engagement=true;render();});
+function checkImage(src,expected){
+  return new Promise(resolve=>{
+    const img=new Image();
+    img.onload=()=>resolve({ok:img.naturalWidth===expected&&img.naturalHeight===expected,label:`${img.naturalWidth}×${img.naturalHeight} decoded`});
+    img.onerror=()=>resolve({ok:false,label:'load/decode failed'});
+    img.src=`${src}?diag=${Date.now()}`;
+  });
+}
+
+tapButton.addEventListener('click',()=>{
+  engagement=true;
+  tapButton.textContent='Engagement confirmed ✓';
+  tapButton.classList.add('engaged');
+  render();
+});
 window.addEventListener('beforeinstallprompt',e=>{promptSeen=true;e.preventDefault();render();});
 window.addEventListener('appinstalled',()=>{summary.innerHTML='<strong class="pass">PASS:</strong> App installed.';});
 
@@ -72,11 +92,16 @@ window.addEventListener('appinstalled',()=>{summary.innerHTML='<strong class="pa
   render();
 
   try{
-    const m=await fetch('/app.webmanifest?diag=2',{cache:'no-store'});
+    const m=await fetch('/app.webmanifest?diag=3',{cache:'no-store'});
     results.manifestHttp=m.status;
     results.manifestType=m.headers.get('content-type')||'(none)';
     if(m.ok){const j=await m.json();results.manifestName=j.name||'(missing)';}
   }catch(err){results.manifestHttp='network error';results.manifestType=err.message;}
+  render();
+
+  const [i192,i512]=await Promise.all([checkImage('/icon-192.png',192),checkImage('/icon-512.png',512)]);
+  results.icon192=i192.label;results.icon192ok=i192.ok;
+  results.icon512=i512.label;results.icon512ok=i512.ok;
   render();
 
   if(!results.swApi){results.swRegistration='failed';render();return;}
