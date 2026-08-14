@@ -39,4 +39,69 @@
   // delete caches, or redirect through the old pwaReset URL.
   localStorage.setItem('whattoeat_pwa_reset_20260518_done', 'yes');
   sessionStorage.removeItem('whattoeat_pwa_reset_reload');
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const backdrop = document.getElementById('modalBackdrop');
+    const modal = backdrop?.querySelector('.modal-card');
+    const closeButton = document.getElementById('closeModal');
+    if (!backdrop || !modal || !closeButton) return;
+
+    let previouslyFocused = null;
+
+    const focusableSelector = [
+      'button:not([disabled])',
+      '[href]',
+      'input:not([disabled])',
+      'select:not([disabled])',
+      'textarea:not([disabled])',
+      '[tabindex]:not([tabindex="-1"])'
+    ].join(',');
+
+    const isOpen = () => !backdrop.hidden && !backdrop.hasAttribute('hidden');
+
+    const closeModalAccessibly = () => {
+      closeButton.click();
+      if (previouslyFocused instanceof HTMLElement) {
+        previouslyFocused.focus();
+      }
+    };
+
+    const observer = new MutationObserver(() => {
+      if (isOpen()) {
+        if (document.activeElement && !modal.contains(document.activeElement)) {
+          previouslyFocused = document.activeElement;
+        }
+        window.requestAnimationFrame(() => closeButton.focus());
+      }
+    });
+
+    observer.observe(backdrop, { attributes: true, attributeFilter: ['hidden'] });
+
+    document.addEventListener('keydown', event => {
+      if (!isOpen()) return;
+
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeModalAccessibly();
+        return;
+      }
+
+      if (event.key !== 'Tab') return;
+
+      const focusable = [...modal.querySelectorAll(focusableSelector)]
+        .filter(element => element instanceof HTMLElement && !element.hidden);
+      if (!focusable.length) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
+  });
 })();
