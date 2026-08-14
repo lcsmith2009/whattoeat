@@ -1,4 +1,4 @@
-const CACHE_NAME = 'whattoeat-consumer-polish-20260519-v1';
+const CACHE_NAME = 'whattoeat-foundation-20260814-v1';
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -7,8 +7,6 @@ const APP_SHELL = [
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
   '/offline.html'
 ];
 
