@@ -1,0 +1,11 @@
+/* WhatToEat 2.0A mobile regression guard */
+#smartPickBtn{
+  margin-bottom:calc(118px + env(safe-area-inset-bottom));
+  scroll-margin-bottom:calc(150px + env(safe-area-inset-bottom));
+}
+
+@media (max-width:390px){
+  #smartPickBtn{
+    margin-bottom:calc(128px + env(safe-area-inset-bottom));
+  }
+}
