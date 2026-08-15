@@ -61,6 +61,23 @@
       }
     }
 
+    // Chaos Pick switches into the Pick screen and go() intentionally scrolls
+    // that screen to the top. On mobile that leaves the generated result far
+    // below the questionnaire. Keep the existing picker logic untouched, then
+    // follow any rendered Chaos result so the chosen meal stays in view.
+    const smartResult = document.getElementById('smartResult');
+    if (smartResult) {
+      const scrollToChaosResult = () => {
+        if (!smartResult.textContent?.includes('Chaos pick #')) return;
+        window.requestAnimationFrame(() => {
+          smartResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      };
+
+      const chaosObserver = new MutationObserver(scrollToChaosResult);
+      chaosObserver.observe(smartResult, { childList: true, subtree: true });
+    }
+
     const backdrop = document.getElementById('modalBackdrop');
     const modal = backdrop?.querySelector('.modal-card');
     const closeButton = document.getElementById('closeModal');
