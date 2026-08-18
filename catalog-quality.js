@@ -13,6 +13,7 @@
       await loadScript('/meal-image-manifest.js?v=2.0b-images-1');
       await loadScript('/meal-image-manifest-validate.js?v=2.0b-images-1');
       await loadScript('/meal-images.js?v=2.0b-images-2');
+      await loadScript('/meal-image-card-sync.js?v=2.0b-images-1');
       await loadScript('/meal-image-health.js?v=2.0b-images-1');
       await loadScript('/meal-image-production.js?v=2.0b-images-2');
     } catch (error) {
