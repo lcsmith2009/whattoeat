@@ -12,35 +12,36 @@
 
 /* WhatToEat 2.0B — Core Experience: Home hierarchy pass */
 #homeScreen .hero-card{
-  padding:26px 22px 24px;
+  padding:22px 20px 20px;
   min-height:auto;
 }
 
 #homeScreen .hero-card h2{
-  font-size:clamp(2.2rem,10vw,3.05rem);
-  line-height:.92;
-  margin:18px 0 12px;
-  max-width:9ch;
+  font-size:clamp(2rem,8.2vw,2.65rem);
+  line-height:1;
+  margin:14px 0 10px;
+  max-width:16ch;
 }
 
 #homeScreen .hero-card p{
-  max-width:34ch;
-  font-size:1rem;
-  margin-bottom:22px;
+  max-width:36ch;
+  font-size:.96rem;
+  line-height:1.42;
+  margin-bottom:18px;
 }
 
 #homeScreen .hero-actions{
   display:grid;
   grid-template-columns:1fr;
-  gap:10px;
+  gap:9px;
 }
 
 #homeScreen .hero-actions .primary-btn,
 #homeScreen .hero-actions .ghost-btn{
   width:100%;
-  min-height:58px;
-  border-radius:20px;
-  font-size:1.05rem;
+  min-height:54px;
+  border-radius:18px;
+  font-size:1.02rem;
 }
 
 #homeScreen .hero-actions .primary-btn{
@@ -49,7 +50,7 @@
 
 #homeScreen .hero-actions .primary-btn::after{
   content:'✨ Pick For Me';
-  font-size:1.05rem;
+  font-size:1.02rem;
 }
 
 #homeScreen #chaosPickBtn{
@@ -58,12 +59,12 @@
 
 #homeScreen #chaosPickBtn::after{
   content:'🎲 Chaos Pick';
-  font-size:1.05rem;
+  font-size:1.02rem;
 }
 
 #homeScreen .hero-food-stack{
-  height:82px;
-  margin-top:16px;
+  height:64px;
+  margin-top:12px;
 }
 
 /* Supporting dashboard modules move out of the opening decision path. */
@@ -75,11 +76,11 @@
 }
 
 #homeScreen .social-lab-section{
-  margin-top:14px;
+  margin-top:10px;
 }
 
 #homeScreen .social-lab-section .section-heading{
-  margin:0 2px 10px;
+  margin:0 2px 8px;
 }
 
 #homeScreen .social-lab-section .section-heading .eyebrow{
@@ -87,14 +88,10 @@
 }
 
 #homeScreen .social-lab-section .section-heading h3{
-  font-size:.82rem;
+  font-size:0;
   color:var(--muted);
   letter-spacing:.02em;
   font-weight:800;
-}
-
-#homeScreen .social-lab-section .section-heading h3{
-  font-size:0;
 }
 
 #homeScreen .social-lab-section .section-heading h3::after{
@@ -105,7 +102,7 @@
 #homeScreen .social-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:10px;
+  gap:9px;
 }
 
 #homeScreen #roastModeBtn{
@@ -113,9 +110,9 @@
 }
 
 #homeScreen .social-tool-card{
-  min-height:88px;
-  border-radius:20px;
-  padding:14px 12px;
+  min-height:82px;
+  border-radius:18px;
+  padding:12px;
   background:rgba(255,255,255,.055);
   border:1px solid var(--border);
   text-align:left;
@@ -123,13 +120,13 @@
 
 #homeScreen .social-tool-card > span{
   display:block;
-  font-size:1.35rem;
-  margin-bottom:6px;
+  font-size:1.25rem;
+  margin-bottom:5px;
 }
 
 #homeScreen .social-tool-card strong{
   display:block;
-  font-size:.98rem;
+  font-size:.95rem;
 }
 
 #homeScreen .social-tool-card small{
@@ -138,14 +135,28 @@
 
 @media (max-width:390px){
   #homeScreen .hero-card{
-    padding:22px 18px 20px;
+    padding:18px 16px 17px;
   }
 
   #homeScreen .hero-card h2{
-    font-size:2.35rem;
+    font-size:2rem;
+    max-width:17ch;
+    margin-top:12px;
+  }
+
+  #homeScreen .hero-card p{
+    font-size:.92rem;
+    line-height:1.38;
+    margin-bottom:15px;
+  }
+
+  #homeScreen .hero-actions .primary-btn,
+  #homeScreen .hero-actions .ghost-btn{
+    min-height:52px;
   }
 
   #homeScreen .hero-food-stack{
-    height:72px;
+    height:54px;
+    margin-top:10px;
   }
 }
