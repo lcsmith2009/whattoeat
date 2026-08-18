@@ -1,12 +1,7 @@
 (() => {
   // 2.0B meal-image architecture.
-  // Exact production assets will live at /meal-images/<id>.webp and be added
-  // to this manifest as they are approved. Until then, resolve every rendered
-  // card from the actual meal identity rather than trusting stale legacy
-  // meal.photo values.
-  const exactMealImages = Object.freeze({
-    // Example future entry: 1: '/meal-images/1.webp'
-  });
+  // Approved 1:1 production assets are declared in meal-image-manifest.js.
+  const exactMealImages = window.WTE_MEAL_IMAGES || Object.freeze({});
 
   const style = document.createElement('style');
   style.textContent = `
@@ -65,11 +60,8 @@
     if (/(wing|fried chicken|bbq chicken|jerk chicken|chicken plate|tender)/.test(name)) return 'wings';
     if (/(salad|veggie|vegetable|quinoa)/.test(name)) return 'salad';
 
-    // Seafood plates and broad mixed plates are too easy to misrepresent with
-    // one generic stock image. Until their exact assets exist, show an honest
-    // branded meal identity card instead of the wrong food.
-    if (/(salmon|fish|shrimp|seafood|tuna|catfish|tilapia|crab|lobster|mussel|calamari)/.test(name)) return 'meal-fallback';
-    if (/(rice|bowl|curry|stew|chili|soup|pot roast|meatloaf|pork chop|steak|plate)/.test(name)) return 'meal-fallback';
+    // Ambiguous plates are intentionally not represented by a misleading
+    // category stock image while their exact asset is still pending.
     return 'meal-fallback';
   };
 
@@ -111,8 +103,26 @@
     scope.querySelectorAll?.('.food-card').forEach(decorateCard);
   };
 
+  const getCoverage = () => {
+    const catalog = typeof meals !== 'undefined' && Array.isArray(meals) ? meals : [];
+    const exactIds = new Set(Object.keys(exactMealImages).map(Number));
+    const covered = catalog.filter(meal => exactIds.has(Number(meal.id)));
+    const missing = catalog.filter(meal => !exactIds.has(Number(meal.id)));
+    return {
+      total: catalog.length,
+      exact: covered.length,
+      missing: missing.length,
+      percent: catalog.length ? Math.round((covered.length / catalog.length) * 1000) / 10 : 0,
+      covered: covered.map(meal => ({ id: meal.id, name: meal.name })),
+      missingMeals: missing.map(meal => ({ id: meal.id, name: meal.name }))
+    };
+  };
+
   const start = () => {
     decorateAll(document);
+    window.getWhatToEatMealImageCoverage = getCoverage;
+    window.WTE_MEAL_IMAGE_COVERAGE = getCoverage();
+
     const observer = new MutationObserver(records => {
       records.forEach(record => {
         record.addedNodes.forEach(node => {
