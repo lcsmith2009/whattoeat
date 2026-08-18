@@ -83,21 +83,6 @@
   const hasPlaceholderSteps = meal => Array.isArray(meal.steps) && meal.steps.length === 4 &&
     placeholderStepSets.some(set => set.every((step, index) => meal.steps[index] === step));
 
-  const photoForMeal = meal => {
-    const name = String(meal.name || '').toLowerCase();
-    const category = String(meal.category || '').toLowerCase();
-    if (name.includes('pizza') && name.includes('wing')) return 'pizza-wings';
-    if (/(pizza|flatbread)/.test(name)) return 'pizza';
-    if (/(ramen|noodle|pho)/.test(name)) return 'ramen';
-    if (/(taco|quesadilla|burrito|wrap|nacho)/.test(name)) return name.includes('nacho') ? 'nachos' : 'taco';
-    if (/(pasta|alfredo|spaghetti|mac|lasagna)/.test(name)) return 'pasta';
-    if (/(burger|sandwich|melt|slider|hot dog)/.test(name)) return 'burger';
-    if (/(breakfast|pancake|waffle|egg|omelet|biscuit|toast|cereal)/.test(name) || category.includes('breakfast')) return 'breakfast';
-    if (/(salad|salmon|fish|shrimp|seafood|tuna|veggie|vegetable)/.test(name)) return 'salad';
-    if (/(wing|fried chicken|bbq chicken|jerk chicken|chicken plate)/.test(name)) return 'wings';
-    return null;
-  };
-
   const descriptionForMeal = meal => {
     const name = String(meal.name || 'This pick');
     const lower = name.toLowerCase();
@@ -139,9 +124,6 @@
     const patch = curated[meal.name];
     if (patch) Object.assign(meal, patch);
 
-    const betterPhoto = photoForMeal(meal);
-    if (betterPhoto) meal.photo = betterPhoto;
-
     if (!patch && genericDescriptions.has(meal.desc)) meal.desc = descriptionForMeal(meal);
 
     if (typeof meal.why === 'string' && meal.why.startsWith('This variation keeps')) {
@@ -159,4 +141,12 @@
   if (typeof renderHome === 'function') renderHome();
   if (typeof renderFeed === 'function') renderFeed();
   if (typeof renderProfile === 'function') renderProfile();
+
+  // Image resolution is intentionally separate from catalog copy/recipe
+  // cleanup. It decorates every rendered card from the actual meal identity
+  // and provides the insertion point for the 1:1 image library.
+  const imageResolver = document.createElement('script');
+  imageResolver.src = '/meal-images.js?v=2.0b-images-1';
+  imageResolver.defer = true;
+  document.body.appendChild(imageResolver);
 })();
