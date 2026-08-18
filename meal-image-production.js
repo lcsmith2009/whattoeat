@@ -29,24 +29,37 @@
   const getPending = () => catalog().filter(meal => pendingReason(meal));
   const getMissing = getPending;
 
+  // Batch identity is permanently tied to catalog order. Completing Batch 1
+  // must never cause the original Batch 2 meals to be relabeled as Batch 1.
   const getBatches = () => {
-    const pending = getPending();
+    const allMeals = catalog();
     const batches = [];
-    for (let i = 0; i < pending.length; i += BATCH_SIZE) {
-      const items = pending.slice(i, i + BATCH_SIZE);
+    for (let i = 0; i < allMeals.length; i += BATCH_SIZE) {
+      const mealsInBatch = allMeals.slice(i, i + BATCH_SIZE);
+      const items = mealsInBatch.map(meal => ({
+        id: meal.id,
+        name: meal.name,
+        reason: pendingReason(meal),
+        target: `/meal-images/${meal.id}.webp`,
+        prompt: productionPrompt(meal)
+      }));
+      const pendingItems = items.filter(item => item.reason);
       batches.push({
         number: Math.floor(i / BATCH_SIZE) + 1,
-        items: items.map(meal => ({
-          id: meal.id,
-          name: meal.name,
-          reason: pendingReason(meal),
-          target: `/meal-images/${meal.id}.webp`,
-          prompt: productionPrompt(meal)
-        }))
+        startIndex: i + 1,
+        endIndex: i + mealsInBatch.length,
+        total: items.length,
+        complete: items.length - pendingItems.length,
+        pending: pendingItems.length,
+        items,
+        pendingItems
       });
     }
     return batches;
   };
+
+  const getPendingBatches = () => getBatches().filter(batch => batch.pending > 0);
+  const getNextBatch = () => getPendingBatches()[0] || null;
 
   const copyText = async text => {
     try {
@@ -59,18 +72,27 @@
     }
   };
 
-  const batchAsText = batch => batch.items.map((item, index) =>
-    `${index + 1}. MEAL #${item.id} — ${item.name}\nSTATUS: ${item.reason.toUpperCase()}\nTARGET: ${item.target}\nPROMPT: ${item.prompt}`
-  ).join('\n\n');
+  const batchAsText = (batch, pendingOnly = true) => {
+    const source = pendingOnly ? batch.pendingItems : batch.items;
+    return source.map((item, index) => {
+      const status = item.reason ? item.reason.toUpperCase() : 'VERIFIED/MAPPED';
+      return `${index + 1}. MEAL #${item.id} — ${item.name}\nBATCH: ${batch.number}\nSTATUS: ${status}\nTARGET: ${item.target}\nPROMPT: ${item.prompt}`;
+    }).join('\n\n');
+  };
 
   const downloadManifest = () => {
+    const batches = getBatches();
+    const pendingBatches = batches.filter(batch => batch.pending > 0);
     const payload = {
       generatedAt: new Date().toISOString(),
+      batchIdentity: 'stable-catalog-order',
       batchSize: BATCH_SIZE,
       totalMeals: catalog().length,
+      totalBatches: batches.length,
       pendingImages: getPending().length,
+      pendingBatches: pendingBatches.length,
       brokenImages: (healthReport().brokenIds || []).length,
-      batches: getBatches()
+      batches
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -88,16 +110,18 @@
     const status = panel.querySelector('.wte-image-production-status');
     const next = panel.querySelector('.wte-image-production-next');
     const batches = getBatches();
+    const pendingBatches = batches.filter(batch => batch.pending > 0);
     const pending = getPending();
     const brokenCount = (healthReport().brokenIds || []).length;
+    const nextBatch = getNextBatch();
 
     if (status) {
-      status.innerHTML = `<strong style="color:#ffd36e">Production queue:</strong> ${pending.length} image${pending.length === 1 ? '' : 's'} · ${batches.length} batch${batches.length === 1 ? '' : 'es'} of up to ${BATCH_SIZE}${brokenCount ? ` · ${brokenCount} broken requeued` : ''}`;
+      status.innerHTML = `<strong style="color:#ffd36e">Production queue:</strong> ${pending.length} image${pending.length === 1 ? '' : 's'} · ${pendingBatches.length}/${batches.length} batch${batches.length === 1 ? '' : 'es'} still active${brokenCount ? ` · ${brokenCount} broken requeued` : ''}`;
     }
 
     if (next) {
-      next.textContent = batches.length ? `Copy Batch 1 (${batches[0].items.length})` : 'All images complete';
-      next.disabled = !batches.length;
+      next.textContent = nextBatch ? `Copy Batch ${nextBatch.number} (${nextBatch.pending} pending)` : 'All images complete';
+      next.disabled = !nextBatch;
     }
   };
 
@@ -118,8 +142,8 @@
       next.type = 'button';
       next.className = 'wte-image-production-next';
       next.addEventListener('click', () => {
-        const batches = getBatches();
-        if (batches.length) copyText(batchAsText(batches[0]));
+        const batch = getNextBatch();
+        if (batch) copyText(batchAsText(batch, true));
       });
 
       const all = document.createElement('button');
@@ -141,6 +165,8 @@
       getPending,
       getMissing,
       getBatches,
+      getPendingBatches,
+      getNextBatch,
       batchAsText
     });
 
