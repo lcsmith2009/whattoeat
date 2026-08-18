@@ -1,4 +1,4 @@
-const CACHE_NAME = 'whattoeat-2.0b-20260818-v12';
+const CACHE_NAME = 'whattoeat-2.0b-20260818-v13';
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -11,6 +11,7 @@ const APP_SHELL = [
   '/catalog-quality-core.js',
   '/meal-image-manifest.js',
   '/meal-images.js',
+  '/meal-image-production.js',
   '/app.webmanifest',
   '/icon-192.png',
   '/icon-512.png',
