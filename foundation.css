@@ -9,3 +9,143 @@
     margin-bottom:calc(128px + env(safe-area-inset-bottom));
   }
 }
+
+/* WhatToEat 2.0B — Core Experience: Home hierarchy pass */
+#homeScreen .hero-card{
+  padding:26px 22px 24px;
+  min-height:auto;
+}
+
+#homeScreen .hero-card h2{
+  font-size:clamp(2.2rem,10vw,3.05rem);
+  line-height:.92;
+  margin:18px 0 12px;
+  max-width:9ch;
+}
+
+#homeScreen .hero-card p{
+  max-width:34ch;
+  font-size:1rem;
+  margin-bottom:22px;
+}
+
+#homeScreen .hero-actions{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:10px;
+}
+
+#homeScreen .hero-actions .primary-btn,
+#homeScreen .hero-actions .ghost-btn{
+  width:100%;
+  min-height:58px;
+  border-radius:20px;
+  font-size:1.05rem;
+}
+
+#homeScreen .hero-actions .primary-btn{
+  font-size:0;
+}
+
+#homeScreen .hero-actions .primary-btn::after{
+  content:'✨ Pick For Me';
+  font-size:1.05rem;
+}
+
+#homeScreen #chaosPickBtn{
+  font-size:0;
+}
+
+#homeScreen #chaosPickBtn::after{
+  content:'🎲 Chaos Pick';
+  font-size:1.05rem;
+}
+
+#homeScreen .hero-food-stack{
+  height:82px;
+  margin-top:16px;
+}
+
+/* Supporting dashboard modules move out of the opening decision path. */
+#homeScreen > .daily-card,
+#homeScreen > .today-mode-card,
+#homeScreen > .personal-card,
+#homeScreen > .section-block:not(.social-lab-section){
+  display:none;
+}
+
+#homeScreen .social-lab-section{
+  margin-top:14px;
+}
+
+#homeScreen .social-lab-section .section-heading{
+  margin:0 2px 10px;
+}
+
+#homeScreen .social-lab-section .section-heading .eyebrow{
+  display:none;
+}
+
+#homeScreen .social-lab-section .section-heading h3{
+  font-size:.82rem;
+  color:var(--muted);
+  letter-spacing:.02em;
+  font-weight:800;
+}
+
+#homeScreen .social-lab-section .section-heading h3{
+  font-size:0;
+}
+
+#homeScreen .social-lab-section .section-heading h3::after{
+  content:'Deciding with people?';
+  font-size:.82rem;
+}
+
+#homeScreen .social-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+#homeScreen #roastModeBtn{
+  display:none;
+}
+
+#homeScreen .social-tool-card{
+  min-height:88px;
+  border-radius:20px;
+  padding:14px 12px;
+  background:rgba(255,255,255,.055);
+  border:1px solid var(--border);
+  text-align:left;
+}
+
+#homeScreen .social-tool-card > span{
+  display:block;
+  font-size:1.35rem;
+  margin-bottom:6px;
+}
+
+#homeScreen .social-tool-card strong{
+  display:block;
+  font-size:.98rem;
+}
+
+#homeScreen .social-tool-card small{
+  display:none;
+}
+
+@media (max-width:390px){
+  #homeScreen .hero-card{
+    padding:22px 18px 20px;
+  }
+
+  #homeScreen .hero-card h2{
+    font-size:2.35rem;
+  }
+
+  #homeScreen .hero-food-stack{
+    height:72px;
+  }
+}
