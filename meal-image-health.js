@@ -10,6 +10,29 @@
     });
   };
 
+  const getReport = () => {
+    const entries = Object.keys(manifest()).map(Number);
+    const verified = entries.filter(id => states.get(id) === 'verified');
+    const broken = entries.filter(id => states.get(id) === 'broken');
+    const checking = entries.filter(id => !states.has(id) || states.get(id) === 'checking');
+    return {
+      mapped: entries.length,
+      verified: verified.length,
+      broken: broken.length,
+      checking: checking.length,
+      verifiedIds: verified,
+      brokenIds: broken,
+      checkingIds: checking
+    };
+  };
+
+  const publishReport = () => {
+    const report = getReport();
+    window.WTE_MEAL_IMAGE_HEALTH_REPORT = report;
+    window.dispatchEvent(new CustomEvent('wte:meal-image-health-updated', { detail: report }));
+    return report;
+  };
+
   const refreshAuditRows = () => {
     const panel = document.querySelector('.wte-image-audit');
     if (!panel) return;
@@ -55,20 +78,24 @@
     }
   };
 
+  const updateState = (mealId, state) => {
+    states.set(Number(mealId), state);
+    refreshAuditRows();
+    publishReport();
+  };
+
   const verifyOne = (mealId, src) => new Promise(resolve => {
-    states.set(Number(mealId), 'checking');
+    updateState(mealId, 'checking');
     const probe = new Image();
     probe.onload = () => {
       const valid = probe.naturalWidth > 0 && probe.naturalHeight > 0;
-      states.set(Number(mealId), valid ? 'verified' : 'broken');
+      updateState(mealId, valid ? 'verified' : 'broken');
       if (!valid) fallbackCardImage(mealId);
-      refreshAuditRows();
       resolve(valid);
     };
     probe.onerror = () => {
-      states.set(Number(mealId), 'broken');
+      updateState(mealId, 'broken');
       fallbackCardImage(mealId);
-      refreshAuditRows();
       resolve(false);
     };
     probe.src = src;
@@ -77,23 +104,7 @@
   const verifyAll = async () => {
     const entries = Object.entries(manifest());
     await Promise.all(entries.map(([mealId, src]) => verifyOne(mealId, src)));
-    return getReport();
-  };
-
-  const getReport = () => {
-    const entries = Object.keys(manifest()).map(Number);
-    const verified = entries.filter(id => states.get(id) === 'verified');
-    const broken = entries.filter(id => states.get(id) === 'broken');
-    const checking = entries.filter(id => !states.has(id) || states.get(id) === 'checking');
-    return {
-      mapped: entries.length,
-      verified: verified.length,
-      broken: broken.length,
-      checking: checking.length,
-      verifiedIds: verified,
-      brokenIds: broken,
-      checkingIds: checking
-    };
+    return publishReport();
   };
 
   const start = () => {
@@ -102,9 +113,8 @@
     const observer = new MutationObserver(() => refreshAuditRows());
     observer.observe(document.body, { childList: true, subtree: true });
 
-    verifyAll().then(report => {
-      window.WTE_MEAL_IMAGE_HEALTH_REPORT = report;
-    });
+    publishReport();
+    verifyAll();
   };
 
   if (document.readyState === 'loading') {
