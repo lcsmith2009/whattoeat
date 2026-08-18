@@ -1,6 +1,7 @@
 (() => {
   const catalog = () => (typeof meals !== 'undefined' && Array.isArray(meals) ? meals : []);
   const exactImages = () => window.WTE_MEAL_IMAGES || {};
+  const healthReport = () => window.WTE_MEAL_IMAGE_HEALTH_REPORT || { brokenIds: [] };
   const BATCH_SIZE = 20;
 
   const productionPrompt = meal => {
@@ -17,21 +18,28 @@
     ].join(' ');
   };
 
-  const getMissing = () => {
+  const pendingReason = meal => {
     const exact = exactImages();
-    return catalog().filter(meal => !exact[meal.id]);
+    const broken = new Set((healthReport().brokenIds || []).map(Number));
+    if (!exact[meal.id]) return 'missing';
+    if (broken.has(Number(meal.id))) return 'broken';
+    return null;
   };
 
+  const getPending = () => catalog().filter(meal => pendingReason(meal));
+  const getMissing = getPending;
+
   const getBatches = () => {
-    const missing = getMissing();
+    const pending = getPending();
     const batches = [];
-    for (let i = 0; i < missing.length; i += BATCH_SIZE) {
-      const items = missing.slice(i, i + BATCH_SIZE);
+    for (let i = 0; i < pending.length; i += BATCH_SIZE) {
+      const items = pending.slice(i, i + BATCH_SIZE);
       batches.push({
         number: Math.floor(i / BATCH_SIZE) + 1,
         items: items.map(meal => ({
           id: meal.id,
           name: meal.name,
+          reason: pendingReason(meal),
           target: `/meal-images/${meal.id}.webp`,
           prompt: productionPrompt(meal)
         }))
@@ -52,7 +60,7 @@
   };
 
   const batchAsText = batch => batch.items.map((item, index) =>
-    `${index + 1}. MEAL #${item.id} — ${item.name}\nTARGET: ${item.target}\nPROMPT: ${item.prompt}`
+    `${index + 1}. MEAL #${item.id} — ${item.name}\nSTATUS: ${item.reason.toUpperCase()}\nTARGET: ${item.target}\nPROMPT: ${item.prompt}`
   ).join('\n\n');
 
   const downloadManifest = () => {
@@ -60,7 +68,8 @@
       generatedAt: new Date().toISOString(),
       batchSize: BATCH_SIZE,
       totalMeals: catalog().length,
-      missingImages: getMissing().length,
+      pendingImages: getPending().length,
+      brokenImages: (healthReport().brokenIds || []).length,
       batches: getBatches()
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
@@ -74,48 +83,76 @@
     URL.revokeObjectURL(url);
   };
 
+  const refreshProductionUI = panel => {
+    if (!panel) return;
+    const status = panel.querySelector('.wte-image-production-status');
+    const next = panel.querySelector('.wte-image-production-next');
+    const batches = getBatches();
+    const pending = getPending();
+    const brokenCount = (healthReport().brokenIds || []).length;
+
+    if (status) {
+      status.innerHTML = `<strong style="color:#ffd36e">Production queue:</strong> ${pending.length} image${pending.length === 1 ? '' : 's'} · ${batches.length} batch${batches.length === 1 ? '' : 'es'} of up to ${BATCH_SIZE}${brokenCount ? ` · ${brokenCount} broken requeued` : ''}`;
+    }
+
+    if (next) {
+      next.textContent = batches.length ? `Copy Batch 1 (${batches[0].items.length})` : 'All images complete';
+      next.disabled = !batches.length;
+    }
+  };
+
   const enhanceAudit = panel => {
-    if (!panel || panel.dataset.productionReady === 'true') return;
-    panel.dataset.productionReady = 'true';
+    if (!panel) return;
     const toolbar = panel.querySelector('.wte-image-audit-toolbar');
     if (!toolbar) return;
 
-    const batches = getBatches();
-    const status = document.createElement('p');
-    status.style.margin = '0 0 12px';
-    status.innerHTML = `<strong style="color:#ffd36e">Production queue:</strong> ${getMissing().length} images · ${batches.length} batch${batches.length === 1 ? '' : 'es'} of up to ${BATCH_SIZE}`;
-    toolbar.before(status);
+    if (panel.dataset.productionReady !== 'true') {
+      panel.dataset.productionReady = 'true';
 
-    const next = document.createElement('button');
-    next.type = 'button';
-    next.textContent = batches.length ? `Copy Batch 1 (${batches[0].items.length})` : 'All images complete';
-    next.disabled = !batches.length;
-    next.addEventListener('click', () => batches.length && copyText(batchAsText(batches[0])));
+      const status = document.createElement('p');
+      status.className = 'wte-image-production-status';
+      status.style.margin = '0 0 12px';
+      toolbar.before(status);
 
-    const all = document.createElement('button');
-    all.type = 'button';
-    all.textContent = 'Download Prompt Manifest';
-    all.addEventListener('click', downloadManifest);
+      const next = document.createElement('button');
+      next.type = 'button';
+      next.className = 'wte-image-production-next';
+      next.addEventListener('click', () => {
+        const batches = getBatches();
+        if (batches.length) copyText(batchAsText(batches[0]));
+      });
 
-    toolbar.append(next, all);
+      const all = document.createElement('button');
+      all.type = 'button';
+      all.textContent = 'Download Prompt Manifest';
+      all.addEventListener('click', downloadManifest);
+
+      toolbar.append(next, all);
+    }
+
+    refreshProductionUI(panel);
   };
 
   const start = () => {
     window.WTE_IMAGE_PRODUCTION = Object.freeze({
       batchSize: BATCH_SIZE,
       promptForMeal: productionPrompt,
+      pendingReason,
+      getPending,
       getMissing,
       getBatches,
       batchAsText
     });
 
-    const existing = document.querySelector('.wte-image-audit');
-    if (existing) enhanceAudit(existing);
-
-    const observer = new MutationObserver(() => {
+    const refresh = () => {
       const panel = document.querySelector('.wte-image-audit');
       if (panel) enhanceAudit(panel);
-    });
+    };
+
+    refresh();
+    window.addEventListener('wte:meal-image-health-updated', refresh);
+
+    const observer = new MutationObserver(refresh);
     observer.observe(document.body, { childList: true, subtree: true });
   };
 
