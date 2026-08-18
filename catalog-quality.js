@@ -11,6 +11,17 @@
     'This is financial creativity with a side of hunger.'
   ]);
 
+  const placeholderStepSets = [
+    ['Gather the main ingredient', 'Heat it up or cook it through', 'Add sauce or seasoning', 'Plate it like you meant it'],
+    ['Use what you have', 'Warm it up', 'Add flavor aggressively', 'Eat before overthinking it'],
+    ['Start with the base', 'Add protein or toppings', 'Make it saucy', 'Finish with crunch or heat']
+  ];
+
+  const hasPlaceholderSteps = meal => {
+    if (!Array.isArray(meal.steps) || meal.steps.length !== 4) return false;
+    return placeholderStepSets.some(set => set.every((step, index) => meal.steps[index] === step));
+  };
+
   const photoForMeal = meal => {
     const name = String(meal.name || '').toLowerCase();
     const category = String(meal.category || '').toLowerCase();
@@ -41,12 +52,31 @@
     return `${name} gets food on the table with enough flavor and personality to make the decision feel worth it.`;
   };
 
+  const universalSteps = meal => {
+    const name = String(meal.name || 'this meal');
+    const energy = meal.energy === 'low' ? 'Keep this as low-effort as possible and use ready-to-eat or pre-cooked ingredients where they make sense.' : 'Get the ingredients and any needed pan, bowl, or appliance ready before you start.';
+    return [
+      energy,
+      `Prepare the main parts of ${name} in the simplest way that fits the ingredients—cook what needs cooking and leave ready-to-eat items cold.`,
+      'Combine everything, then add seasoning, sauce, or toppings a little at a time so you can taste as you go.',
+      'Serve once the cooked components are safely done and the texture tastes right; add something fresh, crunchy, or spicy if it needs a finish.'
+    ];
+  };
+
   meals.forEach(meal => {
     const betterPhoto = photoForMeal(meal);
     if (betterPhoto) meal.photo = betterPhoto;
 
     if (genericDescriptions.has(meal.desc)) {
       meal.desc = descriptionForMeal(meal);
+    }
+
+    // Final safety net: no meal should ever expose the legacy placeholder
+    // recipe copy. Category-specific fixes may already have replaced it; if
+    // one slipped through, use a universal flow that does not assume every
+    // meal needs heating or cooking.
+    if (hasPlaceholderSteps(meal)) {
+      meal.steps = universalSteps(meal);
     }
   });
 
