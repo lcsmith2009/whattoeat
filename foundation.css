@@ -1,12 +1,12 @@
 /* WhatToEat 2.0A mobile regression guard */
 #smartPickBtn{
-  margin-bottom:calc(118px + env(safe-area-inset-bottom));
-  scroll-margin-bottom:calc(150px + env(safe-area-inset-bottom));
+  margin-bottom:16px;
+  scroll-margin-bottom:96px;
 }
 
 @media (max-width:390px){
   #smartPickBtn{
-    margin-bottom:calc(128px + env(safe-area-inset-bottom));
+    margin-bottom:14px;
   }
 }
 
@@ -251,6 +251,29 @@
 #smartResult > .ghost-btn.full::after{
   content:'Nah. Give me something else.';
   font-size:.96rem;
+}
+
+/* 2.0B trims legacy 2.0A bottom-nav safety spacers on Pick only. */
+#matchScreen{
+  padding-bottom:calc(88px + env(safe-area-inset-bottom))!important;
+}
+
+#matchScreen .result-zone,
+#smartResult{
+  margin-bottom:10px!important;
+}
+
+.app-shell:has(#matchScreen.active){
+  padding-bottom:calc(88px + env(safe-area-inset-bottom))!important;
+}
+
+#app:has(#matchScreen.active),
+main:has(#matchScreen.active){
+  padding-bottom:0!important;
+}
+
+body:has(#matchScreen.active)::after{
+  height:0!important;
 }
 
 @media (max-width:390px){
