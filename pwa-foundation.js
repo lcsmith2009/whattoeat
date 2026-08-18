@@ -1,4 +1,6 @@
 (() => {
+  window.__WTE_PWA_FOUNDATION_ACTIVE__ = true;
+
   let installPrompt = null;
   const installBtn = document.getElementById('installBtn');
 
@@ -7,6 +9,17 @@
 
   const isAndroid = () => /Android/i.test(navigator.userAgent || '');
   const isIOS = () => /iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+
+  // script.js still contains the May 2026 PWA registration path. During
+  // Foundation, normalize that obsolete versioned registration to the one
+  // canonical service-worker URL so two lifecycle generations cannot compete.
+  if ('serviceWorker' in navigator && typeof navigator.serviceWorker.register === 'function') {
+    const nativeRegister = navigator.serviceWorker.register.bind(navigator.serviceWorker);
+    navigator.serviceWorker.register = (scriptURL, options) => {
+      const normalizedURL = String(scriptURL).startsWith('/sw.js?v=20260518') ? '/sw.js' : scriptURL;
+      return nativeRegister(normalizedURL, options);
+    };
+  }
 
   const showInstallHelp = () => {
     const existing = document.getElementById('pwaInstallHelp');
@@ -73,12 +86,13 @@
   };
 
   let cleanButton = null;
+  let refresh = () => {};
 
   if (installBtn) {
     cleanButton = installBtn.cloneNode(true);
     installBtn.replaceWith(cleanButton);
 
-    const refresh = () => {
+    refresh = () => {
       if (isStandalone()) {
         cleanButton.textContent = 'Installed';
         cleanButton.disabled = true;
@@ -95,7 +109,10 @@
       }
     };
 
-    cleanButton.addEventListener('click', async () => {
+    cleanButton.addEventListener('click', async event => {
+      // This handler is intentionally registered before the legacy bundle.
+      // Keep the old May 2026 click handler from running a second install flow.
+      event.stopImmediatePropagation();
       if (isStandalone()) return;
 
       if (!installPrompt) {
@@ -113,14 +130,18 @@
 
     window.addEventListener('beforeinstallprompt', event => {
       event.preventDefault();
+      // pwa-foundation.js is the single owner of Chrome's install event.
+      // Prevent the obsolete anonymous listener in script.js from caching it too.
+      event.stopImmediatePropagation();
       installPrompt = event;
       refresh();
-    });
+    }, { capture: true });
 
-    window.addEventListener('appinstalled', () => {
+    window.addEventListener('appinstalled', event => {
+      event.stopImmediatePropagation();
       installPrompt = null;
       refresh();
-    });
+    }, { capture: true });
 
     refresh();
   }
@@ -132,6 +153,10 @@
       await registration.update();
     } catch (error) {
       console.warn('WhatToEat service worker registration failed.', error);
+    } finally {
+      // The legacy bundle may briefly rewrite the Install button during its own
+      // load callback. Reassert the Foundation state after all load listeners run.
+      window.setTimeout(refresh, 0);
     }
-  });
+  }, { capture: true });
 })();
