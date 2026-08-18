@@ -43,6 +43,34 @@
       background-position:center!important;
       background-repeat:no-repeat!important;
     }
+    .wte-image-audit{
+      position:fixed;
+      inset:12px;
+      z-index:99999;
+      overflow:auto;
+      padding:18px;
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:24px;
+      background:rgba(11,10,12,.97);
+      color:#fff8ed;
+      box-shadow:0 28px 90px rgba(0,0,0,.68);
+      font-family:inherit;
+    }
+    .wte-image-audit h1{margin:0 0 6px;font-size:1.65rem;line-height:1.05}
+    .wte-image-audit p{color:#c9c2bc;line-height:1.4}
+    .wte-image-audit-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}
+    .wte-image-audit-summary div{padding:12px;border:1px solid rgba(255,255,255,.1);border-radius:16px;background:rgba(255,255,255,.05)}
+    .wte-image-audit-summary strong{display:block;font-size:1.35rem;color:#ffd36e}
+    .wte-image-audit-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+    .wte-image-audit button{padding:9px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.15);background:#252226;color:#fff;font-weight:800}
+    .wte-image-audit button.active{background:linear-gradient(135deg,#ff8a1f,#ff4d4d);border-color:transparent}
+    .wte-image-audit-list{display:grid;gap:7px}
+    .wte-image-audit-row{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.035)}
+    .wte-image-audit-row small{color:#9f9893}
+    .wte-image-audit-status{font-size:.72rem;font-weight:900;padding:5px 8px;border-radius:999px;background:rgba(255,255,255,.08)}
+    .wte-image-audit-row.exact .wte-image-audit-status{background:rgba(57,214,134,.14);color:#8df0b7}
+    .wte-image-audit-close{position:sticky;top:0;float:right;z-index:2}
+    @media(max-width:520px){.wte-image-audit-summary{grid-template-columns:1fr 1fr}.wte-image-audit-row{grid-template-columns:38px 1fr}.wte-image-audit-status{grid-column:2;justify-self:start}}
   `;
   document.head.appendChild(style);
 
@@ -118,10 +146,62 @@
     };
   };
 
+  const renderAudit = () => {
+    if (!new URLSearchParams(location.search).has('imageAudit')) return;
+    if (document.querySelector('.wte-image-audit')) return;
+    const coverage = getCoverage();
+    const panel = document.createElement('section');
+    panel.className = 'wte-image-audit';
+    panel.innerHTML = `
+      <button class="wte-image-audit-close" type="button">Close</button>
+      <p style="margin:0 0 5px;color:#ffd36e;font-weight:900;text-transform:uppercase;letter-spacing:.12em;font-size:.72rem">Developer tool</p>
+      <h1>Meal Image Coverage</h1>
+      <p>Every exact production image is tracked by meal ID. Fallbacks are allowed during rollout, but they do not count as complete.</p>
+      <div class="wte-image-audit-summary">
+        <div><strong>${coverage.total}</strong><span>Total meals</span></div>
+        <div><strong>${coverage.exact}</strong><span>Exact images</span></div>
+        <div><strong>${coverage.missing}</strong><span>Still missing</span></div>
+        <div><strong>${coverage.percent}%</strong><span>Coverage</span></div>
+      </div>
+      <div class="wte-image-audit-toolbar">
+        <button type="button" data-audit-filter="all" class="active">All</button>
+        <button type="button" data-audit-filter="missing">Missing only</button>
+        <button type="button" data-audit-filter="exact">Exact only</button>
+      </div>
+      <div class="wte-image-audit-list"></div>
+    `;
+    document.body.appendChild(panel);
+
+    const list = panel.querySelector('.wte-image-audit-list');
+    const renderRows = filter => {
+      const catalog = typeof meals !== 'undefined' && Array.isArray(meals) ? meals : [];
+      const rows = catalog.filter(meal => {
+        const exact = Boolean(exactMealImages[meal.id]);
+        return filter === 'all' || (filter === 'exact' && exact) || (filter === 'missing' && !exact);
+      });
+      list.innerHTML = rows.map(meal => {
+        const exact = Boolean(exactMealImages[meal.id]);
+        const fallback = exact ? 'exact asset' : bucketForMeal(meal);
+        return `<div class="wte-image-audit-row ${exact ? 'exact' : ''}"><strong>#${meal.id}</strong><div><b>${meal.emoji || '🍽️'} ${meal.name}</b><br><small>${meal.category || ''} · ${fallback}</small></div><span class="wte-image-audit-status">${exact ? 'EXACT' : 'MISSING'}</span></div>`;
+      }).join('');
+    };
+
+    renderRows('all');
+    panel.querySelectorAll('[data-audit-filter]').forEach(button => {
+      button.addEventListener('click', () => {
+        panel.querySelectorAll('[data-audit-filter]').forEach(item => item.classList.remove('active'));
+        button.classList.add('active');
+        renderRows(button.dataset.auditFilter);
+      });
+    });
+    panel.querySelector('.wte-image-audit-close').addEventListener('click', () => panel.remove());
+  };
+
   const start = () => {
     decorateAll(document);
     window.getWhatToEatMealImageCoverage = getCoverage;
     window.WTE_MEAL_IMAGE_COVERAGE = getCoverage();
+    renderAudit();
 
     const observer = new MutationObserver(records => {
       records.forEach(record => {
