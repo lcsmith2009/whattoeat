@@ -1,9 +1,9 @@
 {
-  "name": "WhatToEat 2.0A Preview",
-  "short_name": "WTE 2.0A",
+  "name": "WhatToEat",
+  "short_name": "WhatToEat",
   "description": "A fast, funny food picker with daily modes, smart rerolls, share cards, and chaotic meal energy.",
   "id": "/",
-  "start_url": "/?preview=2.0a",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
