@@ -108,9 +108,53 @@
         }
       };
 
+      const placeholderStepSets = [
+        ['Gather the main ingredient', 'Heat it up or cook it through', 'Add sauce or seasoning', 'Plate it like you meant it'],
+        ['Use what you have', 'Warm it up', 'Add flavor aggressively', 'Eat before overthinking it'],
+        ['Start with the base', 'Add protein or toppings', 'Make it saucy', 'Finish with crunch or heat']
+      ];
+
+      const hasPlaceholderSteps = meal => {
+        if (!Array.isArray(meal.steps) || meal.steps.length !== 4) return false;
+        return placeholderStepSets.some(set => set.every((step, index) => meal.steps[index] === step));
+      };
+
+      const contextualSteps = meal => {
+        const name = String(meal.name || '').toLowerCase();
+        const category = String(meal.category || '').toLowerCase();
+
+        if (/(pasta|alfredo|spaghetti|mac|noodle)/.test(name)) {
+          return ['Boil the pasta or noodles until just tender, then drain.', 'Cook or warm the protein and vegetables you are using.', 'Add the sauce and seasoning, loosening with a splash of pasta water if needed.', 'Toss everything together and finish with cheese, herbs, or pepper.'];
+        }
+        if (/(taco|quesadilla|nacho|burrito|wrap)/.test(name)) {
+          return ['Cook or warm the filling and season it well.', 'Warm the tortilla, chips, or wrap so it is ready to build.', 'Add cheese, vegetables, sauce, and the cooked filling.', 'Fold, toast, or pile it up, then finish with salsa, lime, or hot sauce.'];
+        }
+        if (/(rice|bowl)/.test(name)) {
+          return ['Cook or reheat the rice or other bowl base.', 'Cook and season the main protein or vegetables.', 'Add the sauce or seasoning while everything is hot.', 'Build the bowl and finish with something fresh, crunchy, or spicy.'];
+        }
+        if (/(sandwich|burger|melt|toast|biscuit)/.test(name)) {
+          return ['Prepare and season the filling or protein.', 'Toast or warm the bread until the edges have some color.', 'Layer the filling with cheese, sauce, and any toppings you want.', 'Close it up, slice if needed, and serve while everything is hot.'];
+        }
+        if (/(soup|stew|chili)/.test(name)) {
+          return ['Cook the aromatics or vegetables until they start to soften.', 'Add the main ingredients plus broth, tomatoes, or your preferred liquid.', 'Simmer until everything is tender and the flavors come together.', 'Taste, adjust the seasoning, and finish with your favorite toppings.'];
+        }
+        if (/(egg|omelet|breakfast|pancake|waffle)/.test(name) || category.includes('breakfast')) {
+          return ['Get the main breakfast ingredients ready and heat your pan or appliance.', 'Cook the eggs, batter, or protein until done to your liking.', 'Add cheese, seasoning, fruit, syrup, or toppings while everything is warm.', 'Plate it immediately and serve before breakfast turns into lunch.'];
+        }
+        if (/(chicken|salmon|fish|shrimp|steak|pork|meatloaf|turkey)/.test(name)) {
+          return ['Season the main protein on all sides.', 'Cook it by skillet, oven, grill, or air fryer until safely cooked through.', 'Add or brush on the sauce during the final part of cooking.', 'Let it rest briefly, then serve with the easiest side that fits the plate.'];
+        }
+        return null;
+      };
+
       meals.forEach(meal => {
         const patch = curated[meal.name];
         if (patch) Object.assign(meal, patch);
+
+        if (!patch && hasPlaceholderSteps(meal)) {
+          const betterSteps = contextualSteps(meal);
+          if (betterSteps) meal.steps = betterSteps;
+        }
 
         if (typeof meal.why === 'string' && meal.why.startsWith('This variation keeps')) {
           const mood = Array.isArray(meal.mood) ? meal.mood[0] : meal.mood;
