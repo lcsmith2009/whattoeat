@@ -61,21 +61,31 @@
       }
     }
 
-    // Chaos Pick switches into the Pick screen and go() intentionally scrolls
-    // that screen to the top. On mobile that leaves the generated result far
-    // below the questionnaire. Keep the existing picker logic untouched, then
-    // follow any rendered Chaos result so the chosen meal stays in view.
+    // Smart Pick and Chaos Pick both render into the same result container.
+    // The picker questionnaire is tall enough on mobile that a freshly
+    // rendered recommendation can land below the viewport. Follow every
+    // meaningful result mutation so the food WhatToEat chose becomes the
+    // immediate focus after Pick, Reroll, or Chaos without changing picker
+    // logic or recommendation scoring.
     const smartResult = document.getElementById('smartResult');
     if (smartResult) {
-      const scrollToChaosResult = () => {
-        if (!smartResult.textContent?.includes('Chaos pick #')) return;
-        window.requestAnimationFrame(() => {
+      let resultScrollFrame = 0;
+      const scrollToRenderedResult = () => {
+        if (smartResult.hidden || !smartResult.textContent?.trim()) return;
+        window.cancelAnimationFrame(resultScrollFrame);
+        resultScrollFrame = window.requestAnimationFrame(() => {
           smartResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
       };
 
-      const chaosObserver = new MutationObserver(scrollToChaosResult);
-      chaosObserver.observe(smartResult, { childList: true, subtree: true });
+      const resultObserver = new MutationObserver(scrollToRenderedResult);
+      resultObserver.observe(smartResult, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+        attributes: true,
+        attributeFilter: ['hidden', 'class']
+      });
     }
 
     const backdrop = document.getElementById('modalBackdrop');
