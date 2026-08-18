@@ -133,6 +133,126 @@
   display:none;
 }
 
+/* WhatToEat 2.0B — Pick flow + result hierarchy */
+#matchScreen .screen-title{
+  padding-bottom:4px;
+}
+
+#matchScreen .screen-title h2{
+  font-size:1.65rem;
+}
+
+#matchScreen .question-card{
+  margin-top:10px;
+  padding:13px;
+  border-radius:22px;
+}
+
+#matchScreen .question-card h3{
+  margin:0 0 9px;
+  font-size:.94rem;
+}
+
+#matchScreen .option-grid{
+  gap:7px;
+}
+
+#matchScreen .option-grid button{
+  padding:10px 8px;
+  border-radius:15px;
+  font-size:.88rem;
+}
+
+#matchScreen #smartPickBtn{
+  min-height:56px;
+  border-radius:19px;
+  font-size:1.05rem;
+}
+
+#smartResult{
+  scroll-margin-top:84px;
+}
+
+#smartResult .result-header{
+  padding:10px 13px;
+  margin-bottom:10px;
+  border-radius:18px;
+  background:rgba(255,255,255,.045);
+  box-shadow:none;
+}
+
+#smartResult .result-header .tiny-note{
+  margin:2px 0 0;
+  color:var(--muted);
+  font-size:.78rem;
+}
+
+#smartResult .food-card.large{
+  border-radius:30px;
+  background:linear-gradient(180deg,#201817,#121214 52%);
+  box-shadow:0 26px 70px rgba(0,0,0,.42);
+}
+
+#smartResult .food-card.large .food-img{
+  height:210px;
+}
+
+#smartResult .food-card.large .food-body{
+  padding:18px;
+}
+
+#smartResult .food-card.large .tags{
+  margin-bottom:10px;
+}
+
+#smartResult .food-card.large .food-body h3{
+  font-size:1.72rem;
+  line-height:1.02;
+  margin-bottom:8px;
+}
+
+#smartResult .food-card.large .food-body p{
+  line-height:1.42;
+}
+
+#smartResult .food-card.large .food-body p strong{
+  color:var(--yellow);
+}
+
+#smartResult .food-card.large .card-actions{
+  display:grid;
+  grid-template-columns:1.25fr .9fr .9fr;
+  gap:8px;
+  margin-top:16px;
+}
+
+#smartResult .food-card.large .card-actions button{
+  min-height:48px;
+  border-radius:15px;
+}
+
+#smartResult .food-card.large .card-actions button:first-child{
+  font-size:0;
+}
+
+#smartResult .food-card.large .card-actions button:first-child::after{
+  content:'🍳 Make It';
+  font-size:.9rem;
+}
+
+#smartResult > .ghost-btn.full{
+  min-height:52px;
+  margin-top:10px;
+  font-size:0;
+  border-radius:18px;
+  background:rgba(255,255,255,.055);
+}
+
+#smartResult > .ghost-btn.full::after{
+  content:'Nah. Give me something else.';
+  font-size:.96rem;
+}
+
 @media (max-width:390px){
   #homeScreen .hero-card{
     padding:18px 16px 17px;
@@ -158,5 +278,30 @@
   #homeScreen .hero-food-stack{
     height:54px;
     margin-top:10px;
+  }
+
+  #matchScreen .screen-title h2{
+    font-size:1.48rem;
+  }
+
+  #matchScreen .question-card{
+    padding:11px;
+  }
+
+  #matchScreen .option-grid button{
+    padding:9px 7px;
+    font-size:.84rem;
+  }
+
+  #smartResult .food-card.large .food-img{
+    height:185px;
+  }
+
+  #smartResult .food-card.large .food-body h3{
+    font-size:1.55rem;
+  }
+
+  #smartResult .food-card.large .card-actions{
+    grid-template-columns:1.15fr .85fr .85fr;
   }
 }
