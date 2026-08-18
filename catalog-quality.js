@@ -26,6 +26,7 @@
     const name = String(meal.name || '').toLowerCase();
     const category = String(meal.category || '').toLowerCase();
 
+    if (name.includes('pizza') && name.includes('wing')) return 'pizza-wings';
     if (/(pizza|flatbread)/.test(name)) return 'pizza';
     if (/(ramen|noodle|pho)/.test(name)) return 'ramen';
     if (/(taco|quesadilla|burrito|wrap|nacho)/.test(name)) return name.includes('nacho') ? 'nachos' : 'taco';
@@ -71,18 +72,11 @@
       meal.desc = descriptionForMeal(meal);
     }
 
-    // Final safety net: no meal should ever expose the legacy placeholder
-    // recipe copy. Category-specific fixes may already have replaced it; if
-    // one slipped through, use a universal flow that does not assume every
-    // meal needs heating or cooking.
     if (hasPlaceholderSteps(meal)) {
       meal.steps = universalSteps(meal);
     }
   });
 
-  // The legacy bundle renders Home/Feed before this overlay runs. Refresh the
-  // rendered views once so the corrected descriptions/photos appear
-  // immediately, while keeping recommendation logic and persisted state intact.
   if (typeof renderHome === 'function') renderHome();
   if (typeof renderFeed === 'function') renderFeed();
   if (typeof renderProfile === 'function') renderProfile();
