@@ -16,6 +16,7 @@
       await loadScript('/meal-image-card-sync.js?v=2.0b-images-1');
       await loadScript('/meal-image-health.js?v=2.0b-images-1');
       await loadScript('/meal-image-production.js?v=2.0b-images-2');
+      await loadScript('/meal-image-readiness.js?v=2.0b-images-1');
     } catch (error) {
       console.error('WhatToEat 2.0B enhancement loader failed.', error);
     }
