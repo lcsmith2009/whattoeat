@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#ff6b2c">
+  <title>WhatToEat 2.0A PWA Diagnostic</title>
+  <script>
+    window.__wteInstallPromptSeen = false;
+    window.__wteInstallPromptEvent = null;
+    window.addEventListener('beforeinstallprompt', event => {
+      window.__wteInstallPromptSeen = true;
+      window.__wteInstallPromptEvent = event;
+      event.preventDefault();
+    });
+  </script>
+  <link rel="manifest" href="/app.webmanifest?v=2.0a-pwa-test-8" crossorigin="use-credentials">
+  <style>
+    body{margin:0;min-height:100vh;background:#0b0b0d;color:#fff8ed;font:16px system-ui,sans-serif;padding:24px;box-sizing:border-box}main{max-width:620px;margin:0 auto}h1{margin:.25rem 0 1rem;font-size:2rem}p{line-height:1.5;color:#d8ccbf}button{font:inherit;font-weight:800;padding:14px 18px;border:0;border-radius:14px;background:#ff6b2c;color:white}.panel{margin-top:18px;padding:14px;border:1px solid #ffffff22;border-radius:14px;background:#ffffff08}.row{display:flex;justify-content:space-between;gap:18px;padding:8px 0;border-bottom:1px solid #ffffff12}.row:last-child{border-bottom:0}.label{color:#d8ccbf}.value{font-weight:800;text-align:right;word-break:break-word;max-width:65%}.pass{color:#9cffb2}.fail{color:#ff9c9c}.wait{color:#ffd37a}
+  </style>
+</head>
+<body><main>
+  <p>WhatToEat Foundation Diagnostic</p><h1>2.0A PWA status</h1>
+  <p>This page reports what Chrome can actually see on this device.</p>
+  <button id="tap" type="button">Tap to confirm engagement</button>
+  <div class="panel" id="summary">Running checks…</div><div class="panel" id="details"></div>
+<script>
+const summary=document.getElementById('summary'),details=document.getElementById('details'),tap=document.getElementById('tap');
+let promptSeen=window.__wteInstallPromptSeen===true,engagement=false;const r={earlyPrompt:window.__wteInstallPromptSeen===true};
+const row=(l,v,s='')=>`<div class="row"><span class="label">${l}</span><span class="value ${s}">${v}</span></div>`;
+function render(){
+ const iconOK=r.icon192OK&&r.icon512OK;
+ const viewportOK=Number.isFinite(r.viewportWidth)&&r.viewportWidth>=320&&r.viewportWidth<=390;
+ const updateOK=Array.isArray(r.cacheNames)&&r.cacheNames.some(name=>name==='whattoeat-foundation-20260818-v8');
+ details.innerHTML=
+ row('Viewport',r.viewport||'checking…',viewportOK?'pass':'wait')+
+ row('SW update cache',r.cacheNames?.join(', ')||'checking…',updateOK?'pass':'wait')+
+ row('Secure context',String(r.secure),r.secure?'pass':'fail')+
+ row('Standalone',String(r.standalone),r.standalone?'pass':'wait')+
+ row('Manifest HTTP',r.manifestHttp??'checking…',r.manifestHttp===200?'pass':r.manifestHttp?'fail':'wait')+
+ row('Manifest type',r.manifestType||'checking…',r.manifestType?.includes('manifest')?'pass':r.manifestType?'fail':'wait')+
+ row('Manifest name',r.manifestName||'checking…',r.manifestName?'pass':'wait')+
+ row('Manifest ID',r.manifestId||'checking…',r.manifestId?'pass':'wait')+
+ row('Start URL',r.startUrl||'checking…',r.startUrl?'pass':'wait')+
+ row('Start URL HTTP',r.startHttp??'checking…',r.startHttp===200?'pass':r.startHttp?'fail':'wait')+
+ row('Display mode',r.display||'checking…',(['standalone','fullscreen','minimal-ui'].includes(r.display))?'pass':r.display?'fail':'wait')+
+ row('Icon A',r.icon192||'checking…',r.icon192OK?'pass':r.icon192?'fail':'wait')+
+ row('Icon B',r.icon512||'checking…',r.icon512OK?'pass':r.icon512?'fail':'wait')+
+ row('Service worker API',String(r.swApi),r.swApi?'pass':'fail')+
+ row('SW registration',r.swRegistration||'checking…',r.swRegistration==='ready'?'pass':r.swRegistration==='failed'?'fail':'wait')+
+ row('SW scope',r.swScope||'checking…',r.swScope?'pass':'wait')+
+ row('SW controller',String(r.swController),r.swController?'pass':'wait')+
+ row('SW controller script',r.swScript||'none',r.swScript?'pass':'wait')+
+ row('Early BIP capture',r.earlyPrompt?'FIRED':'not fired',r.earlyPrompt?'pass':'wait')+
+ row('beforeinstallprompt',promptSeen?'FIRED':'not fired',promptSeen?'pass':'wait')+
+ row('Engagement tap',engagement?'done':'not yet',engagement?'pass':'wait')+
+ row('Install API',r.installApi||'unavailable',r.installApi==='available'?'pass':'wait')+
+ row('User agent',r.ua||'checking…')+
+ row('Origin',location.origin);
+ if(!r.secure)summary.innerHTML='<strong class="fail">FAIL:</strong> Not a secure context.';
+ else if(r.manifestHttp&&r.manifestHttp!==200)summary.innerHTML='<strong class="fail">FAIL:</strong> Manifest request failed.';
+ else if(r.startHttp&&r.startHttp!==200)summary.innerHTML='<strong class="fail">FAIL:</strong> Manifest start URL is not returning HTTP 200.';
+ else if(r.iconsChecked&&!iconOK)summary.innerHTML='<strong class="fail">FAIL:</strong> One or more manifest icons are invalid.';
+ else if(r.swRegistration==='failed')summary.innerHTML='<strong class="fail">FAIL:</strong> Service worker registration failed.';
+ else if(updateOK&&viewportOK&&r.standalone)summary.innerHTML='<strong class="pass">FOUNDATION DEVICE PASS:</strong> Installed PWA updated to v8 and viewport is within the 320–390px regression band.';
+ else if(promptSeen)summary.innerHTML='<strong class="pass">PASS:</strong> Chrome fired the install prompt.';
+ else if(r.swController&&r.manifestHttp===200&&r.startHttp===200&&iconOK)summary.innerHTML='<strong class="pass">CORE PWA PASS:</strong> Manifest, start URL, icons, and service worker are healthy.';
+ else summary.textContent='Running checks…';
+}
+function loadIcon(src,declared){return new Promise(resolve=>{const i=new Image();i.onload=()=>resolve({text:`${i.naturalWidth}×${i.naturalHeight} decoded / declared ${declared}`,ok:`${i.naturalWidth}x${i.naturalHeight}`===declared&&i.naturalWidth>=192&&i.naturalHeight>=192});i.onerror=()=>resolve({text:'load/decode failed',ok:false});i.src=src+(src.includes('?')?'&':'?')+'diag='+Date.now();});}
+async function readCaches(){if('caches'in window){try{r.cacheNames=await caches.keys();}catch(e){r.cacheNames=[];}}render();}
+tap.addEventListener('click',()=>{engagement=true;tap.textContent='Engagement confirmed ✓';tap.disabled=true;render();});
+window.addEventListener('beforeinstallprompt',e=>{promptSeen=true;r.earlyPrompt=window.__wteInstallPromptSeen===true;e.preventDefault();render();});
+(async()=>{
+ r.viewportWidth=window.innerWidth;r.viewport=`${window.innerWidth}×${window.innerHeight} CSS px`;
+ r.secure=isSecureContext;r.standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;r.swApi='serviceWorker'in navigator;r.swController=!!navigator.serviceWorker?.controller;r.swScript=navigator.serviceWorker?.controller?.scriptURL||'';r.ua=navigator.userAgent;r.installApi=typeof navigator.install==='function'?'available':'unavailable';await readCaches();
+ try{const m=await fetch('/app.webmanifest?diag='+Date.now(),{cache:'no-store',credentials:'include'});r.manifestHttp=m.status;r.manifestType=m.headers.get('content-type')||'(none)';if(m.ok){const j=await m.json();r.manifestName=j.name||'(missing)';r.manifestId=j.id||'(missing)';r.startUrl=j.start_url||'(missing)';r.display=j.display||'(missing)';if(j.start_url){try{const s=await fetch(j.start_url,{cache:'no-store',credentials:'include'});r.startHttp=s.status;}catch(e){r.startHttp='network error';}}const a=j.icons?.find(x=>x.sizes==='192x192')||j.icons?.[0],b=j.icons?.find(x=>x.sizes==='512x512')||j.icons?.[1];if(a&&b){const ia=await loadIcon(a.src,a.sizes),ib=await loadIcon(b.src,b.sizes);r.icon192=ia.text;r.icon192OK=ia.ok;r.icon512=ib.text;r.icon512OK=ib.ok;r.iconsChecked=true;}else{r.icon192='missing';r.icon512='missing';r.iconsChecked=true;}}}catch(e){r.manifestHttp='network error';}render();
+ if(!r.swApi){r.swRegistration='failed';render();return;}try{const reg=await navigator.serviceWorker.register('/sw.js',{scope:'/'});await navigator.serviceWorker.ready;r.swRegistration='ready';r.swScope=reg.scope;r.swController=!!navigator.serviceWorker.controller;r.swScript=navigator.serviceWorker?.controller?.scriptURL||'';await reg.update();setTimeout(readCaches,1200);}catch(e){r.swRegistration='failed';}render();
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{r.swController=!!navigator.serviceWorker.controller;r.swScript=navigator.serviceWorker?.controller?.scriptURL||'';readCaches();});
+})();
+</script></main></body></html>
