@@ -1,0 +1,96 @@
+name: Import approved meal images
+
+on:
+  push:
+    branches:
+      - work/whattoeat-2.0b-core-experience
+    paths:
+      - meal-image-sources.json
+
+permissions:
+  contents: write
+
+concurrency:
+  group: whattoeat-meal-image-import
+  cancel-in-progress: false
+
+jobs:
+  import-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout development branch
+        uses: actions/checkout@v4
+        with:
+          ref: work/whattoeat-2.0b-core-experience
+          fetch-depth: 0
+
+      - name: Install image tooling
+        run: python -m pip install --disable-pip-version-check pillow
+
+      - name: Download and normalize approved assets
+        shell: python
+        run: |
+          import io
+          import json
+          import pathlib
+          import urllib.request
+          from PIL import Image, ImageOps
+
+          root = pathlib.Path('.')
+          source_file = root / 'meal-image-sources.json'
+          output_dir = root / 'meal-images'
+          output_dir.mkdir(exist_ok=True)
+
+          payload = json.loads(source_file.read_text(encoding='utf-8'))
+          items = payload.get('items', [])
+          approved = [item for item in items if item.get('status') == 'approved']
+          if not approved:
+              raise SystemExit('No approved meal image sources found.')
+
+          seen_ids = set()
+          for item in approved:
+              meal_id = int(item['id'])
+              if meal_id < 1 or meal_id > 320 or meal_id in seen_ids:
+                  raise SystemExit(f'Invalid or duplicate meal id: {meal_id}')
+              seen_ids.add(meal_id)
+
+              source_url = str(item['sourceUrl'])
+              source_page = str(item['sourcePage'])
+              if not source_url.startswith('https://images.pexels.com/'):
+                  raise SystemExit(f'Unapproved image host for meal {meal_id}: {source_url}')
+              if not source_page.startswith('https://www.pexels.com/photo/'):
+                  raise SystemExit(f'Unapproved provenance page for meal {meal_id}: {source_page}')
+
+              request = urllib.request.Request(
+                  source_url,
+                  headers={'User-Agent': 'WhatToEat/2.0B meal-image importer'}
+              )
+              with urllib.request.urlopen(request, timeout=45) as response:
+                  raw = response.read()
+
+              with Image.open(io.BytesIO(raw)) as source:
+                  image = ImageOps.exif_transpose(source).convert('RGB')
+                  side = min(image.size)
+                  left = (image.width - side) // 2
+                  top = (image.height - side) // 2
+                  image = image.crop((left, top, left + side, top + side))
+                  image = image.resize((1024, 1024), Image.Resampling.LANCZOS)
+                  output = output_dir / f'{meal_id}.webp'
+                  image.save(output, 'WEBP', quality=88, method=6)
+
+              with Image.open(output) as check:
+                  if check.format != 'WEBP' or check.size != (1024, 1024):
+                      raise SystemExit(f'Normalization failed for meal {meal_id}')
+              print(f'Imported meal {meal_id}: {item.get("name", "")}'.strip())
+
+      - name: Commit generated WebP assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add meal-images/*.webp
+          if git diff --cached --quiet; then
+            echo "No image changes to commit."
+            exit 0
+          fi
+          git commit -m "2.0B: import approved exact meal images"
+          git push origin HEAD:work/whattoeat-2.0b-core-experience
