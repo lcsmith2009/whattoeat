@@ -10,5 +10,12 @@
 // Keeping this separate from the renderer lets image batches land without
 // rewriting meal-image resolution logic.
 window.WTE_MEAL_IMAGES = Object.freeze({
-  // 1: '/meal-images/1.webp',
+  1: '/meal-images/1.webp',
+  2: '/meal-images/2.webp',
+  4: '/meal-images/4.webp',
+  5: '/meal-images/5.webp',
+  7: '/meal-images/7.webp',
+  8: '/meal-images/8.webp',
+  10: '/meal-images/10.webp',
+  16: '/meal-images/16.webp',
 });
