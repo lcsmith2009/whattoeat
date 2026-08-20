@@ -17,6 +17,11 @@
       why: 'You picked comfort and chef energy, so a proper smothered plate earns the extra effort.',
       steps: ['Season and sear the pork chops until browned, then set aside.', 'Cook sliced onions in the same pan until soft.', 'Stir in a little flour, then slowly add broth to make gravy.', 'Return the chops to the pan and simmer gently until cooked through and tender.']
     },
+    'Meatloaf Plate': {
+      desc: 'Savory glazed meatloaf with the kind of sides that make a weeknight plate feel like somebody actually cared.',
+      why: 'You wanted classic comfort and have enough energy for a proper sit-down meal, so meatloaf earns the assignment.',
+      steps: ['Mix ground meat with egg, breadcrumbs, seasoning, and a little onion without overworking it.', 'Shape into a loaf and brush the top with ketchup or your preferred glaze.', 'Bake until browned and safely cooked through in the center.', 'Rest briefly, slice, and serve with mashed potatoes, vegetables, or another comfort-food side.']
+    },
     'Pot Roast Bowl': {
       desc: 'Fork-tender beef, soft vegetables, and gravy over something starchy enough to catch every drop.',
       why: 'This is full-volume comfort food for a day when a little patience can turn into a serious plate.',
@@ -37,6 +42,16 @@
       why: 'Low energy plus comfort mood is exactly when grilled cheese and soup starts making excellent decisions for you.',
       steps: ['Butter the outside of two bread slices and add cheese between them.', 'Cook in a skillet over medium-low heat until both sides are golden and the cheese melts.', 'Warm tomato soup on the stove or in the microwave.', 'Cut the sandwich and serve immediately for maximum dipping efficiency.']
     },
+    'Shepherd’s Pie Bowl': {
+      desc: 'Savory beef and vegetables under creamy mashed potatoes, scooped into a bowl where every bite gets a little of everything.',
+      why: 'This gives you full shepherd’s-pie comfort without needing the presentation to behave perfectly.',
+      steps: ['Brown the ground meat with onion and season it well.', 'Stir in vegetables, a little broth or gravy, and simmer until thickened.', 'Prepare or reheat mashed potatoes until hot and creamy.', 'Spoon the meat mixture into bowls and pile the mashed potatoes over the top.']
+    },
+    'Chicken Pot Pie Skillet': {
+      desc: 'Creamy chicken and vegetables under a golden biscuit or pastry top, minus the ceremony of building a perfect pie.',
+      why: 'You want cozy pot-pie energy, and the skillet route gets there with less fuss and more crispy topping per decision.',
+      steps: ['Cook onion and vegetables until they begin to soften.', 'Stir in cooked chicken, seasoning, and a creamy broth-based sauce.', 'Top the skillet with biscuit dough, puff pastry, or another easy crust option.', 'Bake until the filling bubbles and the topping is deeply golden.']
+    },
     'Turkey Meatball Pasta': {
       desc: 'Saucy pasta with tender turkey meatballs when you want comfort without going completely off the rails.',
       why: 'This keeps the cozy pasta energy while giving you a straightforward protein-forward dinner.',
@@ -47,10 +62,35 @@
       why: 'You wanted something familiar and satisfying without turning dinner into a culinary group project.',
       steps: ['Season the chicken and cook it until nearly done by grill, skillet, oven, or air fryer.', 'Brush generously with barbecue sauce during the final few minutes.', 'Let the chicken rest briefly so the juices stay put.', 'Serve with an easy side like rice, corn, slaw, or vegetables.']
     },
+    'Creamy Tuscan Chicken': {
+      desc: 'Golden chicken in a creamy garlic sauce with spinach and tomatoes doing just enough to make the plate feel fancy.',
+      why: 'You picked comfort with treat-yourself energy, and Tuscan chicken gives you restaurant vibes without requiring restaurant plans.',
+      steps: ['Season and sear the chicken until browned, then set it aside.', 'Cook garlic and tomatoes in the same pan, then add cream and Parmesan.', 'Stir in spinach until just wilted.', 'Return the chicken to the sauce and simmer gently until cooked through.']
+    },
+    'Cheesy Broccoli Rice Bake': {
+      desc: 'Creamy rice, tender broccoli, and a browned cheesy top that turns inexpensive ingredients into legitimate comfort food.',
+      why: 'This is budget-friendly casserole energy: filling, cheesy, and built from ingredients that know how to stretch.',
+      steps: ['Cook or reheat the rice and steam the broccoli until just tender.', 'Combine them with a creamy sauce and plenty of shredded cheese.', 'Spread into a baking dish and add another layer of cheese on top.', 'Bake until hot throughout and browned around the edges.']
+    },
     'Cajun Chicken Pasta': {
       desc: 'Creamy pasta with Cajun-spiced chicken and enough heat to keep the comfort from getting sleepy.',
       why: 'You still get creamy pasta comfort, but Cajun seasoning keeps the whole plate from playing it safe.',
       steps: ['Season chicken with Cajun seasoning and cook until browned and done.', 'Boil pasta and reserve a little pasta water.', 'Make a quick cream sauce in the chicken pan and stir in Parmesan if available.', 'Toss in the pasta, slice the chicken over top, and adjust seasoning.']
+    },
+    'Beef Stroganoff Noodles': {
+      desc: 'Tender beef and mushrooms in a savory creamy sauce wrapped around noodles that refuse to let any gravy escape.',
+      why: 'You wanted comfort without an all-day project, and stroganoff lands squarely in that rich, cozy middle ground.',
+      steps: ['Brown thinly sliced beef quickly in a hot skillet, then remove it.', 'Cook onion and mushrooms in the same pan until softened and browned.', 'Add broth and seasoning, then stir in sour cream off the strongest heat.', 'Return the beef, toss with cooked noodles, and finish with black pepper.']
+    },
+    'Chicken Parm Sandwich': {
+      desc: 'Crispy chicken, marinara, and melted mozzarella packed into toasted bread because chicken Parmesan did not need a plate tonight.',
+      why: 'You get the cheesy red-sauce comfort of chicken parm in a faster handheld format that still feels like dinner.',
+      steps: ['Cook a breaded chicken cutlet until crisp and safely cooked through.', 'Warm marinara and spoon it over the chicken.', 'Top with mozzarella or provolone and melt the cheese.', 'Load everything onto toasted bread and serve before the crust loses its crunch.']
+    },
+    'Lasagna Rollups': {
+      desc: 'Lasagna noodles rolled around cheesy filling, covered in sauce, and baked until every edge starts looking dangerous.',
+      why: 'This is full lasagna comfort with built-in portions and enough hands-on energy to feel worth the effort.',
+      steps: ['Boil lasagna noodles until flexible, then lay them flat.', 'Spread each noodle with ricotta mixture and a little mozzarella.', 'Roll them up, arrange in marinara, and spoon more sauce over the top.', 'Add cheese and bake until bubbling and browned.']
     },
     'Bacon Cheeseburger Bowl': {
       desc: 'All the salty, cheesy burger parts piled into a bowl without needing a bun to hold the meeting together.',
