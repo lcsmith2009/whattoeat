@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "provider": "Pexels",
+  "license": "Pexels free-use license",
+  "purpose": "Source provenance for local 1:1 WebP meal assets. Only literal meal matches are approved.",
+  "items": [
+    {
+      "id": 1,
+      "name": "Baked Mac & Cheese",
+      "status": "approved",
+      "sourcePage": "https://www.pexels.com/photo/close-up-of-baked-macaroni-and-cheese-25524076/",
+      "sourceUrl": "https://images.pexels.com/photos/25524076/pexels-photo-25524076.jpeg"
+    },
+    {
+      "id": 2,
+      "name": "Chicken Alfredo",
+      "status": "approved",
+      "sourcePage": "https://www.pexels.com/photo/creamy-chicken-alfredo-pasta-on-marble-table-37336685/",
+      "sourceUrl": "https://images.pexels.com/photos/37336685/pexels-photo-37336685.jpeg"
+    },
+    {
+      "id": 4,
+      "name": "Meatloaf Plate",
+      "status": "approved",
+      "sourcePage": "https://www.pexels.com/photo/close-up-photo-of-mashed-potato-and-steak-2397401/",
+      "sourceUrl": "https://images.pexels.com/photos/2397401/pexels-photo-2397401.jpeg"
+    },
+    {
+      "id": 5,
+      "name": "Pot Roast Bowl",
+      "status": "approved",
+      "sourcePage": "https://www.pexels.com/photo/food-dinner-lunch-steak-6545671/",
+      "sourceUrl": "https://images.pexels.com/photos/6545671/pexels-photo-6545671.jpeg"
+    },
+    {
+      "id": 7,
+      "name": "Loaded Baked Potato",
+      "status": "approved",
+      "sourcePage": "https://www.pexels.com/photo/delicious-loaded-baked-potatoes-on-wood-surface-30146061/",
+      "sourceUrl": "https://images.pexels.com/photos/30146061/pexels-photo-30146061.jpeg"
+    },
+    {
+      "id": 8,
+      "name": "Grilled Cheese & Tomato Soup",
+      "status": "approved",
+      "sourcePage": "https://www.pexels.com/photo/grilled-cheese-and-tomato-soup-comfort-meal-33706245/",
+      "sourceUrl": "https://images.pexels.com/photos/33706245/pexels-photo-33706245.jpeg"
+    },
+    {
+      "id": 10,
+      "name": "Chicken Pot Pie Skillet",
+      "status": "approved",
+      "sourcePage": "https://www.pexels.com/photo/delicious-chicken-pot-pie-with-flaky-crust-29535632/",
+      "sourceUrl": "https://images.pexels.com/photos/29535632/pexels-photo-29535632.jpeg"
+    },
+    {
+      "id": 16,
+      "name": "Beef Stroganoff Noodles",
+      "status": "approved",
+      "sourcePage": "https://www.pexels.com/photo/steak-spaghetti-20234576/",
+      "sourceUrl": "https://images.pexels.com/photos/20234576/pexels-photo-20234576.jpeg"
+    }
+  ]
+}
