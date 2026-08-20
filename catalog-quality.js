@@ -9,7 +9,7 @@
 
   (async () => {
     try {
-      await loadScript('/catalog-quality-core.js?v=2.0b-catalog-3');
+      await loadScript('/catalog-quality-core.js?v=2.0b-catalog-4');
       await loadScript('/meal-image-manifest.js?v=2.0b-images-1');
       await loadScript('/meal-image-manifest-validate.js?v=2.0b-images-1');
       await loadScript('/meal-images.js?v=2.0b-images-2');
