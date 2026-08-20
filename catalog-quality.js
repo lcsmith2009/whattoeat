@@ -16,6 +16,7 @@
       await loadScript('/catalog-quality-batch5.js?v=2.0b-catalog-1');
       await loadScript('/catalog-quality-batch6.js?v=2.0b-catalog-1');
       await loadScript('/catalog-quality-batch7.js?v=2.0b-catalog-2');
+      await loadScript('/catalog-quality-batch8.js?v=2.0b-catalog-1');
       await loadScript('/meal-image-manifest.js?v=2.0b-images-1');
       await loadScript('/meal-image-manifest-validate.js?v=2.0b-images-1');
       await loadScript('/meal-images.js?v=2.0b-images-2');
