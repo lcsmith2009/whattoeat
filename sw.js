@@ -1,4 +1,4 @@
-const CACHE_NAME = 'whattoeat-2.0b-20260818-v44';
+const CACHE_NAME = 'whattoeat-2.0b-20260818-v45';
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -43,32 +43,34 @@ self.addEventListener('install', event => {
   self.skipWaiting();
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
-    await cache.addAll(APP_SHELL.map(url => new Request(url, { cache: 'reload' })));
+    await cache.addAll(APP_SHELL);
   })());
 });
 
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.map(key => key === CACHE_NAME ? undefined : caches.delete(key)));
+    await Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)));
     await self.clients.claim();
   })());
 });
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
-  const url = new URL(event.request.url);
-  if (url.origin !== self.location.origin) return;
+
+  const requestUrl = new URL(event.request.url);
+  if (requestUrl.origin !== self.location.origin) return;
 
   if (event.request.mode === 'navigate') {
     event.respondWith((async () => {
       try {
-        const fresh = await fetch(event.request, { cache: 'no-store' });
+        const networkResponse = await fetch(event.request);
         const cache = await caches.open(CACHE_NAME);
-        cache.put('/index.html', fresh.clone());
-        return fresh;
-      } catch (err) {
-        return (await caches.match('/index.html')) || caches.match('/offline.html');
+        cache.put('/index.html', networkResponse.clone());
+        return networkResponse;
+      } catch (error) {
+        const cachedPage = await caches.match('/index.html');
+        return cachedPage || caches.match('/offline.html');
       }
     })());
     return;
@@ -76,13 +78,17 @@ self.addEventListener('fetch', event => {
 
   event.respondWith((async () => {
     const cached = await caches.match(event.request);
-    const fetchPromise = fetch(event.request).then(response => {
-      if (response && response.status === 200) {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+    if (cached) return cached;
+
+    try {
+      const networkResponse = await fetch(event.request);
+      if (networkResponse && networkResponse.ok) {
+        const cache = await caches.open(CACHE_NAME);
+        cache.put(event.request, networkResponse.clone());
       }
-      return response;
-    }).catch(() => cached);
-    return cached || fetchPromise;
+      return networkResponse;
+    } catch (error) {
+      return caches.match('/offline.html');
+    }
   })());
 });
