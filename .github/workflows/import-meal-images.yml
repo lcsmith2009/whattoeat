@@ -61,6 +61,10 @@ jobs:
                   'source_hosts': {'cdn.pixabay.com'},
                   'page_hosts': {'pixabay.com', 'www.pixabay.com'},
               },
+              'wikimedia': {
+                  'source_hosts': {'commons.wikimedia.org', 'upload.wikimedia.org'},
+                  'page_hosts': {'commons.wikimedia.org'},
+              },
           }
 
           seen_ids = set()
