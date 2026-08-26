@@ -7,6 +7,7 @@ on:
     paths:
       - meal-image-sources.json
       - .github/workflows/import-meal-images.yml
+      - .github/tmp/meal-image-originals.json
 
 permissions:
   contents: write
@@ -27,6 +28,39 @@ jobs:
 
       - name: Install image tooling
         run: python -m pip install --disable-pip-version-check pillow
+
+      - name: Materialize approved original assets
+        shell: python
+        run: |
+          import base64
+          import io
+          import json
+          import pathlib
+          from PIL import Image
+
+          root = pathlib.Path('.')
+          source = root / '.github/tmp/meal-image-originals.json'
+          output_dir = root / 'meal-images'
+          output_dir.mkdir(exist_ok=True)
+          if not source.exists():
+              print('No staged original assets found.')
+          else:
+              payload = json.loads(source.read_text(encoding='utf-8'))
+              if payload.get('provider') != 'whattoeat-original' or payload.get('license') != 'Owned (WhatToEat)':
+                  raise SystemExit('Invalid original-asset provenance metadata.')
+              seen = set()
+              for item in payload.get('items', []):
+                  meal_id = int(item['id'])
+                  if meal_id < 1 or meal_id > 320 or meal_id in seen:
+                      raise SystemExit(f'Invalid or duplicate original meal id: {meal_id}')
+                  seen.add(meal_id)
+                  raw = base64.b64decode(item['webpBase64'], validate=True)
+                  with Image.open(io.BytesIO(raw)) as check:
+                      if check.format != 'WEBP' or check.size != (1024, 1024):
+                          raise SystemExit(f'Invalid original WebP for meal {meal_id}')
+                  (output_dir / f'{meal_id}.webp').write_bytes(raw)
+                  print(f'Materialized original meal {meal_id}: {item.get("name", "")}')
+              source.unlink()
 
       - name: Download and normalize missing approved assets
         shell: python
@@ -155,7 +189,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add meal-images/*.webp
+          git add -A meal-images .github/tmp/meal-image-originals.json
           if git diff --cached --quiet; then
             echo "No image changes to commit."
             exit 0
