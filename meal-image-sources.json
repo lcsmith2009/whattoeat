@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "purpose": "Source provenance for local 1:1 WebP meal assets. Only literal or visually indistinguishable meal matches are approved.",
   "items": [
     {"id":1,"name":"Baked Mac & Cheese","status":"approved","provider":"pexels","license":"Pexels free-use license","sourcePage":"https://www.pexels.com/photo/close-up-of-baked-macaroni-and-cheese-25524076/","sourceUrl":"https://images.pexels.com/photos/25524076/pexels-photo-25524076.jpeg"},
@@ -15,9 +15,12 @@
     {"id":11,"name":"Turkey Meatball Pasta","status":"approved","provider":"pexels","license":"Pexels free-use license","sourcePage":"https://www.pexels.com/photo/photo-of-a-dish-with-pasta-and-meatballs-6952405/","sourceUrl":"https://images.pexels.com/photos/6952405/pexels-photo-6952405.jpeg"},
     {"id":12,"name":"BBQ Chicken Plate","status":"approved","provider":"pexels","license":"Pexels free-use license","sourcePage":"https://www.pexels.com/photo/grilled-meat-on-white-ceramic-plate-7262370/","sourceUrl":"https://images.pexels.com/photos/7262370/pexels-photo-7262370.jpeg"},
     {"id":13,"name":"Creamy Tuscan Chicken","status":"approved","provider":"wikimedia","license":"Public domain (U.S. Army)","attribution":"U.S. Army","sourcePage":"https://commons.wikimedia.org/wiki/File:High_School_seniors_take_first_place_in_Europe_East_Culinary_Competition_(6628066).jpg","sourceUrl":"https://commons.wikimedia.org/wiki/Special:Redirect/file/High_School_seniors_take_first_place_in_Europe_East_Culinary_Competition_(6628066).jpg"},
+    {"id":14,"name":"Cheesy Broccoli Rice Bake","status":"original","provider":"whattoeat-original","license":"Owned (WhatToEat)","attribution":"WhatToEat","sourcePage":"in-project original asset","sourceUrl":"meal-images/14.webp"},
     {"id":15,"name":"Cajun Chicken Pasta","status":"approved","provider":"pexels","license":"Pexels free-use license","sourcePage":"https://www.pexels.com/photo/close-up-of-a-chicken-pasta-dish-with-cherry-tomatoes-and-herbs-4730662/","sourceUrl":"https://images.pexels.com/photos/4730662/pexels-photo-4730662.jpeg"},
     {"id":16,"name":"Beef Stroganoff Noodles","status":"approved","provider":"pexels","license":"Pexels free-use license","sourcePage":"https://www.pexels.com/photo/steak-spaghetti-20234576/","sourceUrl":"https://images.pexels.com/photos/20234576/pexels-photo-20234576.jpeg"},
     {"id":17,"name":"Chicken Parm Sandwich","status":"approved","provider":"wikimedia","license":"CC BY 2.0","attribution":"Key West Wedding Photography","sourcePage":"https://commons.wikimedia.org/wiki/File:Chicken_Parm_5.jpg","sourceUrl":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Chicken_Parm_5.jpg"},
-    {"id":18,"name":"Lasagna Rollups","status":"approved","provider":"pexels","license":"Pexels free-use license","sourcePage":"https://www.pexels.com/photo/lasagna-on-tray-19589060/","sourceUrl":"https://images.pexels.com/photos/19589060/pexels-photo-19589060.jpeg"}
+    {"id":18,"name":"Lasagna Rollups","status":"approved","provider":"pexels","license":"Pexels free-use license","sourcePage":"https://www.pexels.com/photo/lasagna-on-tray-19589060/","sourceUrl":"https://images.pexels.com/photos/19589060/pexels-photo-19589060.jpeg"},
+    {"id":19,"name":"Bacon Cheeseburger Bowl","status":"original","provider":"whattoeat-original","license":"Owned (WhatToEat)","attribution":"WhatToEat","sourcePage":"in-project original asset","sourceUrl":"meal-images/19.webp"},
+    {"id":20,"name":"Honey Garlic Chicken Bowl","status":"original","provider":"whattoeat-original","license":"Owned (WhatToEat)","attribution":"WhatToEat","sourcePage":"in-project original asset","sourceUrl":"meal-images/20.webp"}
   ]
 }
