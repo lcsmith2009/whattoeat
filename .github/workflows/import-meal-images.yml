@@ -6,6 +6,7 @@ on:
       - work/whattoeat-2.0b-core-experience
     paths:
       - meal-image-sources.json
+      - .github/workflows/import-meal-images.yml
 
 permissions:
   contents: write
@@ -27,12 +28,14 @@ jobs:
       - name: Install image tooling
         run: python -m pip install --disable-pip-version-check pillow
 
-      - name: Download and normalize approved assets
+      - name: Download and normalize missing approved assets
         shell: python
         run: |
           import io
           import json
           import pathlib
+          import time
+          import urllib.error
           import urllib.parse
           import urllib.request
           from PIL import Image, ImageOps
@@ -67,7 +70,45 @@ jobs:
               },
           }
 
+          def valid_existing(path):
+              if not path.exists():
+                  return False
+              try:
+                  with Image.open(path) as check:
+                      return check.format == 'WEBP' and check.size == (1024, 1024)
+              except Exception:
+                  return False
+
+          def download(source_url, meal_id):
+              request = urllib.request.Request(
+                  source_url,
+                  headers={'User-Agent': 'WhatToEat/2.0B meal-image importer (https://github.com/lcsmith2009/whattoeat)'}
+              )
+              last_error = None
+              for attempt in range(4):
+                  try:
+                      with urllib.request.urlopen(request, timeout=45) as response:
+                          return response.read()
+                  except urllib.error.HTTPError as exc:
+                      last_error = exc
+                      if exc.code not in (429, 500, 502, 503, 504) or attempt == 3:
+                          raise
+                      retry_after = exc.headers.get('Retry-After')
+                      delay = int(retry_after) if retry_after and retry_after.isdigit() else 2 ** (attempt + 1)
+                      print(f'Retrying meal {meal_id} after HTTP {exc.code} in {delay}s...')
+                      time.sleep(delay)
+                  except urllib.error.URLError as exc:
+                      last_error = exc
+                      if attempt == 3:
+                          raise
+                      delay = 2 ** (attempt + 1)
+                      print(f'Retrying meal {meal_id} after network error in {delay}s...')
+                      time.sleep(delay)
+              raise last_error
+
           seen_ids = set()
+          imported = 0
+          skipped = 0
           for item in approved:
               meal_id = int(item['id'])
               if meal_id < 1 or meal_id > 320 or meal_id in seen_ids:
@@ -87,13 +128,13 @@ jobs:
               if page_host not in allowed[provider]['page_hosts']:
                   raise SystemExit(f'Unapproved provenance page for meal {meal_id}: {source_page}')
 
-              request = urllib.request.Request(
-                  source_url,
-                  headers={'User-Agent': 'WhatToEat/2.0B meal-image importer'}
-              )
-              with urllib.request.urlopen(request, timeout=45) as response:
-                  raw = response.read()
+              output = output_dir / f'{meal_id}.webp'
+              if valid_existing(output):
+                  skipped += 1
+                  print(f'Skipped existing meal {meal_id}: {item.get("name", "")}')
+                  continue
 
+              raw = download(source_url, meal_id)
               with Image.open(io.BytesIO(raw)) as source:
                   image = ImageOps.exif_transpose(source).convert('RGB')
                   side = min(image.size)
@@ -101,13 +142,14 @@ jobs:
                   top = (image.height - side) // 2
                   image = image.crop((left, top, left + side, top + side))
                   image = image.resize((1024, 1024), Image.Resampling.LANCZOS)
-                  output = output_dir / f'{meal_id}.webp'
                   image.save(output, 'WEBP', quality=88, method=6)
 
-              with Image.open(output) as check:
-                  if check.format != 'WEBP' or check.size != (1024, 1024):
-                      raise SystemExit(f'Normalization failed for meal {meal_id}')
+              if not valid_existing(output):
+                  raise SystemExit(f'Normalization failed for meal {meal_id}')
+              imported += 1
               print(f'Imported meal {meal_id}: {item.get("name", "")} ({provider})'.strip())
+
+          print(f'Import complete: {imported} new, {skipped} existing.')
 
       - name: Commit generated WebP assets
         run: |
