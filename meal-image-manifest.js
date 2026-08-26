@@ -23,8 +23,11 @@ window.WTE_MEAL_IMAGES = Object.freeze({
   11: '/meal-images/11.webp',
   12: '/meal-images/12.webp',
   13: '/meal-images/13.webp',
+  14: '/meal-images/14.webp',
   15: '/meal-images/15.webp',
   16: '/meal-images/16.webp',
   17: '/meal-images/17.webp',
   18: '/meal-images/18.webp',
+  19: '/meal-images/19.webp',
+  20: '/meal-images/20.webp',
 });
