@@ -1,4 +1,4 @@
-const CACHE_NAME = 'whattoeat-2.0b-20260818-v43';
+const CACHE_NAME = 'whattoeat-2.0b-20260818-v44';
 const APP_SHELL = [
   '/',
   '/index.html',
