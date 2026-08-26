@@ -57,6 +57,10 @@ jobs:
                   'source_hosts': {'images.unsplash.com'},
                   'page_hosts': {'unsplash.com', 'www.unsplash.com'},
               },
+              'pixabay': {
+                  'source_hosts': {'cdn.pixabay.com'},
+                  'page_hosts': {'pixabay.com', 'www.pixabay.com'},
+              },
           }
 
           seen_ids = set()
@@ -66,7 +70,7 @@ jobs:
                   raise SystemExit(f'Invalid or duplicate meal id: {meal_id}')
               seen_ids.add(meal_id)
 
-              provider = str(item.get('provider') or payload.get('provider') or '').strip().lower()
+              provider = str(item.get('provider') or '').strip().lower()
               if provider not in allowed:
                   raise SystemExit(f'Unapproved provider for meal {meal_id}: {provider}')
 
