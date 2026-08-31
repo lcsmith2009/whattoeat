@@ -1,0 +1,199 @@
+name: Import approved meal images
+
+on:
+  push:
+    branches:
+      - work/whattoeat-2.0b-core-experience
+    paths:
+      - meal-image-sources.json
+      - .github/workflows/import-meal-images.yml
+      - .github/tmp/meal-image-originals.json
+
+permissions:
+  contents: write
+
+concurrency:
+  group: whattoeat-meal-image-import
+  cancel-in-progress: false
+
+jobs:
+  import-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout development branch
+        uses: actions/checkout@v4
+        with:
+          ref: work/whattoeat-2.0b-core-experience
+          fetch-depth: 0
+
+      - name: Install image tooling
+        run: python -m pip install --disable-pip-version-check pillow
+
+      - name: Materialize approved original assets
+        shell: python
+        run: |
+          import base64
+          import io
+          import json
+          import pathlib
+          from PIL import Image
+
+          root = pathlib.Path('.')
+          source = root / '.github/tmp/meal-image-originals.json'
+          output_dir = root / 'meal-images'
+          output_dir.mkdir(exist_ok=True)
+          if not source.exists():
+              print('No staged original assets found.')
+          else:
+              payload = json.loads(source.read_text(encoding='utf-8'))
+              if payload.get('provider') != 'whattoeat-original' or payload.get('license') != 'Owned (WhatToEat)':
+                  raise SystemExit('Invalid original-asset provenance metadata.')
+              seen = set()
+              for item in payload.get('items', []):
+                  meal_id = int(item['id'])
+                  if meal_id < 1 or meal_id > 320 or meal_id in seen:
+                      raise SystemExit(f'Invalid or duplicate original meal id: {meal_id}')
+                  seen.add(meal_id)
+                  raw = base64.b64decode(item['webpBase64'], validate=True)
+                  with Image.open(io.BytesIO(raw)) as check:
+                      if check.format != 'WEBP' or check.size != (1024, 1024):
+                          raise SystemExit(f'Invalid original WebP for meal {meal_id}')
+                  (output_dir / f'{meal_id}.webp').write_bytes(raw)
+                  print(f'Materialized original meal {meal_id}: {item.get("name", "")}')
+              source.unlink()
+
+      - name: Download and normalize missing approved assets
+        shell: python
+        run: |
+          import io
+          import json
+          import pathlib
+          import time
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+          from PIL import Image, ImageOps
+
+          root = pathlib.Path('.')
+          source_file = root / 'meal-image-sources.json'
+          output_dir = root / 'meal-images'
+          output_dir.mkdir(exist_ok=True)
+
+          payload = json.loads(source_file.read_text(encoding='utf-8'))
+          items = payload.get('items', [])
+          approved = [item for item in items if item.get('status') == 'approved']
+          if not approved:
+              raise SystemExit('No approved meal image sources found.')
+
+          allowed = {
+              'pexels': {
+                  'source_hosts': {'images.pexels.com'},
+                  'page_hosts': {'www.pexels.com', 'pexels.com'},
+              },
+              'unsplash': {
+                  'source_hosts': {'images.unsplash.com'},
+                  'page_hosts': {'unsplash.com', 'www.unsplash.com'},
+              },
+              'pixabay': {
+                  'source_hosts': {'cdn.pixabay.com'},
+                  'page_hosts': {'pixabay.com', 'www.pixabay.com'},
+              },
+              'wikimedia': {
+                  'source_hosts': {'commons.wikimedia.org', 'upload.wikimedia.org'},
+                  'page_hosts': {'commons.wikimedia.org'},
+              },
+          }
+
+          def valid_existing(path):
+              if not path.exists():
+                  return False
+              try:
+                  with Image.open(path) as check:
+                      return check.format == 'WEBP' and check.size == (1024, 1024)
+              except Exception:
+                  return False
+
+          def download(source_url, meal_id):
+              request = urllib.request.Request(
+                  source_url,
+                  headers={'User-Agent': 'WhatToEat/2.0B meal-image importer (https://github.com/lcsmith2009/whattoeat)'}
+              )
+              last_error = None
+              for attempt in range(4):
+                  try:
+                      with urllib.request.urlopen(request, timeout=45) as response:
+                          return response.read()
+                  except urllib.error.HTTPError as exc:
+                      last_error = exc
+                      if exc.code not in (429, 500, 502, 503, 504) or attempt == 3:
+                          raise
+                      retry_after = exc.headers.get('Retry-After')
+                      delay = int(retry_after) if retry_after and retry_after.isdigit() else 2 ** (attempt + 1)
+                      print(f'Retrying meal {meal_id} after HTTP {exc.code} in {delay}s...')
+                      time.sleep(delay)
+                  except urllib.error.URLError as exc:
+                      last_error = exc
+                      if attempt == 3:
+                          raise
+                      delay = 2 ** (attempt + 1)
+                      print(f'Retrying meal {meal_id} after network error in {delay}s...')
+                      time.sleep(delay)
+              raise last_error
+
+          seen_ids = set()
+          imported = 0
+          skipped = 0
+          for item in approved:
+              meal_id = int(item['id'])
+              if meal_id < 1 or meal_id > 320 or meal_id in seen_ids:
+                  raise SystemExit(f'Invalid or duplicate meal id: {meal_id}')
+              seen_ids.add(meal_id)
+
+              provider = str(item.get('provider') or '').strip().lower()
+              if provider not in allowed:
+                  raise SystemExit(f'Unapproved provider for meal {meal_id}: {provider}')
+
+              source_url = str(item['sourceUrl'])
+              source_page = str(item['sourcePage'])
+              source_host = (urllib.parse.urlparse(source_url).hostname or '').lower()
+              page_host = (urllib.parse.urlparse(source_page).hostname or '').lower()
+              if source_host not in allowed[provider]['source_hosts']:
+                  raise SystemExit(f'Unapproved image host for meal {meal_id}: {source_url}')
+              if page_host not in allowed[provider]['page_hosts']:
+                  raise SystemExit(f'Unapproved provenance page for meal {meal_id}: {source_page}')
+
+              output = output_dir / f'{meal_id}.webp'
+              if valid_existing(output):
+                  skipped += 1
+                  print(f'Skipped existing meal {meal_id}: {item.get("name", "")}')
+                  continue
+
+              raw = download(source_url, meal_id)
+              with Image.open(io.BytesIO(raw)) as source:
+                  image = ImageOps.exif_transpose(source).convert('RGB')
+                  side = min(image.size)
+                  left = (image.width - side) // 2
+                  top = (image.height - side) // 2
+                  image = image.crop((left, top, left + side, top + side))
+                  image = image.resize((1024, 1024), Image.Resampling.LANCZOS)
+                  image.save(output, 'WEBP', quality=88, method=6)
+
+              if not valid_existing(output):
+                  raise SystemExit(f'Normalization failed for meal {meal_id}')
+              imported += 1
+              print(f'Imported meal {meal_id}: {item.get("name", "")} ({provider})'.strip())
+
+          print(f'Import complete: {imported} new, {skipped} existing.')
+
+      - name: Commit generated WebP assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A meal-images
+          git add -A .github/tmp 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No image changes to commit."
+            exit 0
+          fi
+          git commit -m "2.0B: import approved exact meal images"
+          git push origin HEAD:work/whattoeat-2.0b-core-experience

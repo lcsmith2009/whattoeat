@@ -1,11 +1,487 @@
 /* WhatToEat 2.0A mobile regression guard */
 #smartPickBtn{
-  margin-bottom:calc(118px + env(safe-area-inset-bottom));
-  scroll-margin-bottom:calc(150px + env(safe-area-inset-bottom));
+  margin-bottom:16px;
+  scroll-margin-bottom:96px;
 }
 
 @media (max-width:390px){
   #smartPickBtn{
-    margin-bottom:calc(128px + env(safe-area-inset-bottom));
+    margin-bottom:14px;
+  }
+}
+
+/* WhatToEat 2.0B — Core Experience: Home hierarchy pass */
+#homeScreen .hero-card{
+  padding:22px 20px 20px;
+  min-height:auto;
+}
+
+#homeScreen .hero-card h2{
+  font-size:clamp(2rem,8.2vw,2.65rem);
+  line-height:1;
+  margin:14px 0 10px;
+  max-width:16ch;
+}
+
+#homeScreen .hero-card p{
+  max-width:36ch;
+  font-size:.96rem;
+  line-height:1.42;
+  margin-bottom:18px;
+}
+
+#homeScreen .hero-actions{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:9px;
+}
+
+#homeScreen .hero-actions .primary-btn,
+#homeScreen .hero-actions .ghost-btn{
+  width:100%;
+  min-height:54px;
+  border-radius:18px;
+  font-size:1.02rem;
+}
+
+#homeScreen .hero-actions .primary-btn{
+  font-size:0;
+}
+
+#homeScreen .hero-actions .primary-btn::after{
+  content:'✨ Pick For Me';
+  font-size:1.02rem;
+}
+
+#homeScreen #chaosPickBtn{
+  font-size:0;
+}
+
+#homeScreen #chaosPickBtn::after{
+  content:'🎲 Chaos Pick';
+  font-size:1.02rem;
+}
+
+#homeScreen .hero-food-stack{
+  height:64px;
+  margin-top:12px;
+}
+
+/* Supporting dashboard modules move out of the opening decision path. */
+#homeScreen > .daily-card,
+#homeScreen > .today-mode-card,
+#homeScreen > .personal-card,
+#homeScreen > .section-block:not(.social-lab-section){
+  display:none;
+}
+
+#homeScreen .social-lab-section{
+  margin-top:10px;
+}
+
+#homeScreen .social-lab-section .section-heading{
+  margin:0 2px 8px;
+}
+
+#homeScreen .social-lab-section .section-heading .eyebrow{
+  display:none;
+}
+
+#homeScreen .social-lab-section .section-heading h3{
+  font-size:0;
+  color:var(--muted);
+  letter-spacing:.02em;
+  font-weight:800;
+}
+
+#homeScreen .social-lab-section .section-heading h3::after{
+  content:'Deciding with people?';
+  font-size:.82rem;
+}
+
+#homeScreen .social-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+}
+
+#homeScreen #roastModeBtn{
+  display:none;
+}
+
+#homeScreen .social-tool-card{
+  min-height:82px;
+  border-radius:18px;
+  padding:12px;
+  background:rgba(255,255,255,.055);
+  border:1px solid var(--border);
+  text-align:left;
+}
+
+#homeScreen .social-tool-card > span{
+  display:block;
+  font-size:1.25rem;
+  margin-bottom:5px;
+}
+
+#homeScreen .social-tool-card strong{
+  display:block;
+  font-size:.95rem;
+}
+
+#homeScreen .social-tool-card small{
+  display:none;
+}
+
+/* WhatToEat 2.0B — Pick flow + result hierarchy */
+#matchScreen .screen-title{
+  padding-bottom:4px;
+}
+
+#matchScreen .screen-title h2{
+  font-size:1.65rem;
+}
+
+#matchScreen .question-card{
+  margin-top:10px;
+  padding:13px;
+  border-radius:22px;
+}
+
+#matchScreen .question-card h3{
+  margin:0 0 9px;
+  font-size:.94rem;
+}
+
+#matchScreen .option-grid{
+  gap:7px;
+}
+
+#matchScreen .option-grid button{
+  padding:10px 8px;
+  border-radius:15px;
+  font-size:.88rem;
+}
+
+#matchScreen #smartPickBtn{
+  min-height:56px;
+  border-radius:19px;
+  font-size:1.05rem;
+}
+
+#smartResult{
+  scroll-margin-top:84px;
+}
+
+#smartResult .result-header{
+  padding:10px 13px;
+  margin-bottom:10px;
+  border-radius:18px;
+  background:rgba(255,255,255,.045);
+  box-shadow:none;
+}
+
+#smartResult .result-header .tiny-note{
+  margin:2px 0 0;
+  color:var(--muted);
+  font-size:.78rem;
+}
+
+#smartResult .food-card.large{
+  border-radius:30px;
+  background:linear-gradient(180deg,#201817,#121214 52%);
+  box-shadow:0 26px 70px rgba(0,0,0,.42);
+}
+
+#smartResult .food-card.large .food-img{
+  height:210px;
+}
+
+#smartResult .food-card.large .food-body{
+  padding:18px;
+}
+
+#smartResult .food-card.large .tags{
+  margin-bottom:10px;
+}
+
+#smartResult .food-card.large .food-body h3{
+  font-size:1.72rem;
+  line-height:1.02;
+  margin-bottom:8px;
+}
+
+#smartResult .food-card.large .food-body p{
+  line-height:1.42;
+}
+
+#smartResult .food-card.large .food-body p strong{
+  color:var(--yellow);
+}
+
+#smartResult .food-card.large .card-actions{
+  display:grid;
+  grid-template-columns:1.25fr .9fr .9fr;
+  gap:8px;
+  margin-top:16px;
+}
+
+#smartResult .food-card.large .card-actions button{
+  min-height:48px;
+  border-radius:15px;
+}
+
+#smartResult .food-card.large .card-actions button:first-child{
+  font-size:0;
+}
+
+#smartResult .food-card.large .card-actions button:first-child::after{
+  content:'🍳 Make It';
+  font-size:.9rem;
+}
+
+#smartResult > .ghost-btn.full{
+  min-height:52px;
+  margin-top:10px;
+  font-size:0;
+  border-radius:18px;
+  background:rgba(255,255,255,.055);
+}
+
+#smartResult > .ghost-btn.full::after{
+  content:'Nah. Give me something else.';
+  font-size:.96rem;
+}
+
+/* 2.0B trims legacy 2.0A bottom-nav safety spacers on Pick only. */
+#matchScreen{
+  padding-bottom:calc(88px + env(safe-area-inset-bottom))!important;
+}
+
+#matchScreen .result-zone,
+#smartResult{
+  margin-bottom:10px!important;
+}
+
+.app-shell:has(#matchScreen.active){
+  padding-bottom:calc(88px + env(safe-area-inset-bottom))!important;
+}
+
+#app:has(#matchScreen.active),
+main:has(#matchScreen.active){
+  padding-bottom:0!important;
+}
+
+body:has(#matchScreen.active)::after{
+  height:0!important;
+}
+
+/* WhatToEat 2.0B — Your Food Brain */
+#profileScreen .screen-title{
+  padding-bottom:4px;
+}
+
+#profileScreen .screen-title h2{
+  font-size:0;
+}
+
+#profileScreen .screen-title h2::after{
+  content:'WhatToEat is learning your taste.';
+  display:block;
+  font-size:1.5rem;
+  line-height:1.05;
+  letter-spacing:-.045em;
+  max-width:16ch;
+}
+
+#profileScreen .stats-grid{
+  gap:9px;
+  margin-top:8px;
+}
+
+#profileScreen .stat-card{
+  margin-top:0;
+  padding:14px;
+  border-radius:20px;
+  min-height:104px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  background:linear-gradient(145deg,rgba(255,138,31,.10),rgba(255,255,255,.05));
+}
+
+#profileScreen .stat-card span{
+  font-size:1.7rem;
+  line-height:1;
+}
+
+#profileScreen .stat-card p{
+  font-size:.78rem;
+  line-height:1.2;
+}
+
+#profileScreen .glass-card{
+  border-radius:22px;
+  padding:14px;
+  margin-top:11px;
+}
+
+#profileScreen .glass-card > .eyebrow{
+  font-size:0;
+}
+
+#profileScreen .glass-card > .eyebrow::after{
+  content:'Recently picked';
+  font-size:.72rem;
+}
+
+#profileScreen .recent-list{
+  display:grid;
+  gap:7px;
+  margin-top:8px;
+}
+
+#profileScreen .recent-list button{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  text-align:left;
+  padding:11px 12px;
+  border-radius:14px;
+  background:rgba(255,255,255,.055);
+  border:1px solid var(--border);
+  font-weight:850;
+}
+
+#profileScreen .recent-list button span{
+  color:var(--muted);
+  font-size:.7rem;
+  text-transform:capitalize;
+  font-weight:750;
+}
+
+#profileScreen .question-card{
+  margin-top:11px;
+  padding:14px;
+  border-radius:22px;
+}
+
+#profileScreen .question-card h3{
+  margin:0 0 4px;
+  font-size:0;
+}
+
+#profileScreen .question-card h3::after{
+  content:'Your default craving';
+  font-size:1rem;
+}
+
+#profileScreen .question-card::before{
+  content:'WhatToEat starts here when you do not choose a mood.';
+  display:block;
+  color:var(--muted);
+  font-size:.78rem;
+  line-height:1.35;
+  margin:0 0 10px;
+}
+
+#profileScreen .option-grid{
+  gap:7px;
+}
+
+#profileScreen .option-grid button{
+  padding:10px 8px;
+  border-radius:14px;
+  font-size:.84rem;
+}
+
+#profileScreen #resetBtn{
+  margin-top:22px;
+  min-height:44px;
+  padding:10px 12px;
+  font-size:.78rem;
+  color:var(--muted);
+  background:transparent;
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:none;
+}
+
+/* Dedicated combo visual: pizza + wings side by side instead of borrowing a
+   random single-food bucket. Uses the existing verified image sources. */
+.food-img.pizza-wings{
+  background-image:
+    linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.34)),
+    url('https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=72'),
+    url('https://images.unsplash.com/photo-1527477396000-e27163b481c2?auto=format&fit=crop&w=800&q=72');
+  background-size:100% 100%,50% 100%,50% 100%;
+  background-position:center,left center,right center;
+  background-repeat:no-repeat;
+}
+
+@media (max-width:390px){
+  #homeScreen .hero-card{
+    padding:18px 16px 17px;
+  }
+
+  #homeScreen .hero-card h2{
+    font-size:2rem;
+    max-width:17ch;
+    margin-top:12px;
+  }
+
+  #homeScreen .hero-card p{
+    font-size:.92rem;
+    line-height:1.38;
+    margin-bottom:15px;
+  }
+
+  #homeScreen .hero-actions .primary-btn,
+  #homeScreen .hero-actions .ghost-btn{
+    min-height:52px;
+  }
+
+  #homeScreen .hero-food-stack{
+    height:54px;
+    margin-top:10px;
+  }
+
+  #matchScreen .screen-title h2{
+    font-size:1.48rem;
+  }
+
+  #matchScreen .question-card{
+    padding:11px;
+  }
+
+  #matchScreen .option-grid button{
+    padding:9px 7px;
+    font-size:.84rem;
+  }
+
+  #smartResult .food-card.large .food-img{
+    height:185px;
+  }
+
+  #smartResult .food-card.large .food-body h3{
+    font-size:1.55rem;
+  }
+
+  #smartResult .food-card.large .card-actions{
+    grid-template-columns:1.15fr .85fr .85fr;
+  }
+
+  #profileScreen .screen-title h2::after{
+    font-size:1.35rem;
+  }
+
+  #profileScreen .stat-card{
+    min-height:96px;
+    padding:12px;
+  }
+
+  #profileScreen .stat-card span{
+    font-size:1.55rem;
   }
 }
