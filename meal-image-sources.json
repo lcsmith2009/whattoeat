@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "purpose": "Source provenance for local 1:1 WebP meal assets. Only literal or visually indistinguishable meal matches are approved.",
   "items": [
     {"id":1,"name":"Baked Mac & Cheese","status":"approved","provider":"pexels","license":"Pexels free-use license","sourcePage":"https://www.pexels.com/photo/close-up-of-baked-macaroni-and-cheese-25524076/","sourceUrl":"https://images.pexels.com/photos/25524076/pexels-photo-25524076.jpeg"},
@@ -26,6 +26,8 @@
     {"id":22,"name":"Shrimp & Grits","status":"approved","provider":"wikimedia","license":"CC BY 2.0","attribution":"City Foodsters","sourcePage":"https://commons.wikimedia.org/wiki/File:Shrimp_%26_Grits_-_Saut%C3%A9ed_shrimp_with_mushrooms%2C_scallions_%26_bacon_served_over_cheese_grits_2.jpg","sourceUrl":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Shrimp_%26_Grits_-_Saut%C3%A9ed_shrimp_with_mushrooms%2C_scallions_%26_bacon_served_over_cheese_grits_2.jpg"},
     {"id":23,"name":"Red Beans & Rice","status":"approved","provider":"pexels","license":"Pexels free-use license","sourcePage":"https://www.pexels.com/photo/cooked-rice-with-vegetables-on-white-ceramic-plate-8992843/","sourceUrl":"https://images.pexels.com/photos/8992843/pexels-photo-8992843.jpeg"},
     {"id":24,"name":"Chicken & Waffles","status":"approved","provider":"pexels","license":"Pexels free-use license","sourcePage":"https://www.pexels.com/photo/classic-chicken-and-waffles-with-maple-syrup-31706937/","sourceUrl":"https://images.pexels.com/photos/31706937/pexels-photo-31706937.jpeg"},
-    {"id":25,"name":"Oxtail Rice Bowl","status":"approved","provider":"pexels","license":"Pexels free-use license","sourcePage":"https://www.pexels.com/photo/delicious-jamaican-oxtail-and-rice-dish-30746554/","sourceUrl":"https://images.pexels.com/photos/30746554/pexels-photo-30746554.jpeg"}
+    {"id":25,"name":"Oxtail Rice Bowl","status":"approved","provider":"pexels","license":"Pexels free-use license","sourcePage":"https://www.pexels.com/photo/delicious-jamaican-oxtail-and-rice-dish-30746554/","sourceUrl":"https://images.pexels.com/photos/30746554/pexels-photo-30746554.jpeg"},
+    {"id":27,"name":"Collard Greens Plate","status":"approved","provider":"wikimedia","license":"CC BY-SA 4.0","attribution":"Nolabob","sourcePage":"https://commons.wikimedia.org/wiki/File:Collard_greens_on_a_stovetop.jpg","sourceUrl":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Collard_greens_on_a_stovetop.jpg"},
+    {"id":28,"name":"Cornbread Chili Bowl","status":"approved","provider":"wikimedia","license":"Public domain (NIH/NCI)","attribution":"Len Rizzi / National Cancer Institute","sourcePage":"https://commons.wikimedia.org/wiki/File:Vegetable_chili_with_cornbread.jpg","sourceUrl":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Vegetable_chili_with_cornbread.jpg"}
   ]
 }
