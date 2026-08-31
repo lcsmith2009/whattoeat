@@ -31,6 +31,7 @@ window.WTE_MEAL_IMAGES = Object.freeze({
   19: '/meal-images/19.webp',
   20: '/meal-images/20.webp',
   21: '/meal-images/21.webp',
+  22: '/meal-images/22.webp',
   23: '/meal-images/23.webp',
   24: '/meal-images/24.webp',
   25: '/meal-images/25.webp',
