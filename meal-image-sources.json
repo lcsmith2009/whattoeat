@@ -24,6 +24,7 @@
     {"id":20,"name":"Honey Garlic Chicken Bowl","status":"original","provider":"whattoeat-original","license":"Owned (WhatToEat)","attribution":"WhatToEat","sourcePage":"in-project original asset","sourceUrl":"meal-images/20.webp"},
     {"id":21,"name":"Fried Catfish Plate","status":"approved","provider":"pexels","license":"Pexels free-use license","sourcePage":"https://www.pexels.com/photo/delicious-southern-fried-fish-and-fries-28449691/","sourceUrl":"https://images.pexels.com/photos/28449691/pexels-photo-28449691.jpeg"},
     {"id":23,"name":"Red Beans & Rice","status":"approved","provider":"pexels","license":"Pexels free-use license","sourcePage":"https://www.pexels.com/photo/cooked-rice-with-vegetables-on-white-ceramic-plate-8992843/","sourceUrl":"https://images.pexels.com/photos/8992843/pexels-photo-8992843.jpeg"},
-    {"id":24,"name":"Chicken & Waffles","status":"approved","provider":"pexels","license":"Pexels free-use license","sourcePage":"https://www.pexels.com/photo/classic-chicken-and-waffles-with-maple-syrup-31706937/","sourceUrl":"https://images.pexels.com/photos/31706937/pexels-photo-31706937.jpeg"}
+    {"id":24,"name":"Chicken & Waffles","status":"approved","provider":"pexels","license":"Pexels free-use license","sourcePage":"https://www.pexels.com/photo/classic-chicken-and-waffles-with-maple-syrup-31706937/","sourceUrl":"https://images.pexels.com/photos/31706937/pexels-photo-31706937.jpeg"},
+    {"id":25,"name":"Oxtail Rice Bowl","status":"approved","provider":"pexels","license":"Pexels free-use license","sourcePage":"https://www.pexels.com/photo/delicious-jamaican-oxtail-and-rice-dish-30746554/","sourceUrl":"https://images.pexels.com/photos/30746554/pexels-photo-30746554.jpeg"}
   ]
 }
