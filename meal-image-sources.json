@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "purpose": "Source provenance for local 1:1 WebP meal assets. Only literal or visually indistinguishable meal matches are approved.",
   "items": [
     {"id":1,"name":"Baked Mac & Cheese","status":"approved","provider":"pexels","license":"Pexels free-use license","sourcePage":"https://www.pexels.com/photo/close-up-of-baked-macaroni-and-cheese-25524076/","sourceUrl":"https://images.pexels.com/photos/25524076/pexels-photo-25524076.jpeg"},
